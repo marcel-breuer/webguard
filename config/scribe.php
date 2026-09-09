@@ -41,9 +41,13 @@ return [
             // Exclude these routes even if they matched the rules above.
             'exclude' => [
                 'api/auth/*',
+                // The app.* namespace is reserved for the authenticated internal UI contract.
+                'app.*',
                 'api/instances/*',
                 'api/mobile/*',
                 'api/server-health/*',
+                'api/v1/server-health/*',
+                'api/docs',
             ],
         ],
     ],
