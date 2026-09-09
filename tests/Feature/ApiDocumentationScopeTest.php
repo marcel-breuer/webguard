@@ -12,18 +12,25 @@ class ApiDocumentationScopeTest extends TestCase
     public function test_scribe_matches_user_facing_api_routes_without_internal_routes(): void
     {
         $matchedRoutes = app(RouteMatcherInterface::class)->getRoutes(config('scribe.routes'));
-        $routeNames = array_map(
-            static fn (mixed $matchedRoute): ?string => $matchedRoute->getRoute()->getName(),
+        $routeUris = array_map(
+            static fn (mixed $matchedRoute): string => $matchedRoute->getRoute()->uri(),
             $matchedRoutes,
         );
 
-        $this->assertContains('public.status.show', $routeNames);
-        $this->assertContains('api-keys.index', $routeNames);
-        $this->assertNotContains('app.dashboard', $routeNames);
-        $this->assertNotContains('app.monitorings.index', $routeNames);
-        $this->assertNotContains('instances.monitorings.list', $routeNames);
-        $this->assertNotContains('server-health.legacy.store', $routeNames);
-        $this->assertNotContains('server-health.bearer.legacy.store', $routeNames);
-        $this->assertNotContains('api.docs.redirect', $routeNames);
+        $this->assertNotEmpty($routeUris);
+        $this->assertSame(
+            $routeUris,
+            array_values(array_filter(
+                $routeUris,
+                static fn (string $uri): bool => str_starts_with($uri, 'api/public/'),
+            )),
+        );
+        $this->assertContains('api/public/status/{status}', $routeUris);
+        $this->assertNotContains('api/api-keys', $routeUris);
+        $this->assertNotContains('api/translations', $routeUris);
+        $this->assertNotContains('api/dashboard', $routeUris);
+        $this->assertNotContains('api/instances/monitorings', $routeUris);
+        $this->assertNotContains('api/server-health/{token}', $routeUris);
+        $this->assertNotContains('api/v1/server-health/{token}', $routeUris);
     }
 }
