@@ -16,7 +16,7 @@ return [
     'title' => config('app.name') . ' API Reference',
 
     // A short description of your API. Will be included in the docs webpage, Postman collection and OpenAPI spec.
-    'description' => 'Stable REST API for monitoring management, status data, teams, and operations overviews.',
+    'description' => 'Public API for monitoring badges, uptime data, status pages, and subscriptions.',
 
     // The base URL displayed in the docs.
     // If you're using `laravel` type, you can set this to a dynamic string, like '{{ config("app.tenant_url") }}' to get a dynamic base URL.
@@ -26,8 +26,8 @@ return [
     'routes' => [
         [
             'match' => [
-                // Match only routes whose paths match this pattern (use * as a wildcard to match any characters). Example: 'users/*'.
-                'prefixes' => ['api/*'],
+                // Keep the reference aligned with the public API URL namespace.
+                'prefixes' => ['api/public/*'],
 
                 // Match only routes whose domains match this pattern (use * as a wildcard to match any characters). Example: 'api.*'.
                 'domains' => ['*'],
@@ -38,17 +38,6 @@ return [
                 // 'users.index', 'POST /new', '/auth/*'
             ],
 
-            // Exclude these routes even if they matched the rules above.
-            'exclude' => [
-                'api/auth/*',
-                // The app.* namespace is reserved for the authenticated internal UI contract.
-                'app.*',
-                'api/instances/*',
-                'api/mobile/*',
-                'api/server-health/*',
-                'api/v1/server-health/*',
-                'api/docs',
-            ],
         ],
     ],
 
@@ -106,11 +95,11 @@ return [
     // How is your API authenticated? This information will be used in the displayed docs, generated examples and response calls.
     'auth' => [
         // Set this to true if ANY endpoints in your API use authentication.
-        'enabled' => true,
+        'enabled' => false,
 
         // Set this to true if your API should be authenticated by default. If so, you must also set `enabled` (above) to true.
         // You can then use @unauthenticated or @authenticated on individual endpoints to change their status from the default.
-        'default' => true,
+        'default' => false,
 
         // Where is the auth value meant to be sent in a request?
         'in' => AuthIn::BEARER->value,
@@ -127,11 +116,11 @@ return [
         'placeholder' => '{YOUR_AUTH_KEY}',
 
         // Any extra authentication-related info for your users. Markdown and HTML are supported.
-        'extra_info' => 'You can retrieve your token by visiting your dashboard and clicking <b>Generate API token</b>. Responses include <code>X-Request-Id</code>. Non-mobile tokens are limited to five requests per minute and include standard <code>X-RateLimit-*</code> headers.',
+        'extra_info' => '',
     ],
 
     // Text to place in the "Introduction" section, right after the `description`. Markdown and HTML are supported.
-    'intro_text' => 'This reference documents the stable `/api` integration contract. Existing response bodies remain backward compatible. The repository guide `docs/api/external-v1.md` defines pagination, errors, idempotency, and deprecation policy.',
+    'intro_text' => 'This reference documents the public `/api/public` contract for status and monitoring data.',
 
     // Example requests for each endpoint will be shown in each of these languages.
     // Supported options are: bash, javascript, php, python
