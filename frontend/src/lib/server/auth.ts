@@ -2,6 +2,7 @@ import { error, redirect } from "@sveltejs/kit";
 
 export interface AuthOptions {
     captcha_url: string;
+    imprint_url: string;
     terms_url: string;
     privacy_url: string;
 }

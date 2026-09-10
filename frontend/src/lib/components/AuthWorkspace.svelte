@@ -17,16 +17,22 @@
         options: AuthOptions;
         initialMode?: AuthMode;
         initialEmail?: string;
+        initialLocale?: string;
         expired?: boolean;
         notice?: string;
+        showPreferences?: boolean;
+        showLegalLinks?: boolean;
     }
 
     let {
         options,
         initialMode = "login",
         initialEmail = "",
+        initialLocale = "en",
         expired = false,
         notice = "",
+        showPreferences = false,
+        showLegalLinks = false,
     }: Props = $props();
     let mode = $state<AuthMode>("login");
     let email = $state("");
@@ -109,7 +115,7 @@
     }
 </script>
 
-<GuestAuthLayout title={mode === "register" ? "Create your account" : "Welcome to WebGuard"} description={mode === "register" ? "Start monitoring the services your team depends on." : "Sign in to manage your monitorings, status pages, and notifications."}>
+<GuestAuthLayout title={mode === "register" ? "Create your account" : "Welcome to WebGuard"} description={mode === "register" ? "Start monitoring the services your team depends on." : "Sign in to manage your monitorings, status pages, and notifications."} initialLocale={initialLocale} showPreferences={showPreferences}>
     <div class="mb-7 grid grid-cols-3 gap-2 rounded-xl bg-wg-surface-muted p-1.5" aria-label="Authentication mode">
         <Button variant={mode === "login" ? "primary" : "quiet"} onclick={() => selectMode("login")}>Sign in</Button>
         <Button variant={mode === "register" ? "primary" : "quiet"} onclick={() => selectMode("register")}>Register</Button>
@@ -136,4 +142,10 @@
         {/if}
         <Button type="submit" loading={submitting}>{mode === "register" ? "Create account" : "Sign in"}</Button>
     </form>
+    {#if showLegalLinks}
+        <nav class="mt-8 flex flex-wrap justify-center gap-x-5 gap-y-2 border-t border-wg-border pt-5 text-sm font-bold" aria-label="Legal links">
+            <a class="text-wg-text-muted no-underline hover:text-wg-accent hover:underline" href={options.imprint_url} target="_blank" rel="noopener">Imprint</a>
+            <a class="text-wg-text-muted no-underline hover:text-wg-accent hover:underline" href={options.privacy_url} target="_blank" rel="noopener">Privacy Policy</a>
+        </nav>
+    {/if}
 </GuestAuthLayout>

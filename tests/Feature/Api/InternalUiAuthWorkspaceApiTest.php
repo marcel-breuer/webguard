@@ -41,6 +41,7 @@ final class InternalUiAuthWorkspaceApiTest extends TestCase
         $this->getJson(route('auth.options'))
             ->assertOk()
             ->assertJsonPath('data.captcha_url', url('captcha/register'))
+            ->assertJsonPath('data.imprint_url', config('app.marketing_url') . '/imprint')
             ->assertJsonPath('data.terms_url', config('app.marketing_url') . '/terms-of-use');
         $this->getJson(route('auth.demo-credentials'))
             ->assertOk()

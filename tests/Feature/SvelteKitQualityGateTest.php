@@ -289,6 +289,23 @@ class SvelteKitQualityGateTest extends TestCase
         $this->assertStringContainsString('return translate(value, data.locale, data.messages);', $statusPage);
     }
 
+    public function test_login_page_exposes_guest_preferences_and_marketing_legal_links(): void
+    {
+        $loginPage = file_get_contents(base_path('frontend/src/routes/login/+page.svelte'));
+        $authWorkspace = file_get_contents(base_path('frontend/src/lib/components/AuthWorkspace.svelte'));
+        $guestLayout = file_get_contents(base_path('frontend/src/lib/components/GuestAuthLayout.svelte'));
+
+        $this->assertIsString($loginPage);
+        $this->assertIsString($authWorkspace);
+        $this->assertIsString($guestLayout);
+        $this->assertStringContainsString('showPreferences showLegalLinks', $loginPage);
+        $this->assertStringContainsString('initialLocale={data.locale}', $loginPage);
+        $this->assertStringContainsString('options.imprint_url', $authWorkspace);
+        $this->assertStringContainsString('options.privacy_url', $authWorkspace);
+        $this->assertStringContainsString('<AppearanceSelector endpoint={null}', $guestLayout);
+        $this->assertStringContainsString('<LocaleSelector initialLocale={initialLocale} endpoint={null}', $guestLayout);
+    }
+
     public function test_notification_inbox_updates_read_state_from_successful_mutation_responses(): void
     {
         $notificationInbox = file_get_contents(base_path('frontend/src/routes/(app)/notifications/+page.svelte'));
