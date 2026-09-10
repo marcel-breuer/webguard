@@ -182,6 +182,10 @@ Do not add custom Traefik labels that reference `SERVICE_FQDN_PHP` or Docker Com
 
 The gateway listens internally on `8080` for public HTTP routing. Laravel remains internal on `8080` and `8443` for optional container-level HTTPS. For Coolify deployments, keep `DOCKER_SSL_MODE=off` and let Coolify/Traefik generate and terminate public TLS.
 
+The gateway preserves a valid `X-Forwarded-Proto` from Coolify and falls back
+to its own scheme for direct HTTP traffic. Keep the gateway behind Coolify's
+proxy and do not expose the gateway container directly on a host port.
+
 If you use Coolify, Traefik, or another reverse proxy in front of the deployment, route traffic to the `gateway` service on `8080`. Set `DOCKER_SSL_MODE=mixed` and use Laravel port `8443` only when you explicitly want encrypted traffic between the gateway and the application container.
 
 ### Health Check

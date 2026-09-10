@@ -404,6 +404,19 @@ class SvelteKitQualityGateTest extends TestCase
         $this->assertStringContainsString("'172.16.0.0/12'", $applicationBootstrap);
     }
 
+    public function test_gateway_preserves_the_https_scheme_from_coolify(): void
+    {
+        $gatewayConfiguration = file_get_contents(base_path('docker/gateway/nginx.conf'));
+        $proxyHeaders = file_get_contents(base_path('docker/gateway/proxy-headers.conf'));
+
+        $this->assertIsString($gatewayConfiguration);
+        $this->assertIsString($proxyHeaders);
+        $this->assertStringContainsString('map $http_x_forwarded_proto $forwarded_proto', $gatewayConfiguration);
+        $this->assertStringContainsString('https https;', $gatewayConfiguration);
+        $this->assertStringContainsString('X-Forwarded-Proto $forwarded_proto;', $proxyHeaders);
+        $this->assertStringNotContainsString('X-Forwarded-Proto $scheme;', $proxyHeaders);
+    }
+
     public function test_gateway_serves_canonical_unsubscribe_pages_from_sveltekit(): void
     {
         $gatewayConfiguration = file_get_contents(base_path('docker/gateway/nginx.conf'));
