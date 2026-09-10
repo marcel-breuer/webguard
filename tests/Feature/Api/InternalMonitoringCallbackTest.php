@@ -196,7 +196,7 @@ class InternalMonitoringCallbackTest extends TestCase
                 'monitoring_id' => $monitoring->id,
                 'status' => MonitoringStatus::DOWN->value,
                 'response_time' => 250,
-            ])->assertStatus(409)
+            ])->assertConflict()
             ->assertJsonPath('message', 'Idempotency key was already used with a different request.');
 
         $this->assertSame(1, MonitoringResponse::query()->where('monitoring_id', $monitoring->id)->count());
