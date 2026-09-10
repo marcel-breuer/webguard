@@ -3,9 +3,9 @@
 declare(strict_types=1);
 
 namespace Tests\Unit\Support {
-    use RuntimeException;
     use App\Support\PubliclyRoutableUrl;
     use Illuminate\Support\Facades\Http;
+    use RuntimeException;
     use Tests\TestCase;
 
     class PubliclyRoutableUrlTest extends TestCase
