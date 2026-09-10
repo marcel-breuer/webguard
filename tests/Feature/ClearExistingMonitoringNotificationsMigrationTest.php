@@ -29,14 +29,14 @@ final class ClearExistingMonitoringNotificationsMigrationTest extends TestCase
     {
         $user = User::factory()->create();
         $monitoring = Monitoring::factory()->for($user)->create();
-        $notification = MonitoringNotification::query()->create([
+        $monitoringNotification = MonitoringNotification::query()->create([
             'monitoring_id' => $monitoring->id,
             'type' => NotificationType::STATUS_CHANGE,
             'message' => 'Monitoring is up',
         ]);
         NotificationChannelDelivery::query()->create([
             'user_id' => $user->id,
-            'monitoring_notification_id' => $notification->id,
+            'monitoring_notification_id' => $monitoringNotification->id,
             'channel' => 'mail',
             'event_type' => 'recovery',
             'status' => NotificationDeliveryStatus::SENT,

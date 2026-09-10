@@ -14,12 +14,12 @@ final class FrontendTranslationCatalog
     public function payload(?string $locale): array
     {
         $language = SupportedLanguage::tryFrom((string) $locale) ?? SupportedLanguage::default();
-        $fallbackLanguage = SupportedLanguage::default();
-        $fallback = $this->load($fallbackLanguage);
+        $supportedLanguage = SupportedLanguage::default();
+        $fallback = $this->load($supportedLanguage);
 
         return [
             'locale' => $language->value,
-            'fallback_locale' => $fallbackLanguage->value,
+            'fallback_locale' => $supportedLanguage->value,
             'messages' => array_replace($fallback, $this->load($language)),
         ];
     }
@@ -27,10 +27,10 @@ final class FrontendTranslationCatalog
     /**
      * @return array<string, string>
      */
-    private function load(SupportedLanguage $language): array
+    private function load(SupportedLanguage $supportedLanguage): array
     {
         /** @var mixed $messages */
-        $messages = require lang_path($language->value . '/sveltekit.php');
+        $messages = require lang_path($supportedLanguage->value . '/sveltekit.php');
 
         if (! is_array($messages)) {
             return [];
@@ -38,12 +38,12 @@ final class FrontendTranslationCatalog
 
         $translations = [];
 
-        foreach ($messages as $group) {
-            if (! is_array($group)) {
+        foreach ($messages as $message) {
+            if (! is_array($message)) {
                 continue;
             }
 
-            foreach ($group as $key => $value) {
+            foreach ($message as $key => $value) {
                 if (is_string($key) && is_string($value)) {
                     $translations[$key] = $value;
                 }

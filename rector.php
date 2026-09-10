@@ -43,6 +43,7 @@ return RectorConfig::configure()
     ->withImportNames(true)
     ->withSkip([
         StringToClassConstantRector::class,
+        __DIR__ . '/bootstrap/cache',
         __DIR__ . '/app/Http/Controllers/Auth/AuthenticatedSessionController.php',
         // This service is large enough that Rector currently stalls while processing it.
         __DIR__ . '/app/Services/MonitoringResultService.php',

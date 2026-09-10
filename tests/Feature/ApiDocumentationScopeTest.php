@@ -11,7 +11,7 @@ class ApiDocumentationScopeTest extends TestCase
 {
     public function test_scribe_matches_user_facing_api_routes_without_internal_routes(): void
     {
-        $matchedRoutes = app(RouteMatcherInterface::class)->getRoutes(config('scribe.routes'));
+        $matchedRoutes = resolve(RouteMatcherInterface::class)->getRoutes(config('scribe.routes'));
         $routeUris = array_map(
             static fn (mixed $matchedRoute): string => $matchedRoute->getRoute()->uri(),
             $matchedRoutes,

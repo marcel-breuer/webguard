@@ -159,13 +159,13 @@ class InternalMonitoringCallbackTest extends TestCase
         ];
         $headers = [...$this->instanceHeaders($serverInstance), 'Idempotency-Key' => '6f3a8bb2-8a66-4c84-91db-5166c9c291c5'];
 
-        $firstResponse = $this->withHeaders($headers)
+        $testResponse = $this->withHeaders($headers)
             ->postJson(route('instances.monitoring-responses.store'), $payload)
             ->assertOk();
         $this->withHeaders($headers)
             ->postJson(route('instances.monitoring-responses.store'), $payload)
             ->assertOk()
-            ->assertExactJson($firstResponse->json());
+            ->assertExactJson($testResponse->json());
 
         $this->assertDatabaseCount('monitoring_response_results', 1);
     }
@@ -218,7 +218,7 @@ class InternalMonitoringCallbackTest extends TestCase
         ])->postJson(route('instances.monitoring-responses.store'), [
             'monitoring_id' => $monitoring->id,
             'status' => MonitoringStatus::UP->value,
-        ])->assertStatus(422)
+        ])->assertUnprocessable()
             ->assertJsonValidationErrors(['Idempotency-Key']);
     }
 

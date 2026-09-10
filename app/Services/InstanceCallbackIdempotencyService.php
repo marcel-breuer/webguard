@@ -42,9 +42,7 @@ final class InstanceCallbackIdempotencyService
 
         $instanceCode = (string) $request->attributes->get('authenticated_instance_code');
 
-        if ($instanceCode === '') {
-            throw new LogicException('An authenticated instance code is required for callback idempotency.');
-        }
+        throw_if($instanceCode === '', LogicException::class, 'An authenticated instance code is required for callback idempotency.');
 
         $requestHash = $this->requestHash($request);
 
@@ -62,24 +60,22 @@ final class InstanceCallbackIdempotencyService
                 }
 
                 $record?->delete();
-                $response = $callback();
-                $responseBody = $response->getData(true);
+                $jsonResponse = $callback();
+                $responseBody = $jsonResponse->getData(true);
 
-                if (! is_array($responseBody)) {
-                    throw new LogicException('Instance callback responses must be JSON objects or arrays.');
-                }
+                throw_unless(is_array($responseBody), LogicException::class, 'Instance callback responses must be JSON objects or arrays.');
 
                 InstanceCallbackIdempotency::query()->create([
                     'instance_code' => $instanceCode,
                     'endpoint' => $endpoint,
                     'idempotency_key' => $idempotencyKey,
                     'request_hash' => $requestHash,
-                    'response_status' => $response->getStatusCode(),
+                    'response_status' => $jsonResponse->getStatusCode(),
                     'response_body' => $responseBody,
                     'expires_at' => now()->addHours(self::RETENTION_HOURS),
                 ]);
 
-                return $response;
+                return $jsonResponse;
             });
         } catch (UniqueConstraintViolationException $exception) {
             $record = InstanceCallbackIdempotency::query()
@@ -88,23 +84,21 @@ final class InstanceCallbackIdempotencyService
                 ->where('idempotency_key', $idempotencyKey)
                 ->first();
 
-            if (! $record || $record->expires_at?->isPast()) {
-                throw $exception;
-            }
+            throw_if(! $record || $record->expires_at?->isPast(), $exception);
 
             return $this->replayOrReject($record, $requestHash);
         }
     }
 
-    private function replayOrReject(InstanceCallbackIdempotency $record, string $requestHash): JsonResponse
+    private function replayOrReject(InstanceCallbackIdempotency $instanceCallbackIdempotency, string $requestHash): JsonResponse
     {
-        if ($record->request_hash !== $requestHash) {
+        if ($instanceCallbackIdempotency->request_hash !== $requestHash) {
             return response()->json([
                 'message' => 'Idempotency key was already used with a different request.',
             ], 409);
         }
 
-        return response()->json($record->response_body, $record->response_status);
+        return response()->json($instanceCallbackIdempotency->response_body, $instanceCallbackIdempotency->response_status);
     }
 
     private function requestHash(Request $request): string

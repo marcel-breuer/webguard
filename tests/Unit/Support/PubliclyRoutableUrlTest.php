@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 namespace Tests\Unit\Support {
+    use RuntimeException;
     use App\Support\PubliclyRoutableUrl;
     use Illuminate\Support\Facades\Http;
     use Tests\TestCase;
@@ -89,7 +90,7 @@ namespace Tests\Unit\Support {
             try {
                 PubliclyRoutableUrl::post('https://private.example.com/webhook', ['event' => 'test']);
                 $this->fail('Private webhook destinations must be rejected.');
-            } catch (\RuntimeException $exception) {
+            } catch (RuntimeException $exception) {
                 $this->assertSame('Notification webhook URL is not publicly routable.', $exception->getMessage());
             }
 

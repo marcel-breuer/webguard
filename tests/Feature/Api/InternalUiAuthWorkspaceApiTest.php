@@ -93,11 +93,11 @@ final class InternalUiAuthWorkspaceApiTest extends TestCase
         Notification::fake();
         $user = User::factory()->create();
 
-        $knownEmailResponse = $this->postJson(route('auth.password.email'), ['email' => $user->email]);
+        $testResponse = $this->postJson(route('auth.password.email'), ['email' => $user->email]);
         $unknownEmailResponse = $this->postJson(route('auth.password.email'), ['email' => 'unknown@example.test']);
 
-        $this->assertSame($knownEmailResponse->status(), $unknownEmailResponse->status());
-        $this->assertSame($knownEmailResponse->json(), $unknownEmailResponse->json());
+        $this->assertSame($testResponse->status(), $unknownEmailResponse->status());
+        $this->assertSame($testResponse->json(), $unknownEmailResponse->json());
         Notification::assertSentTo($user, ResetPassword::class);
     }
 
