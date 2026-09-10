@@ -28,6 +28,7 @@ final class AuthWorkspaceController extends Controller
     {
         return response()->json(['data' => [
             'captcha_url' => url('captcha/register'),
+            'imprint_url' => LegalLinks::imprint(),
             'terms_url' => LegalLinks::termsOfUse(),
             'privacy_url' => LegalLinks::privacyPolicy(),
         ]]);
