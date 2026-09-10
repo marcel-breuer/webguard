@@ -154,17 +154,22 @@ final class InternalUiNotificationWorkspaceApiTest extends TestCase
         Date::setTestNow('2026-08-24 12:00:00');
         $user = User::factory()->create();
         $monitoring = Monitoring::factory()->for($user)->create();
-        $this->notification($monitoring, NotificationType::STATUS_CHANGE, 'Service down', Date::now()->subMinute());
+        $incident = $this->notification($monitoring, NotificationType::STATUS_CHANGE, 'Service down', Date::now()->subMinute());
         $recovery = $this->notification($monitoring, NotificationType::STATUS_CHANGE, 'Monitoring is up', Date::now());
 
         $response = $this->actingAs($user)->patchJson(route('app.notifications.read', ['notification' => $recovery->id]))
             ->assertOk()
             ->assertJsonPath('data.read', true)
-            ->assertJsonPath('meta.unread_count', 0);
-
-        $this->assertContains($recovery->id, $response->json('data.read_notification_ids'));
+            ->assertJsonPath('data.read_notification_ids', [$recovery->id])
+            ->assertJsonPath('meta.unread_count', 1);
 
         $this->assertNotNull($recovery->states()->where('user_id', $user->id)->value('read_at'));
+        $this->assertNull($incident->states()->where('user_id', $user->id)->value('read_at'));
+
+        $this->actingAs($user)->getJson(route('app.notifications.index'))
+            ->assertOk()
+            ->assertJsonPath('data.0.id', $incident->id)
+            ->assertJsonPath('meta.unread_count', 1);
     }
 
     private function notification(Monitoring $monitoring, NotificationType $notificationType, string $message, mixed $createdAt): MonitoringNotification
