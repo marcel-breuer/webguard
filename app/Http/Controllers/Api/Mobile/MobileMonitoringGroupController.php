@@ -61,9 +61,9 @@ class MobileMonitoringGroupController extends Controller
 
         $monitorings = Monitoring::query()
             ->privateOwnedBy($user)
-            ->when($search !== '', function (Builder $query) use ($search): void {
-                $query->where(function (Builder $query) use ($search): void {
-                    $query
+            ->when($search !== '', function (Builder $builder) use ($search): void {
+                $builder->where(function (Builder $builder) use ($search): void {
+                    $builder
                         ->where('name', 'like', "%{$search}%")
                         ->orWhere('target', 'like', "%{$search}%");
                 });

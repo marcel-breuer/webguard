@@ -111,7 +111,7 @@ class InternalUiStatusPageApiTest extends TestCase
             ->assertJsonPath('data.monitoring_groups.0.monitorings_count', 1)
             ->assertJsonMissing(['id' => $foreignGroup->id]);
 
-        $response = $this->actingAs($user)
+        $testResponse = $this->actingAs($user)
             ->postJson(route('app.status-pages.store'), [
                 'name' => 'Acme Status',
                 'is_public' => true,
@@ -126,7 +126,7 @@ class InternalUiStatusPageApiTest extends TestCase
             ->assertJsonPath('data.components.0.monitoring_group.id', $group->id)
             ->assertJsonPath('data.components.0.monitorings.0.id', $monitoring->id);
 
-        $componentId = $response->json('data.components.0.id');
+        $componentId = $testResponse->json('data.components.0.id');
         $this->assertDatabaseHas('status_page_components', [
             'id' => $componentId,
             'monitoring_group_id' => $group->id,

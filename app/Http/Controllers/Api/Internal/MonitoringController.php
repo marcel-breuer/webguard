@@ -24,7 +24,7 @@ class MonitoringController extends Controller
     public function storeResponse(
         Request $request,
         MonitoringCheckIntervalService $monitoringCheckIntervalService,
-        InstanceCallbackIdempotencyService $idempotencyService
+        InstanceCallbackIdempotencyService $instanceCallbackIdempotencyService
     ): JsonResponse {
         $validated = $request->validate([
             'monitoring_id' => ['required', 'exists:monitorings,id'],
@@ -55,7 +55,7 @@ class MonitoringController extends Controller
         $validated['location_code'] = (string) $request->attributes->get('authenticated_instance_code');
         $validated['check_interval_seconds'] ??= $monitoringCheckIntervalService->defaultSeconds();
 
-        return $idempotencyService->execute($request, 'monitoring-responses', function () use ($validated): JsonResponse {
+        return $instanceCallbackIdempotencyService->execute($request, 'monitoring-responses', function () use ($validated): JsonResponse {
             MonitoringResponse::query()->create($validated);
 
             return response()->json(['message' => 'Monitoring response stored successfully.']);
@@ -111,7 +111,7 @@ class MonitoringController extends Controller
         return response()->json(['message' => 'Incident updated successfully.']);
     }
 
-    public function storeSsl(Request $request, InstanceCallbackIdempotencyService $idempotencyService): JsonResponse
+    public function storeSsl(Request $request, InstanceCallbackIdempotencyService $instanceCallbackIdempotencyService): JsonResponse
     {
         $validated = $request->validate([
             'monitoring_id' => ['required', 'exists:monitorings,id'],
@@ -125,7 +125,7 @@ class MonitoringController extends Controller
             return response()->json(['message' => 'Unauthorized monitoring'], 403);
         }
 
-        return $idempotencyService->execute($request, 'ssl-results', function () use ($validated): JsonResponse {
+        return $instanceCallbackIdempotencyService->execute($request, 'ssl-results', function () use ($validated): JsonResponse {
             try {
                 MonitoringSslResult::query()->updateOrCreate(['monitoring_id' => $validated['monitoring_id']], $validated);
             } catch (UniqueConstraintViolationException) {
@@ -136,7 +136,7 @@ class MonitoringController extends Controller
         });
     }
 
-    public function storeDomain(Request $request, InstanceCallbackIdempotencyService $idempotencyService): JsonResponse
+    public function storeDomain(Request $request, InstanceCallbackIdempotencyService $instanceCallbackIdempotencyService): JsonResponse
     {
         $validated = $request->validate([
             'monitoring_id' => ['required', Rule::exists('monitorings', 'id')->where('type', MonitoringType::DOMAIN_EXPIRATION->value)],
@@ -150,7 +150,7 @@ class MonitoringController extends Controller
             return response()->json(['message' => 'Unauthorized monitoring'], 403);
         }
 
-        return $idempotencyService->execute($request, 'domain-results', function () use ($validated): JsonResponse {
+        return $instanceCallbackIdempotencyService->execute($request, 'domain-results', function () use ($validated): JsonResponse {
             MonitoringDomainResult::query()->updateOrCreate(['monitoring_id' => $validated['monitoring_id']], $validated);
 
             return response()->json(['message' => 'Domain expiration result stored successfully.']);

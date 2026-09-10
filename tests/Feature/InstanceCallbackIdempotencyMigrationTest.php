@@ -19,9 +19,9 @@ final class InstanceCallbackIdempotencyMigrationTest extends TestCase
 
         $this->assertTrue(Schema::hasTable('instance_callback_idempotencies'));
 
-        Schema::table('instance_callback_idempotencies', function (Blueprint $table): void {
-            $table->dropUnique('instance_callback_idempotencies_key_unique');
-            $table->dropIndex('instance_callback_idempotencies_expires_at_index');
+        Schema::table('instance_callback_idempotencies', function (Blueprint $blueprint): void {
+            $blueprint->dropUnique('instance_callback_idempotencies_key_unique');
+            $blueprint->dropIndex('instance_callback_idempotencies_expires_at_index');
         });
 
         $migration->up();

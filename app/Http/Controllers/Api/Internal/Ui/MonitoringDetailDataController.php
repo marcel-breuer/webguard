@@ -93,7 +93,7 @@ final class MonitoringDetailDataController extends Controller
         if ($monitoring->groups->isNotEmpty()) {
             $statusPages = $statusPages->merge(
                 $user->statusPages()
-                    ->whereHas('components', fn (Builder $query): Builder => $query->whereIn(
+                    ->whereHas('components', fn (Builder $builder): Builder => $builder->whereIn(
                         'monitoring_group_id',
                         $monitoring->groups->modelKeys(),
                     ))

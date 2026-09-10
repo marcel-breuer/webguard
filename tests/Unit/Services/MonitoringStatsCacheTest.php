@@ -111,13 +111,13 @@ class MonitoringStatsCacheTest extends TestCase
     {
         $monitoring = $this->monitoring('monitoring-123');
         $mock = Mockery::mock();
-        $monitoringStatsCache = Mockery::mock(MonitoringStatsCache::class)->makePartial();
+        $legacyMock = Mockery::mock(MonitoringStatsCache::class)->makePartial();
 
-        $monitoringStatsCache->shouldReceive('shouldCache')->once()->andReturnTrue();
+        $legacyMock->shouldReceive('shouldCache')->once()->andReturnTrue();
         Cache::shouldReceive('tags')->once()->with(['monitoring:monitoring-123'])->andReturn($mock);
         $mock->shouldReceive('flush')->once();
 
-        $monitoringStatsCache->flush($monitoring);
+        $legacyMock->flush($monitoring);
     }
 
     private function monitoring(string $id): Monitoring

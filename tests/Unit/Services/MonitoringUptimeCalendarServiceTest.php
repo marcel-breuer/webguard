@@ -183,13 +183,13 @@ class MonitoringUptimeCalendarServiceTest extends TestCase
         ]);
     }
 
-    private function createResponse(Monitoring $monitoring, MonitoringStatus $status, string $createdAt): void
+    private function createResponse(Monitoring $monitoring, MonitoringStatus $monitoringStatus, string $createdAt): void
     {
         MonitoringResponse::query()->forceCreate([
             'monitoring_id' => $monitoring->id,
-            'status' => $status,
-            'http_status_code' => $status === MonitoringStatus::UP ? 200 : 503,
-            'response_time' => $status === MonitoringStatus::UP ? 100.0 : null,
+            'status' => $monitoringStatus,
+            'http_status_code' => $monitoringStatus === MonitoringStatus::UP ? 200 : 503,
+            'response_time' => $monitoringStatus === MonitoringStatus::UP ? 100.0 : null,
             'created_at' => Date::parse($createdAt),
             'updated_at' => Date::parse($createdAt),
         ]);
