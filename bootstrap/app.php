@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Enums\SupportedLanguage;
 use App\Http\Middleware\AuthenticateInstance;
 use App\Http\Middleware\CheckUserRole;
 use App\Http\Middleware\PreventCrawling;
@@ -22,6 +23,7 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->append(PreventCrawling::class);
+        $middleware->encryptCookies([SupportedLanguage::cookieName()]);
         $middleware->web(SetLocaleMiddleware::class);
         $middleware->preventRequestsDuringMaintenance([
             'api/instances/*',

@@ -114,7 +114,7 @@ class InternalUiSessionApiTest extends TestCase
         $testResponse
             ->assertOk()
             ->assertJsonPath('data.locale', 'de')
-            ->assertCookie('webguard_locale', 'de');
+            ->assertPlainCookie('webguard_locale', 'de');
 
         $this->assertDatabaseHas('users', [
             'id' => $user->id,
