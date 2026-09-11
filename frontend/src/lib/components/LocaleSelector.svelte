@@ -21,6 +21,7 @@
         { value: "en", label: "English", shortLabel: "EN" },
         { value: "de", label: "Deutsch", shortLabel: "DE" },
     ];
+    const guestLocaleCookieMaxAge = 60 * 60 * 24 * 365;
 
     $effect(() => {
         locale = initialLocale;
@@ -36,7 +37,7 @@
 
         try {
             if (endpoint === null) {
-                document.cookie = `webguard_locale=${encodeURIComponent(nextLocale)}; path=/; SameSite=Lax`;
+                document.cookie = `webguard_locale=${encodeURIComponent(nextLocale)}; Max-Age=${guestLocaleCookieMaxAge}; path=/; SameSite=Lax`;
             } else {
                 await requestFirstPartyApi<{ locale: string }>(endpoint, {
                     body: JSON.stringify({ locale: nextLocale }),
@@ -59,7 +60,7 @@
 
 </script>
 
-<details class="relative" bind:open ontoggle={handleToggle}>
+<details class="relative" name="webguard-preferences" bind:open ontoggle={handleToggle}>
     <summary class={`grid size-11 cursor-pointer list-none place-items-center rounded-[0.65rem] border [&::-webkit-details-marker]:hidden ${variant === "surface" ? "border-wg-border bg-wg-surface text-wg-text" : "border-purple-700 text-purple-100"}`} aria-label="Language" title="Language">
         <NavIcon name="globe" />
     </summary>
