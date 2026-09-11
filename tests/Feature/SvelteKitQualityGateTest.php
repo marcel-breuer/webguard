@@ -253,6 +253,8 @@ class SvelteKitQualityGateTest extends TestCase
         $this->assertIsString($localize);
         $this->assertStringContainsString('function handleToggle(event: Event): void', $appearanceSelector);
         $this->assertStringContainsString('function handleToggle(event: Event): void', $localeSelector);
+        $this->assertStringContainsString('name="webguard-preferences"', $appearanceSelector);
+        $this->assertStringContainsString('name="webguard-preferences"', $localeSelector);
         $this->assertStringContainsString('(event.currentTarget as HTMLDetailsElement).open', $appearanceSelector);
         $this->assertStringContainsString('(event.currentTarget as HTMLDetailsElement).open', $localeSelector);
         $this->assertStringContainsString('function translateDynamic(value: string, messages: TranslationMessages): string | undefined', $localize);
@@ -302,8 +304,13 @@ class SvelteKitQualityGateTest extends TestCase
         $this->assertStringContainsString('initialLocale={data.locale}', $loginPage);
         $this->assertStringContainsString('options.imprint_url', $authWorkspace);
         $this->assertStringContainsString('options.privacy_url', $authWorkspace);
-        $this->assertStringContainsString('<AppearanceSelector endpoint={null}', $guestLayout);
-        $this->assertStringContainsString('<LocaleSelector initialLocale={initialLocale} endpoint={null}', $guestLayout);
+        $this->assertStringContainsString('let appearanceOpen = $state(false)', $guestLayout);
+        $this->assertStringContainsString('let localeOpen = $state(false)', $guestLayout);
+        $this->assertStringContainsString('<AppearanceSelector endpoint={null} bind:open={appearanceOpen}', $guestLayout);
+        $this->assertStringContainsString('onOpen={() => (localeOpen = false)}', $guestLayout);
+        $this->assertStringContainsString('<LocaleSelector initialLocale={initialLocale} endpoint={null} bind:open={localeOpen}', $guestLayout);
+        $this->assertStringContainsString('onOpen={() => (appearanceOpen = false)}', $guestLayout);
+        $this->assertStringContainsString('Max-Age=${guestLocaleCookieMaxAge}', file_get_contents(base_path('frontend/src/lib/components/LocaleSelector.svelte')));
     }
 
     public function test_notification_inbox_updates_read_state_from_successful_mutation_responses(): void

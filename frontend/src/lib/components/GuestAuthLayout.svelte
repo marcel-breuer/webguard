@@ -12,6 +12,8 @@
     }
 
     let { title, description, initialLocale = "en", showPreferences = false, children }: Props = $props();
+    let appearanceOpen = $state(false);
+    let localeOpen = $state(false);
 </script>
 
 <main class="mx-auto flex min-h-screen w-[min(36rem,calc(100%_-_2rem))] items-center py-8 sm:py-12">
@@ -23,8 +25,8 @@
             </a>
             {#if showPreferences}
                 <div class="flex shrink-0 gap-2" aria-label="Page preferences">
-                    <AppearanceSelector endpoint={null} menuAlign="right" menuPlacement="below" variant="surface" />
-                    <LocaleSelector initialLocale={initialLocale} endpoint={null} menuAlign="right" menuPlacement="below" variant="surface" />
+                    <AppearanceSelector endpoint={null} bind:open={appearanceOpen} onOpen={() => (localeOpen = false)} menuAlign="right" menuPlacement="below" variant="surface" />
+                    <LocaleSelector initialLocale={initialLocale} endpoint={null} bind:open={localeOpen} onOpen={() => (appearanceOpen = false)} menuAlign="right" menuPlacement="below" variant="surface" />
                 </div>
             {/if}
         </div>
