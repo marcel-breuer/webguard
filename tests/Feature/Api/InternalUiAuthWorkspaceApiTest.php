@@ -32,6 +32,7 @@ final class InternalUiAuthWorkspaceApiTest extends TestCase
         $member = User::factory()->create([
             'email' => 'member@example.test',
             'password' => Hash::make('correct-password'),
+            'locale' => 'de',
         ]);
         $demo = User::factory()->create([
             'role' => UserRole::DEMO,
@@ -49,7 +50,9 @@ final class InternalUiAuthWorkspaceApiTest extends TestCase
         $this->postJson(route('auth.login'), [
             'email' => $member->email,
             'password' => 'correct-password',
-        ])->assertOk()->assertJsonPath('data.next_url', '/dashboard');
+        ])->assertOk()
+            ->assertJsonPath('data.next_url', '/dashboard')
+            ->assertPlainCookie('webguard_locale', 'de');
 
         $this->assertAuthenticatedAs($member);
         auth()->logout();
