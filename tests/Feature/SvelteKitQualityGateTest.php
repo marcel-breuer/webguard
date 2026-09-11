@@ -313,6 +313,16 @@ class SvelteKitQualityGateTest extends TestCase
         $this->assertStringContainsString('Max-Age=${guestLocaleCookieMaxAge}', file_get_contents(base_path('frontend/src/lib/components/LocaleSelector.svelte')));
     }
 
+    public function test_registration_page_exposes_guest_language_preferences(): void
+    {
+        $registrationPage = file_get_contents(base_path('frontend/src/routes/register/+page.svelte'));
+
+        $this->assertIsString($registrationPage);
+        $this->assertStringContainsString('locale: string', $registrationPage);
+        $this->assertStringContainsString('initialLocale={data.locale}', $registrationPage);
+        $this->assertStringContainsString('initialMode="register" showPreferences', $registrationPage);
+    }
+
     public function test_notification_inbox_updates_read_state_from_successful_mutation_responses(): void
     {
         $notificationInbox = file_get_contents(base_path('frontend/src/routes/(app)/notifications/+page.svelte'));
