@@ -131,6 +131,9 @@ services:
 
   schedule:
     container_name: webguard-schedule
+    build:
+      context: .
+      target: worker
     image: webguard-core-worker:latest
     restart: unless-stopped
     environment:
