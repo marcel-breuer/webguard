@@ -7,6 +7,7 @@
     import Dialog from "$lib/components/Dialog.svelte";
     import MonitoringAnalytics from "$lib/components/MonitoringAnalytics.svelte";
     import MonitoringForm from "$lib/components/MonitoringForm.svelte";
+    import ServerHealthOverview from "$lib/components/ServerHealthOverview.svelte";
     import MonitoringTypeDiagnostics from "$lib/components/MonitoringTypeDiagnostics.svelte";
     import NavIcon from "$lib/components/NavIcon.svelte";
     import type { MonitoringDetailData, MonitoringFormOptions, MonitoringHeatmapPoint, MonitoringMutationResult, MonitoringSummary } from "$lib/api/monitoring";
@@ -159,6 +160,10 @@
             <article class="min-h-32 rounded-[1.125rem] border border-wg-border bg-wg-surface p-6 shadow-sm"><p class="text-[0.6875rem] font-extrabold tracking-[0.16em] text-wg-text-muted uppercase">Last check</p><p class="mt-4 text-lg font-extrabold">{timestamp(data.detail.current_check.checked_at)}</p><p class="mt-3 text-sm text-wg-text-muted">{intervalLabel(data.detail.current_check.interval)}</p></article>
             <article class="min-h-32 rounded-[1.125rem] border border-wg-border bg-wg-surface p-6 shadow-sm"><div class="flex items-center justify-between gap-3"><p class="text-[0.6875rem] font-extrabold tracking-[0.16em] text-wg-text-muted uppercase">Last 24 hours</p><span class="text-lg font-extrabold text-wg-accent">—</span></div><div class="mt-4 flex h-7 gap-0.5" aria-label="Last 24 hours availability">{#each data.detail.heatmap.slice(0, 24) as point}<span class={`min-w-1 flex-1 rounded-sm ${heatmapClass(point)}`} aria-hidden="true"></span>{/each}</div><p class="mt-3 text-sm text-wg-text-muted">{data.detail.heatmap.length > 0 ? "No incidents in this period" : "No results in this period"}</p></article>
         </section>
+
+        {#if data.detail.server_health_telemetry}
+            <ServerHealthOverview detail={data.detail} monitoringId={data.monitoring.id} />
+        {/if}
 
         <div class="mt-6 grid gap-6 xl:grid-cols-[minmax(0,1fr)_20rem] xl:items-start">
             <div class="min-w-0 space-y-6">
