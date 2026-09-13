@@ -65,6 +65,35 @@ class SvelteKitQualityGateTest extends TestCase
         }
     }
 
+    public function test_server_health_metrics_are_prominent_on_monitoring_details(): void
+    {
+        $monitoringDetail = file_get_contents(base_path('frontend/src/routes/(app)/monitorings/[id]/+page.svelte'));
+        $serverHealthOverview = file_get_contents(base_path('frontend/src/lib/components/ServerHealthOverview.svelte'));
+
+        $this->assertIsString($monitoringDetail);
+        $this->assertIsString($serverHealthOverview);
+        $this->assertStringContainsString('ServerHealthOverview', $monitoringDetail);
+        $this->assertStringContainsString('<ServerHealthOverview detail={data.detail} monitoringId={data.monitoring.id} />', $monitoringDetail);
+
+        foreach ([
+            'Live server metrics',
+            'Utilization history',
+            'CPU',
+            'RAM',
+            'Storage',
+            'Load per CPU',
+            'aria-label="Server health metrics period"',
+            'aria-label="Server health history period"',
+            'aria-label="Server CPU RAM storage and load utilization history"',
+            'summaryTelemetry = await requestTelemetry(requestedPeriod);',
+            'historyTelemetry = await requestTelemetry(requestedPeriod);',
+            'function chartPointRadius(): number',
+            'pointRadius, pointHoverRadius: 4',
+        ] as $expectedText) {
+            $this->assertStringContainsString($expectedText, $serverHealthOverview);
+        }
+    }
+
     public function test_sveltekit_components_use_tailwind_without_scoped_or_inline_styles(): void
     {
         foreach (File::allFiles(base_path('frontend/src')) as $file) {

@@ -19,7 +19,7 @@ final class MonitoringServerHealthTelemetryService
      */
     public function getTelemetry(Monitoring $monitoring, Carbon $startDate, Carbon $endDate): array
     {
-        $grouping = $startDate->diffInDays($endDate) <= 1 ? 'hour' : 'day';
+        $grouping = $startDate->diffInHours($endDate) < 48 ? 'hour' : 'day';
         $rows = $this->monitoringCheckHistoryQuery->forRange((string) $monitoring->getKey(), $startDate, $endDate);
 
         $data = $rows

@@ -73,6 +73,42 @@ class MonitoringServerHealthTelemetryServiceTest extends TestCase
         $this->assertSame(1.5, $telemetry['thresholds']['load_per_cpu']);
     }
 
+    public function test_it_aggregates_a_24_hour_telemetry_window_by_hour(): void
+    {
+        Date::setTestNow('2026-04-12 12:00:00');
+
+        Package::factory()->create();
+        $user = User::factory()->create();
+        $monitoring = Monitoring::factory()->for($user)->create([
+            'type' => MonitoringType::SERVER_HEALTH,
+        ]);
+
+        $this->storeLiveResponse($monitoring, '2026-04-12 10:05:00', [
+            'cpu_usage_percent' => 40,
+            'ram_usage_percent' => 60,
+        ]);
+        $this->storeLiveResponse($monitoring, '2026-04-12 10:45:00', [
+            'cpu_usage_percent' => 60,
+            'ram_usage_percent' => 80,
+        ]);
+        $this->storeLiveResponse($monitoring, '2026-04-12 11:05:00', [
+            'cpu_usage_percent' => 20,
+            'ram_usage_percent' => 30,
+        ]);
+
+        $telemetry = resolve(MonitoringServerHealthTelemetryService::class)->getTelemetry(
+            $monitoring,
+            Date::parse('2026-04-11 00:00:00'),
+            Date::parse('2026-04-12 23:59:59'),
+        );
+
+        $this->assertCount(2, $telemetry['data']);
+        $this->assertSame('2026-04-12T10:00:00+02:00', $telemetry['data'][0]['checked_at']);
+        $this->assertEqualsWithDelta(50.0, $telemetry['data'][0]['cpu_usage_percent'], 0.0001);
+        $this->assertEqualsWithDelta(70.0, $telemetry['data'][0]['ram_usage_percent'], 0.0001);
+        $this->assertSame('2026-04-12T11:00:00+02:00', $telemetry['data'][1]['checked_at']);
+    }
+
     /** @param array<string, int|float> $metrics */
     private function storeLiveResponse(Monitoring $monitoring, string $checkedAt, array $metrics): void
     {
