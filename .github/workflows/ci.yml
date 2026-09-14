@@ -4,8 +4,7 @@ on:
   pull_request:
     types: [opened, synchronize, reopened]
   push:
-    branches:
-    - '**'
+    branches: [main]
 
 concurrency:
   group: ci-${{ github.event.pull_request.head.repo.full_name || github.repository }}-${{ github.event.pull_request.head.ref || github.ref_name }}
@@ -239,6 +238,7 @@ jobs:
   topology:
     name: Topology
     needs: changes
+    if: needs.changes.outputs.topology == 'true'
     runs-on: ubuntu-latest
     steps:
     - name: Record job start
@@ -250,27 +250,15 @@ jobs:
         ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
 
     - name: Setup Bun
-      if: needs.changes.outputs.topology == 'true'
       uses: oven-sh/setup-bun@v2
       with:
         bun-version: '1.3.11'
 
     - name: Install topology smoke dependencies
-      if: needs.changes.outputs.topology == 'true'
       run: bun install --frozen-lockfile
 
     - name: Run SvelteKit container topology smoke test
-      if: needs.changes.outputs.topology == 'true'
       run: .github/scripts/smoke-sveltekit-topology.sh
-
-    - name: Record conservative topology skip
-      if: needs.changes.outputs.topology != 'true'
-      run: |
-        {
-          echo "## Topology"
-          echo
-          echo "Smoke test skipped after conservative changed-path analysis: ${{ needs.changes.outputs.reason }}."
-        } >> "$GITHUB_STEP_SUMMARY"
 
     - name: Summarize job duration
       if: always()

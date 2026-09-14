@@ -22,10 +22,10 @@ application key, and database. It creates only a disposable public status page,
 loads it through Chromium over the gateway, and removes all resources on exit.
 It never calls external services or production data.
 
-For pull requests, CI runs this expensive smoke test whenever changed paths can
-affect the runtime or its infrastructure. Documentation, tests, and isolated
-domain changes may skip it; pushes outside pull requests always run it. The
-Topology job records the decision in its job summary.
+For pull requests, CI allocates a runner for this expensive smoke test whenever
+changed paths can affect the runtime or its infrastructure. Documentation,
+tests, and isolated domain changes skip the job; pushes to `main` always run
+it. When the job runs, its summary records the scope decision.
 
 ## Browser, accessibility, and performance evidence
 

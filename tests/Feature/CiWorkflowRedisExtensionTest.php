@@ -79,6 +79,18 @@ class CiWorkflowRedisExtensionTest extends TestCase
         $this->assertSame('coverage', $coverageStep['env']['XDEBUG_MODE'] ?? null);
     }
 
+    public function test_ci_avoids_redundant_push_runs_and_skipped_topology_runners(): void
+    {
+        $ciConfig = Yaml::parseFile(base_path('.github/workflows/ci.yml'));
+        $coverageConfig = Yaml::parseFile(base_path('.github/workflows/coverage.yml'));
+
+        $this->assertSame(['main'], $ciConfig['on']['push']['branches'] ?? null);
+        $this->assertSame("needs.changes.outputs.topology == 'true'", $ciConfig['jobs']['topology']['if'] ?? null);
+        $this->assertArrayNotHasKey('push', $coverageConfig['on'] ?? []);
+        $this->assertArrayHasKey('schedule', $coverageConfig['on'] ?? []);
+        $this->assertArrayHasKey('workflow_dispatch', $coverageConfig['on'] ?? []);
+    }
+
     public function test_ci_verifies_the_generated_external_openapi_contract(): void
     {
         $workflowConfig = Yaml::parseFile(base_path('.github/workflows/ci.yml'));

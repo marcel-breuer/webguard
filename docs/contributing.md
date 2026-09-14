@@ -21,8 +21,8 @@ Contributions are welcome. Please keep changes focused, tested, and easy to revi
 
    Pull requests run three independent required gates: quality checks, the full
    Pest suite without coverage instrumentation, and a conservative Docker
-   topology smoke check. Coverage runs after merges to `main`, on the daily
-   schedule, and on demand; its report is retained as a workflow artifact.
+   topology smoke check. Coverage runs on the daily schedule and on demand;
+   its report is retained as a workflow artifact.
 
    Rector and Pint are check-only in CI. Apply their corrections locally before
    pushing:
