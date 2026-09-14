@@ -23,6 +23,17 @@ class CiWorkflowRedisExtensionTest extends TestCase
         $this->assertStringContainsString('redis', $installLine);
     }
 
+    public function test_ci_image_includes_bun_for_pint_blade_formatting(): void
+    {
+        $dockerfile = (string) file_get_contents(base_path('Dockerfile'));
+        $ciStage = mb_substr($dockerfile, (int) mb_strpos($dockerfile, 'AS ci'));
+
+        $this->assertStringContainsString(
+            'COPY --from=oven/bun:1.3.11 /usr/local/bin/bun /usr/local/bin/bun',
+            $ciStage,
+        );
+    }
+
     public function test_quality_job_caches_composer_downloads_instead_of_vendor_directory(): void
     {
         $workflowConfig = Yaml::parseFile(base_path('.github/workflows/ci.yml'));
