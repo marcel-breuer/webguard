@@ -56,6 +56,7 @@ FROM base AS ci
 
 # Sometimes CI images need to run as root
 USER root
+COPY --from=oven/bun:1.3.11 /usr/local/bin/bun /usr/local/bin/bun
 RUN apt-get update && \
     apt-get install -y --no-install-recommends nodejs && \
     rm -rf /var/lib/apt/lists/* && \
