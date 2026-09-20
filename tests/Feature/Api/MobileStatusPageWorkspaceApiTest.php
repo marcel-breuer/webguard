@@ -8,6 +8,7 @@ use App\Enums\IncidentFollowUpStatus;
 use App\Enums\IncidentUpdateStatus;
 use App\Enums\TeamRole;
 use App\Enums\UserRole;
+use App\Jobs\SendStatusPageAnnouncementNotifications;
 use App\Models\Incident;
 use App\Models\Monitoring;
 use App\Models\MonitoringGroup;
@@ -19,6 +20,7 @@ use App\Models\TeamMembership;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Date;
+use Illuminate\Support\Facades\Queue;
 use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
 
@@ -173,6 +175,61 @@ class MobileStatusPageWorkspaceApiTest extends TestCase
             'event' => 'incident_update_published',
             'causer_id' => $user->id,
         ]);
+    }
+
+    public function test_owner_can_publish_update_and_dismiss_a_status_page_announcement(): void
+    {
+        Queue::fake();
+        ['user' => $user, 'statusPage' => $statusPage] = $this->workspace();
+        $this->actingAs($user);
+        $base = '/api/status-pages/' . $statusPage->id . '/announcements';
+
+        $this->postJson($base, [
+            'title' => 'Scheduled account changes',
+            'message' => 'Account changes will be unavailable for a short period.',
+            'notify_subscribers' => true,
+        ])
+            ->assertCreated()
+            ->assertJsonPath('data.announcement.title', 'Scheduled account changes')
+            ->assertJsonPath('data.announcement.notify_subscribers', true);
+
+        $announcementId = $this->getJson('/api/status-pages/' . $statusPage->id)->json('data.announcement.id');
+        Queue::assertPushed(SendStatusPageAnnouncementNotifications::class, function (SendStatusPageAnnouncementNotifications $job) use ($announcementId): bool {
+            return $job->announcementId === $announcementId && $job->queue === 'default';
+        });
+
+        $this->patchJson($base . '/' . $announcementId, [
+            'title' => 'Updated account changes',
+            'message' => 'The scheduled change now has a confirmed maintenance window.',
+        ])
+            ->assertOk()
+            ->assertJsonPath('data.announcement.title', 'Updated account changes');
+
+        $this->deleteJson($base . '/' . $announcementId)->assertNoContent();
+        $this->getJson('/api/status-pages/' . $statusPage->id)
+            ->assertOk()
+            ->assertJsonPath('data.announcement', null);
+        $this->assertDatabaseHas('activity_log', [
+            'event' => 'status_page_announcement_dismissed',
+            'causer_id' => $user->id,
+        ]);
+    }
+
+    public function test_status_page_announcement_requires_owner_and_publication(): void
+    {
+        ['user' => $user, 'statusPage' => $statusPage] = $this->workspace();
+        $attributes = [
+            'title' => 'Customer notice',
+            'message' => 'A customer-visible announcement.',
+            'notify_subscribers' => false,
+        ];
+
+        $this->actingAs(User::factory()->create());
+        $this->postJson('/api/status-pages/' . $statusPage->id . '/announcements', $attributes)->assertNotFound();
+
+        $statusPage->update(['is_public' => false]);
+        $this->actingAs($user);
+        $this->postJson('/api/status-pages/' . $statusPage->id . '/announcements', $attributes)->assertUnprocessable();
     }
 
     public function test_incident_communication_requires_status_page_ownership_and_monitoring_management(): void

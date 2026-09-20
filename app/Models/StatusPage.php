@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 #[Fillable([
     'user_id',
@@ -47,6 +48,24 @@ class StatusPage extends Model
     public function subscriptions(): HasMany
     {
         return $this->hasMany(StatusPageSubscription::class);
+    }
+
+    /**
+     * @return HasMany<StatusPageAnnouncement, $this>
+     */
+    public function announcements(): HasMany
+    {
+        return $this->hasMany(StatusPageAnnouncement::class);
+    }
+
+    /**
+     * @return HasOne<StatusPageAnnouncement, $this>
+     */
+    public function activeAnnouncement(): HasOne
+    {
+        return $this->hasOne(StatusPageAnnouncement::class)
+            ->whereNull('dismissed_at')
+            ->latestOfMany();
     }
 
     /**

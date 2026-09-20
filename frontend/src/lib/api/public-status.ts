@@ -17,6 +17,7 @@ export interface PublicStatusPayload {
     name: string;
     description: string | null;
     status: "up" | "down" | "unknown";
+    announcement?: { title: string; message: string; published_at: string | null } | null;
     components?: Array<{
         id: string;
         name: string;

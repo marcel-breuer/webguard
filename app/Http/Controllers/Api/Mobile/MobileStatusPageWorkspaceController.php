@@ -8,19 +8,23 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\Mobile\MobileStoreIncidentFollowUpRequest;
 use App\Http\Requests\Api\Mobile\MobileStoreIncidentTimelineEventRequest;
 use App\Http\Requests\Api\Mobile\MobileStoreIncidentUpdateRequest;
+use App\Http\Requests\StatusPages\StoreStatusPageAnnouncementRequest;
 use App\Http\Requests\StatusPages\UpdateIncidentFollowUpRequest;
 use App\Http\Requests\StatusPages\UpdateIncidentMetadataRequest;
 use App\Http\Requests\StatusPages\UpdateIncidentReviewRequest;
 use App\Http\Requests\StatusPages\UpdateIncidentTimelineEventRequest;
+use App\Http\Requests\StatusPages\UpdateStatusPageAnnouncementRequest;
 use App\Http\Resources\External\MobileIncidentWorkspaceResource;
 use App\Http\Resources\External\MobileStatusPageResource;
 use App\Models\Incident;
 use App\Models\IncidentFollowUp;
 use App\Models\IncidentTimelineEvent;
 use App\Models\StatusPage;
+use App\Models\StatusPageAnnouncement;
 use App\Models\User;
 use App\Services\IncidentTimelineService;
 use App\Services\MobileStatusPageWorkspaceService;
+use App\Services\StatusPageAnnouncementService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -29,6 +33,7 @@ class MobileStatusPageWorkspaceController extends Controller
     public function __construct(
         private readonly IncidentTimelineService $incidentTimelineService,
         private readonly MobileStatusPageWorkspaceService $mobileStatusPageWorkspaceService,
+        private readonly StatusPageAnnouncementService $statusPageAnnouncementService,
     ) {}
 
     public function index(Request $request): JsonResponse
@@ -74,6 +79,48 @@ class MobileStatusPageWorkspaceController extends Controller
         return response()->json([
             'data' => MobileStatusPageResource::make($this->workspaceStatusPage($user, $statusPageModel->id))->resolve($request),
         ]);
+    }
+
+    public function storeAnnouncement(StoreStatusPageAnnouncementRequest $storeStatusPageAnnouncementRequest, string $statusPage): JsonResponse
+    {
+        /** @var User $user */
+        $user = $storeStatusPageAnnouncementRequest->user();
+        $this->statusPageAnnouncementService->create(
+            $this->mobileStatusPageWorkspaceService->statusPageFor($user, $statusPage),
+            $user,
+            $storeStatusPageAnnouncementRequest->validated(),
+        );
+
+        return response()->json([
+            'data' => MobileStatusPageResource::make($this->workspaceStatusPage($user, $statusPage))->resolve($storeStatusPageAnnouncementRequest),
+        ], 201);
+    }
+
+    public function updateAnnouncement(UpdateStatusPageAnnouncementRequest $updateStatusPageAnnouncementRequest, string $statusPage, string $announcement): JsonResponse
+    {
+        /** @var User $user */
+        $user = $updateStatusPageAnnouncementRequest->user();
+        $this->statusPageAnnouncementService->update(
+            $this->announcementFor($this->mobileStatusPageWorkspaceService->statusPageFor($user, $statusPage), $announcement),
+            $user,
+            $updateStatusPageAnnouncementRequest->validated(),
+        );
+
+        return response()->json([
+            'data' => MobileStatusPageResource::make($this->workspaceStatusPage($user, $statusPage))->resolve($updateStatusPageAnnouncementRequest),
+        ]);
+    }
+
+    public function dismissAnnouncement(Request $request, string $statusPage, string $announcement): JsonResponse
+    {
+        /** @var User $user */
+        $user = $request->user();
+        $this->statusPageAnnouncementService->dismiss(
+            $this->announcementFor($this->mobileStatusPageWorkspaceService->statusPageFor($user, $statusPage), $announcement),
+            $user,
+        );
+
+        return response()->json(status: 204);
     }
 
     public function incidents(Request $request, string $statusPage): JsonResponse
@@ -224,6 +271,11 @@ class MobileStatusPageWorkspaceController extends Controller
             $user,
             $incident,
         );
+    }
+
+    private function announcementFor(StatusPage $statusPage, string $announcement): StatusPageAnnouncement
+    {
+        return $statusPage->announcements()->whereKey($announcement)->firstOrFail();
     }
 
     private function followUpFor(Incident $incident, string $incidentFollowUp): IncidentFollowUp

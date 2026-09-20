@@ -74,6 +74,14 @@ return [
         'unsubscribe_text' => 'Diese Statusseiten-Updates abbestellen',
         'salutation' => 'Vielen Dank,',
     ],
+    'public_status_page_announcement' => [
+        'subject' => ':statusPageName: Ankündigung',
+        'title' => 'Ankündigung zur Statusseite',
+        'intro' => 'Auf der öffentlichen Statusseite ":statusPageName" gibt es eine neue Ankündigung.',
+        'button_text' => 'Statusseite anzeigen',
+        'unsubscribe_text' => 'Diese Statusseiten-Updates abbestellen',
+        'salutation' => 'Vielen Dank,',
+    ],
     'server_instance_health_alert' => [
         'subject' => 'Server-Instanz :instanceCode: :status',
         'title' => 'Status der Server-Instanz: :status',
