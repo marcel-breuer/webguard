@@ -35,7 +35,7 @@ class StatusPageAnnouncementService
         });
 
         if ($announcement->notify_subscribers) {
-            SendStatusPageAnnouncementNotifications::dispatch($announcement->id)->afterCommit();
+            dispatch(new SendStatusPageAnnouncementNotifications($announcement->id))->afterCommit();
         }
 
         $this->log($user, $announcement, 'status_page_announcement_published');
@@ -46,31 +46,31 @@ class StatusPageAnnouncementService
     /**
      * @param  array{title: string, message: string}  $attributes
      */
-    public function update(StatusPageAnnouncement $announcement, User $user, array $attributes): StatusPageAnnouncement
+    public function update(StatusPageAnnouncement $statusPageAnnouncement, User $user, array $attributes): StatusPageAnnouncement
     {
         abort_if($user->isDemo(), 403);
-        abort_if($announcement->dismissed_at !== null, 404);
+        abort_if($statusPageAnnouncement->dismissed_at !== null, 404);
 
-        $announcement->update($attributes);
-        $this->log($user, $announcement, 'status_page_announcement_updated');
+        $statusPageAnnouncement->update($attributes);
+        $this->log($user, $statusPageAnnouncement, 'status_page_announcement_updated');
 
-        return $announcement->refresh();
+        return $statusPageAnnouncement->refresh();
     }
 
-    public function dismiss(StatusPageAnnouncement $announcement, User $user): void
+    public function dismiss(StatusPageAnnouncement $statusPageAnnouncement, User $user): void
     {
         abort_if($user->isDemo(), 403);
-        abort_if($announcement->dismissed_at !== null, 404);
+        abort_if($statusPageAnnouncement->dismissed_at !== null, 404);
 
-        $announcement->update(['dismissed_at' => Date::now()]);
-        $this->log($user, $announcement, 'status_page_announcement_dismissed');
+        $statusPageAnnouncement->update(['dismissed_at' => Date::now()]);
+        $this->log($user, $statusPageAnnouncement, 'status_page_announcement_dismissed');
     }
 
-    private function log(User $user, StatusPageAnnouncement $announcement, string $event): void
+    private function log(User $user, StatusPageAnnouncement $statusPageAnnouncement, string $event): void
     {
         activity('status_page')
             ->causedBy($user)
-            ->performedOn($announcement)
+            ->performedOn($statusPageAnnouncement)
             ->event($event)
             ->log($event);
     }

@@ -47,8 +47,8 @@ class SendStatusPageAnnouncementNotifications implements ShouldBeUnique, ShouldQ
         $announcement->statusPage->subscriptions()
             ->verified()
             ->orderBy('id')
-            ->each(function (StatusPageSubscription $subscription) use ($announcement): void {
-                Mail::to($subscription->email)->send(new PublicStatusPageAnnouncementMail($subscription, $announcement));
+            ->each(function (StatusPageSubscription $statusPageSubscription) use ($announcement): void {
+                Mail::to($statusPageSubscription->email)->send(new PublicStatusPageAnnouncementMail($statusPageSubscription, $announcement));
             });
 
         $announcement->forceFill(['notified_at' => Date::now()])->save();

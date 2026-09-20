@@ -47,24 +47,24 @@ class SendStatusPageAnnouncementNotificationsTest extends TestCase
             'confirmation_token_hash' => StatusPageSubscription::hashToken('pending-token'),
             'unsubscribe_token' => 'pending-token',
         ]);
-        $announcement = StatusPageAnnouncement::query()->create([
+        $statusPageAnnouncement = StatusPageAnnouncement::query()->create([
             'status_page_id' => $statusPage->id,
             'title' => 'Account changes',
             'message' => 'Account changes are temporarily unavailable.',
             'notify_subscribers' => true,
         ]);
 
-        $job = new SendStatusPageAnnouncementNotifications($announcement->id);
-        $job->handle();
-        $job->handle();
+        $sendStatusPageAnnouncementNotifications = new SendStatusPageAnnouncementNotifications($statusPageAnnouncement->id);
+        $sendStatusPageAnnouncementNotifications->handle();
+        $sendStatusPageAnnouncementNotifications->handle();
 
-        Mail::assertSent(PublicStatusPageAnnouncementMail::class, function (PublicStatusPageAnnouncementMail $mail): bool {
-            return $mail->hasTo('verified@example.test');
+        Mail::assertSent(PublicStatusPageAnnouncementMail::class, function (PublicStatusPageAnnouncementMail $publicStatusPageAnnouncementMail): bool {
+            return $publicStatusPageAnnouncementMail->hasTo('verified@example.test');
         });
-        Mail::assertNotSent(PublicStatusPageAnnouncementMail::class, function (PublicStatusPageAnnouncementMail $mail): bool {
-            return $mail->hasTo('pending@example.test');
+        Mail::assertNotSent(PublicStatusPageAnnouncementMail::class, function (PublicStatusPageAnnouncementMail $publicStatusPageAnnouncementMail): bool {
+            return $publicStatusPageAnnouncementMail->hasTo('pending@example.test');
         });
         Mail::assertSent(PublicStatusPageAnnouncementMail::class, 1);
-        $this->assertNotNull($announcement->refresh()->notified_at);
+        $this->assertNotNull($statusPageAnnouncement->refresh()->notified_at);
     }
 }

@@ -194,8 +194,8 @@ class MobileStatusPageWorkspaceApiTest extends TestCase
             ->assertJsonPath('data.announcement.notify_subscribers', true);
 
         $announcementId = $this->getJson('/api/status-pages/' . $statusPage->id)->json('data.announcement.id');
-        Queue::assertPushed(SendStatusPageAnnouncementNotifications::class, function (SendStatusPageAnnouncementNotifications $job) use ($announcementId): bool {
-            return $job->announcementId === $announcementId && $job->queue === 'default';
+        Queue::assertPushed(SendStatusPageAnnouncementNotifications::class, function (SendStatusPageAnnouncementNotifications $sendStatusPageAnnouncementNotifications) use ($announcementId): bool {
+            return $sendStatusPageAnnouncementNotifications->announcementId === $announcementId && $sendStatusPageAnnouncementNotifications->queue === 'default';
         });
 
         $this->patchJson($base . '/' . $announcementId, [

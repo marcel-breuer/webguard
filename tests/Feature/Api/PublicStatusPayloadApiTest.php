@@ -112,7 +112,7 @@ class PublicStatusPayloadApiTest extends TestCase
             'name' => 'Acme Status',
             'is_public' => true,
         ]);
-        $announcement = StatusPageAnnouncement::query()->create([
+        $statusPageAnnouncement = StatusPageAnnouncement::query()->create([
             'status_page_id' => $statusPage->id,
             'title' => 'Scheduled account changes',
             'message' => 'Account changes will be unavailable for a short period.',
@@ -120,11 +120,11 @@ class PublicStatusPayloadApiTest extends TestCase
 
         $this->getJson(route('public.status.show', $statusPage))
             ->assertOk()
-            ->assertJsonPath('data.announcement.title', $announcement->title)
-            ->assertJsonPath('data.announcement.message', $announcement->message)
+            ->assertJsonPath('data.announcement.title', $statusPageAnnouncement->title)
+            ->assertJsonPath('data.announcement.message', $statusPageAnnouncement->message)
             ->assertJsonMissing(['notify_subscribers' => false]);
 
-        $announcement->update(['dismissed_at' => Date::now()]);
+        $statusPageAnnouncement->update(['dismissed_at' => Date::now()]);
         $this->getJson(route('public.status.show', $statusPage))
             ->assertOk()
             ->assertJsonPath('data.announcement', null);
