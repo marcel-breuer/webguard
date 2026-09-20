@@ -6,6 +6,7 @@ namespace App\Http\Resources\External;
 
 use App\Models\Monitoring;
 use App\Models\StatusPage;
+use App\Models\StatusPageAnnouncement;
 use App\Models\StatusPageComponent;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -35,6 +36,16 @@ final class MobileStatusPageResource extends JsonResource
             'component_count' => (int) ($statusPage->components_count ?? 0),
             'verified_subscriber_count' => (int) ($statusPage->verified_subscriber_count ?? 0),
             'open_incident_count' => (int) ($statusPage->open_incident_count ?? 0),
+            'announcement' => $statusPage->relationLoaded('activeAnnouncement') && $statusPage->activeAnnouncement instanceof StatusPageAnnouncement
+                ? [
+                    'id' => $statusPage->activeAnnouncement->id,
+                    'title' => $statusPage->activeAnnouncement->title,
+                    'message' => $statusPage->activeAnnouncement->message,
+                    'notify_subscribers' => $statusPage->activeAnnouncement->notify_subscribers,
+                    'notified_at' => $statusPage->activeAnnouncement->notified_at?->toIso8601String(),
+                    'published_at' => $statusPage->activeAnnouncement->created_at?->toIso8601String(),
+                ]
+                : null,
             'components' => $statusPage->relationLoaded('components')
                 ? $statusPage->components
                     ->map(fn (StatusPageComponent $statusPageComponent): array => $this->componentPayload($statusPageComponent))

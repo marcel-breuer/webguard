@@ -45,6 +45,7 @@ class PublicStatusPayloadService
         abort_unless($statusPage->is_public, 404);
 
         $statusPage->loadMissing([
+            'activeAnnouncement',
             'components.monitorings' => fn ($query) => $query->withoutGlobalScope('user')
                 ->with(['latestIncident', 'latestResponseResult']),
             'components.monitoringGroup.monitorings' => fn ($query) => $query->withoutGlobalScope('user')
@@ -84,6 +85,11 @@ class PublicStatusPayloadService
             'name' => $statusPage->name,
             'description' => $statusPage->description,
             'status' => $this->aggregateStatus($components->pluck('status')),
+            'announcement' => $statusPage->activeAnnouncement === null ? null : [
+                'title' => $statusPage->activeAnnouncement->title,
+                'message' => $statusPage->activeAnnouncement->message,
+                'published_at' => $statusPage->activeAnnouncement->created_at?->toIso8601String(),
+            ],
             'components' => $components->all(),
             'incidents' => $this->statusPageIncidents($statusPage),
             'uptime_calendar' => $this->statusPageUptimeCalendarService->getLast30Days($statusPage)->toArray(),

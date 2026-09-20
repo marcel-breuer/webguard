@@ -12,6 +12,7 @@ use App\Models\Monitoring;
 use App\Models\MonitoringResponse;
 use App\Models\Package;
 use App\Models\StatusPage;
+use App\Models\StatusPageAnnouncement;
 use App\Models\StatusPageSubscriber;
 use App\Models\StatusPageSubscription;
 use App\Models\User;
@@ -101,6 +102,32 @@ class PublicStatusPayloadApiTest extends TestCase
         $this->getJson(route('public.status.show', $statusPage))
             ->assertOk()
             ->assertJsonPath('data.uptime_calendar.2026-08.days.22.uptime_percentage', 75);
+    }
+
+    public function test_public_status_page_payload_includes_only_an_active_announcement(): void
+    {
+        $user = $this->user();
+        $statusPage = StatusPage::query()->create([
+            'user_id' => $user->id,
+            'name' => 'Acme Status',
+            'is_public' => true,
+        ]);
+        $statusPageAnnouncement = StatusPageAnnouncement::query()->create([
+            'status_page_id' => $statusPage->id,
+            'title' => 'Scheduled account changes',
+            'message' => 'Account changes will be unavailable for a short period.',
+        ]);
+
+        $this->getJson(route('public.status.show', $statusPage))
+            ->assertOk()
+            ->assertJsonPath('data.announcement.title', $statusPageAnnouncement->title)
+            ->assertJsonPath('data.announcement.message', $statusPageAnnouncement->message)
+            ->assertJsonMissing(['notify_subscribers' => false]);
+
+        $statusPageAnnouncement->update(['dismissed_at' => Date::now()]);
+        $this->getJson(route('public.status.show', $statusPage))
+            ->assertOk()
+            ->assertJsonPath('data.announcement', null);
     }
 
     public function test_private_public_status_resources_are_not_exposed(): void

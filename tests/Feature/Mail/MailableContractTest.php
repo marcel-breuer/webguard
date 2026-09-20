@@ -6,6 +6,7 @@ namespace Tests\Feature\Mail;
 
 use App\Enums\NotificationType;
 use App\Enums\TeamRole;
+use App\Mail\PublicStatusPageAnnouncementMail;
 use App\Mail\PublicStatusPageMaintenanceScheduledMail;
 use App\Mail\PublicStatusPageStatusUpdateMail;
 use App\Mail\PublicStatusPageSubscriptionConfirmationMail;
@@ -16,6 +17,7 @@ use App\Models\Monitoring;
 use App\Models\MonitoringNotification;
 use App\Models\Package;
 use App\Models\StatusPage;
+use App\Models\StatusPageAnnouncement;
 use App\Models\StatusPageSubscriber;
 use App\Models\StatusPageSubscription;
 use App\Models\Team;
@@ -267,6 +269,40 @@ class MailableContractTest extends TestCase
             'token' => 'unsubscribe-token',
         ]), $publicStatusPageMaintenanceScheduledMail->content()->with['unsubscribeUrl']);
         $this->assertSame([], $publicStatusPageMaintenanceScheduledMail->attachments());
+    }
+
+    public function test_public_status_page_announcement_mail_exposes_announcement_and_unsubscribe_contract(): void
+    {
+        $statusPage = StatusPage::query()->create([
+            'user_id' => User::factory()->create()->id,
+            'name' => 'Acme Status',
+            'slug' => 'acme-status',
+            'is_public' => true,
+        ]);
+        $statusPageSubscription = StatusPageSubscription::query()->create([
+            'status_page_id' => $statusPage->id,
+            'email' => 'subscriber@example.com',
+            'unsubscribe_token' => 'unsubscribe-token',
+            'verified_at' => now(),
+        ]);
+        $statusPageAnnouncement = StatusPageAnnouncement::query()->create([
+            'status_page_id' => $statusPage->id,
+            'title' => 'Planned account changes',
+            'message' => 'Account changes are temporarily unavailable.',
+        ]);
+
+        $publicStatusPageAnnouncementMail = new PublicStatusPageAnnouncementMail($statusPageSubscription, $statusPageAnnouncement);
+
+        $this->assertSame(__('mail.public_status_page_announcement.subject', ['statusPageName' => 'Acme Status']), $publicStatusPageAnnouncementMail->envelope()->subject);
+        $this->assertSame('mail.public-status-page-announcement', $publicStatusPageAnnouncementMail->content()->view);
+        $this->assertSame($statusPage->id, $publicStatusPageAnnouncementMail->content()->with['statusPage']->id);
+        $this->assertSame($statusPageAnnouncement->id, $publicStatusPageAnnouncementMail->content()->with['announcement']->id);
+        $this->assertSame(route('public-status-pages.show', $statusPage), $publicStatusPageAnnouncementMail->content()->with['statusPageUrl']);
+        $this->assertSame(route('public-status-pages.subscribers.unsubscribe', [
+            'statusPage' => $statusPage,
+            'token' => 'unsubscribe-token',
+        ]), $publicStatusPageAnnouncementMail->content()->with['unsubscribeUrl']);
+        $this->assertSame([], $publicStatusPageAnnouncementMail->attachments());
     }
 
     public function test_public_status_page_maintenance_scheduled_mail_renders_localized_schedule_branches(): void

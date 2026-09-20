@@ -94,6 +94,20 @@ class SvelteKitQualityGateTest extends TestCase
         }
     }
 
+    public function test_status_page_announcements_are_managed_and_rendered_publicly(): void
+    {
+        $workspace = file_get_contents(base_path('frontend/src/routes/(app)/status-pages/[id]/+page.svelte'));
+        $publicStatusPage = file_get_contents(base_path('frontend/src/routes/status/[id]/+page.svelte'));
+
+        $this->assertIsString($workspace);
+        $this->assertIsString($publicStatusPage);
+        $this->assertStringContainsString('Publish announcement', $workspace);
+        $this->assertStringContainsString('Notify verified subscribers', $workspace);
+        $this->assertStringContainsString('dismissAnnouncement', $workspace);
+        $this->assertStringContainsString('status-page-announcement', $publicStatusPage);
+        $this->assertStringContainsString('data.announcement.title', $publicStatusPage);
+    }
+
     public function test_sveltekit_components_use_tailwind_without_scoped_or_inline_styles(): void
     {
         foreach (File::allFiles(base_path('frontend/src')) as $file) {

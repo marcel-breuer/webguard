@@ -43,6 +43,7 @@ class MobileStatusPageWorkspaceService
     public function loadWorkspace(StatusPage $statusPage, User $user): StatusPage
     {
         return $statusPage->load([
+            'activeAnnouncement',
             'components.monitoringGroup' => fn ($query) => $query->withCount('monitorings'),
             'components.monitorings' => fn ($query) => $query->manageableBy($user)->orderBy('name')->orderBy('id'),
             'components.monitoringGroup.monitorings' => fn ($query) => $query->manageableBy($user)->orderBy('name')->orderBy('id'),

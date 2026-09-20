@@ -28,6 +28,14 @@ export interface StatusPage {
     component_count: number;
     verified_subscriber_count: number;
     open_incident_count: number;
+    announcement: {
+        id: string;
+        title: string;
+        message: string;
+        notify_subscribers: boolean;
+        notified_at: string | null;
+        published_at: string | null;
+    } | null;
     components: StatusPageComponent[];
     created_at: string | null;
     updated_at: string | null;

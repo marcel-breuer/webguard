@@ -74,6 +74,14 @@ return [
         'unsubscribe_text' => 'Unsubscribe from these status page updates',
         'salutation' => 'Thank you,',
     ],
+    'public_status_page_announcement' => [
+        'subject' => ':statusPageName announcement',
+        'title' => 'Status page announcement',
+        'intro' => 'The public status page ":statusPageName" has a new announcement.',
+        'button_text' => 'View Status Page',
+        'unsubscribe_text' => 'Unsubscribe from these status page updates',
+        'salutation' => 'Thank you,',
+    ],
     'server_instance_health_alert' => [
         'subject' => 'Server instance :instanceCode: :status',
         'title' => 'Server instance status: :status',
