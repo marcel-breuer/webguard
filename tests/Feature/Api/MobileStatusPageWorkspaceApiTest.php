@@ -232,6 +232,27 @@ class MobileStatusPageWorkspaceApiTest extends TestCase
         $this->postJson('/api/status-pages/' . $statusPage->id . '/announcements', $attributes)->assertUnprocessable();
     }
 
+    public function test_owner_cannot_publish_an_announcement_while_an_active_announcement_exists(): void
+    {
+        ['user' => $user, 'statusPage' => $statusPage] = $this->workspace();
+        $statusPage->announcements()->create([
+            'title' => 'Current notice',
+            'message' => 'An active announcement is already visible to subscribers.',
+            'notify_subscribers' => false,
+        ]);
+        $this->actingAs($user);
+
+        $this->postJson('/api/status-pages/' . $statusPage->id . '/announcements', [
+            'title' => 'Second notice',
+            'message' => 'This notice must wait until the current one is dismissed.',
+            'notify_subscribers' => false,
+        ])
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors('announcement');
+
+        $this->assertDatabaseCount('status_page_announcements', 1);
+    }
+
     public function test_incident_communication_requires_status_page_ownership_and_monitoring_management(): void
     {
         ['user' => $user, 'statusPage' => $statusPage, 'incident' => $incident] = $this->workspace();
