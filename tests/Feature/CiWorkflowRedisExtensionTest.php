@@ -183,14 +183,31 @@ class CiWorkflowRedisExtensionTest extends TestCase
         $this->assertTrue($packages->has('mews/captcha'));
     }
 
-    public function test_weekly_dependency_update_caches_composer_downloads_instead_of_vendor_directory(): void
+    public function test_dependabot_updates_composer_and_bun_dependencies_daily_at_midnight(): void
     {
-        $workflowConfig = Yaml::parseFile(base_path('.github/workflows/weekly-dependency-update.yml'));
-        $cacheStep = collect($workflowConfig['jobs']['update-dependencies']['steps'] ?? [])
-            ->firstWhere('name', 'Cache Composer dependencies');
+        $dependabotConfig = Yaml::parseFile(base_path('.github/dependabot.yml'));
 
-        $this->assertIsArray($cacheStep);
-        $this->assertSame('~/.cache/composer/files', $cacheStep['with']['path'] ?? null);
-        $this->assertNotSame('vendor', $cacheStep['with']['path'] ?? null);
+        $this->assertSame(2, $dependabotConfig['version'] ?? null);
+        $this->assertSame([
+            [
+                'package-ecosystem' => 'composer',
+                'directory' => '/',
+                'schedule' => [
+                    'interval' => 'daily',
+                    'time' => '00:00',
+                    'timezone' => 'Europe/Berlin',
+                ],
+            ],
+            [
+                'package-ecosystem' => 'bun',
+                'directory' => '/',
+                'schedule' => [
+                    'interval' => 'daily',
+                    'time' => '00:00',
+                    'timezone' => 'Europe/Berlin',
+                ],
+            ],
+        ], $dependabotConfig['updates'] ?? null);
+        $this->assertFileDoesNotExist(base_path('.github/workflows/weekly-dependency-update.yml'));
     }
 }
