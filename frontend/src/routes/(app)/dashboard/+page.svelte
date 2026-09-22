@@ -53,12 +53,38 @@
     }
 
     function statusLabel(status: string): string {
-        return status === "up" ? "Operational"
+        return status === "up" ? "Working"
             : status === "down" ? "Down"
-                : status === "unknown" ? "Unknown"
+                : status === "unknown" ? "Needs a check"
                     : status === "paused" ? "Paused"
                         : status === "maintenance" ? "Maintenance"
                             : status;
+    }
+
+    function healthMessage(): string {
+        if (dashboard.summary.down > 0) return "Some websites are down";
+        if (dashboard.summary.unknown > 0) return "Some websites need a recent check";
+        if (dashboard.summary.healthy > 0) return "All checked websites are working";
+        if (dashboard.summary.maintenance > 0) return "All your websites are under maintenance";
+
+        return "All your websites are paused";
+    }
+
+    function healthTone(): "healthy" | "degraded" | "danger" | "neutral" {
+        if (dashboard.summary.down > 0) return "danger";
+        if (dashboard.summary.unknown > 0) return "degraded";
+        if (dashboard.summary.healthy > 0) return "healthy";
+
+        return "neutral";
+    }
+
+    function healthBadgeLabel(): string {
+        if (dashboard.summary.down > 0) return "Action needed";
+        if (dashboard.summary.unknown > 0) return "Needs a check";
+        if (dashboard.summary.healthy > 0) return "Working";
+        if (dashboard.summary.maintenance > 0) return "Maintenance";
+
+        return "Paused";
     }
 
     function statusDotClass(status: string): string {
@@ -68,19 +94,23 @@
         return "bg-slate-400";
     }
 
-    function attentionDotClass(type: string): string {
-        return type === "down" || type === "incident" ? "bg-red-500" : "bg-slate-400";
+    function attentionStatusLabel(type: string): string {
+        if (type === "down" || type === "incident") return "Website is down";
+        if (type === "delivery") return "Notification delivery issue";
+
+        return "No recent check";
     }
 
-    function attentionStatusLabel(type: string): string {
-        if (type === "down" || type === "incident") return "Monitoring is down";
-        if (type === "delivery") return "Notification delivery needs attention";
+    function attentionTone(type: string): "danger" | "degraded" {
+        return type === "down" || type === "incident" ? "danger" : "degraded";
+    }
 
-        return "Monitoring status is unknown";
+    function attentionBorderClass(type: string): string {
+        return type === "down" || type === "incident" ? "border-red-300 dark:border-red-900" : "border-amber-300 dark:border-amber-900";
     }
 
     function dateTime(value: string | null): string {
-        if (value === null) return "No result yet";
+        if (value === null) return "Not checked yet";
 
         return formatDateTime(value, "—");
     }
@@ -128,9 +158,9 @@
 <main class="mx-auto w-[min(76rem,calc(100%_-_2rem))] py-6 sm:py-12">
     <header class="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
-            <p class="m-0 text-[0.8125rem] font-extrabold tracking-[0.1em] text-wg-accent uppercase">Operations overview</p>
+            <p class="m-0 text-[0.8125rem] font-extrabold tracking-[0.1em] text-wg-accent uppercase">Your websites</p>
             <h1 class="mt-2 text-[clamp(2rem,6vw,3rem)] leading-[1.1] font-bold">Welcome back, {data.session.user.name}</h1>
-            <p class="mt-3 max-w-2xl leading-6 text-wg-text-muted">Review your service health, incidents, maintenance, and operational follow-ups in one place.</p>
+            <p class="mt-3 max-w-2xl leading-6 text-wg-text-muted">Check which websites are working, which need attention, and when they were last checked.</p>
         </div>
         {#if dashboard.capabilities.can_create_monitoring && dashboard.summary.total > 0}
             <Button type="button" loading={createLoading} onclick={openCreateModal}>Add your website</Button>
@@ -144,85 +174,90 @@
             {#snippet action()}<Button type="button" loading={createLoading} onclick={openCreateModal}>Add your website</Button>{/snippet}
         </EmptyState>
     {:else}
-        <section class="rounded-2xl border border-wg-border bg-wg-surface p-5 shadow-wg-surface sm:p-7" aria-labelledby="health-heading">
-            <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-                <div>
-                    <p class="text-sm font-bold tracking-[0.08em] text-wg-text-muted uppercase">Overall health</p>
-                    <h2 id="health-heading" class="mt-2 text-2xl font-bold">{dashboard.overall_state === "healthy" ? "All systems operational" : dashboard.overall_state === "degraded" ? "Service degradation detected" : "Attention required"}</h2>
-                </div>
-                <p class="text-sm font-bold text-wg-text-muted">{dashboard.summary.total} active services</p>
-            </div>
-            <dl class="mt-6 grid grid-cols-2 gap-3 border-t border-wg-border pt-5 sm:grid-cols-5">
-                {#each [["healthy", "Healthy"], ["down", "Down"], ["unknown", "Unknown"], ["paused", "Paused"], ["maintenance", "Maintenance"]] as [key, label]}
+        <Card title="Website health" titleId="health-heading" description={healthMessage()}>
+            {#snippet actions()}<StatusBadge tone={healthTone()} label={healthBadgeLabel()} />{/snippet}
+            <p class="mb-4 mt-0 text-sm font-bold text-wg-text-muted">{dashboard.summary.total} <span>websites</span></p>
+            <dl class="grid grid-cols-2 gap-3 sm:grid-cols-5">
+                {#each [["healthy", "Working"], ["down", "Down"], ["unknown", "Needs a check"], ["paused", "Paused"], ["maintenance", "Maintenance"]] as [key, label]}
                     <div class="rounded-xl bg-wg-surface-muted p-3">
                         <dt class="text-xs font-bold text-wg-text-muted">{label}</dt>
                         <dd class="mt-1 text-xl font-extrabold">{dashboard.summary[key as keyof typeof dashboard.summary]}</dd>
                     </div>
                 {/each}
             </dl>
-        </section>
+        </Card>
 
-        <section class="mt-6 overflow-hidden rounded-2xl border border-wg-border bg-wg-surface shadow-wg-surface" aria-labelledby="services-heading">
-            <div class="flex flex-col gap-4 border-b border-wg-border px-5 py-5 sm:px-7">
-                <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-                    <div>
-                        <p class="text-[0.8125rem] font-extrabold tracking-[0.1em] text-wg-accent uppercase">Service landscape</p>
-                        <h2 id="services-heading" class="mt-1 text-xl font-bold">Monitorings</h2>
-                    </div>
-                    <label class="w-full sm:max-w-sm">
-                        <span class="sr-only">Search monitorings</span>
-                        <Input bind:value={serviceQuery} type="search" placeholder="Search services" />
-                    </label>
-                </div>
-                <div class="flex flex-wrap gap-2" aria-label="Service filters">
-                    {#each [["all", "All"], ["attention", "Attention"], ["maintenance", "Maintenance"], ["paused", "Paused"]] as [filter, label]}
-                        <Button class={`min-h-9 rounded-full px-3 py-1.5 text-xs ${activeFilter === filter ? "" : "border-wg-border bg-wg-surface text-wg-text hover:bg-wg-surface-muted"}`} variant={activeFilter === filter ? "primary" : "secondary"} type="button" onclick={() => (activeFilter = filter as typeof activeFilter)}>{label}</Button>
-                    {/each}
-                </div>
-            </div>
-            {#if services.length === 0}
-                <p class="p-6 text-sm text-wg-text-muted">No services match the current filters.</p>
-            {:else}
-                <div class="divide-y divide-wg-border">
-                    {#each services as service (service.id)}
-                        <a class="flex flex-col gap-3 px-5 py-4 text-wg-text no-underline transition hover:bg-wg-surface-muted sm:flex-row sm:items-center sm:justify-between sm:px-7" href={`/monitorings/${service.id}`}>
-                            <div class="min-w-0">
-                                <div class="flex flex-wrap items-center gap-2">
-                                    <span class={`size-2.5 shrink-0 rounded-full ${statusDotClass(service.status)}`} aria-hidden="true"></span>
-                                    <span class="sr-only">Current status: {statusLabel(service.status)}</span>
-                                    <h3 class="truncate text-base font-bold">{service.name}</h3>
-                                    <StatusBadge tone={statusTone(service.status)} label={statusLabel(service.status)} />
-                                    {#if service.open_incident}<StatusBadge tone="danger" label="Incident" />{/if}
-                                </div>
-                                <p class="mt-1 truncate text-sm text-wg-text-muted">{service.target} · {service.group}</p>
-                            </div>
-                            <div class="shrink-0 text-sm text-wg-text-muted sm:text-right">
-                                <p>{service.response_time_ms === null ? "—" : `${Math.round(service.response_time_ms)} ms`}</p>
-                                <p class="mt-1 text-xs">{dateTime(service.last_checked_at)}</p>
-                            </div>
-                        </a>
-                    {/each}
-                </div>
-            {/if}
-            <div class="border-t border-wg-border px-5 py-4 sm:px-7"><Pagination page={pagination.current_page} pages={pagination.last_page} href={paginationHref} /></div>
-        </section>
-
-        <section class="mt-6 grid gap-6 lg:grid-cols-2">
-            <Card title="Attention" description="Items that need operational follow-up.">
+        <div class="mt-6">
+            <Card title="Needs attention" titleId="attention-heading" description="Websites with an issue, or notification delivery problems.">
                 {#if dashboard.attention.length === 0}
-                    <p class="text-sm text-wg-text-muted">No outstanding attention items.</p>
+                    <p class="m-0 text-sm text-wg-text-muted">No websites need attention.</p>
                 {:else}
                     <ul class="m-0 grid list-none gap-3 p-0">
                         {#each dashboard.attention as item}
-                            <li class="rounded-xl border border-wg-border p-3">
-                                <div class="flex items-center gap-2"><span class={`size-2.5 shrink-0 rounded-full ${attentionDotClass(item.type)}`} aria-hidden="true"></span><span class="sr-only">{attentionStatusLabel(item.type)}</span><p class="font-bold">{item.monitoring_name ?? `${item.count ?? 0} notification deliveries`}</p></div>
-                                <p class="mt-1 text-sm text-wg-text-muted">{item.monitoring_target ?? "Review failed delivery configuration."}</p>
+                            <li class={`rounded-xl border p-3 ${attentionBorderClass(item.type)}`}>
+                                {#if item.monitoring_id}
+                                    <a class="block rounded-md text-wg-text no-underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-wg-focus" href={`/monitorings/${item.monitoring_id}`}>
+                                        <div class="flex flex-wrap items-center justify-between gap-3">
+                                            <p class="m-0 font-bold">{item.monitoring_name ?? "Website"}</p>
+                                            <StatusBadge tone={attentionTone(item.type)} label={attentionStatusLabel(item.type)} />
+                                        </div>
+                                        <p class="mb-0 mt-1 text-sm text-wg-text-muted">{item.monitoring_target}</p>
+                                        <span class="mt-2 inline-block text-sm font-semibold text-wg-accent">View website details <span aria-hidden="true">→</span></span>
+                                    </a>
+                                {:else}
+                                    <div class="flex flex-wrap items-center justify-between gap-3">
+                                        <p class="m-0 font-bold">{item.count ?? 0} <span>notification deliveries</span></p>
+                                        <StatusBadge tone={attentionTone(item.type)} label={attentionStatusLabel(item.type)} />
+                                    </div>
+                                    <p class="mb-0 mt-1 text-sm text-wg-text-muted">Review failed delivery configuration.</p>
+                                {/if}
                             </li>
                         {/each}
                     </ul>
                 {/if}
             </Card>
+        </div>
 
+        <div class="mt-6">
+            <Card title="Your websites" titleId="services-heading" description="Current status and last check for each website.">
+                <label class="mb-4 block w-full sm:max-w-sm">
+                    <span class="sr-only">Search websites</span>
+                    <Input bind:value={serviceQuery} type="search" placeholder="Search by name or address" />
+                </label>
+                <div class="flex flex-wrap gap-2" aria-label="Website filters">
+                    {#each [["all", "All"], ["attention", "Needs attention"], ["maintenance", "Maintenance"], ["paused", "Paused"]] as [filter, label]}
+                        <Button class={`min-h-9 rounded-full px-3 py-1.5 text-xs ${activeFilter === filter ? "" : "border-wg-border bg-wg-surface text-wg-text hover:bg-wg-surface-muted"}`} variant={activeFilter === filter ? "primary" : "secondary"} type="button" onclick={() => (activeFilter = filter as typeof activeFilter)}>{label}</Button>
+                    {/each}
+                </div>
+                {#if services.length === 0}
+                    <p class="mb-0 mt-5 text-sm text-wg-text-muted">No websites match your search or filters.</p>
+                {:else}
+                    <div class="mt-5 divide-y divide-wg-border border-y border-wg-border">
+                        {#each services as service (service.id)}
+                            <a class="flex flex-col gap-3 py-4 text-wg-text no-underline transition hover:bg-wg-surface-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-wg-focus sm:flex-row sm:items-center sm:justify-between" href={`/monitorings/${service.id}`}>
+                                <div class="min-w-0">
+                                    <div class="flex flex-wrap items-center gap-2">
+                                        <span class={`size-2.5 shrink-0 rounded-full ${statusDotClass(service.status)}`} aria-hidden="true"></span>
+                                        <span class="sr-only">Current status: {statusLabel(service.status)}</span>
+                                        <h3 class="truncate text-base font-bold">{service.name}</h3>
+                                        <StatusBadge tone={statusTone(service.status)} label={statusLabel(service.status)} />
+                                        {#if service.open_incident}<StatusBadge tone="danger" label="Incident" />{/if}
+                                    </div>
+                                    <p class="mt-1 truncate text-sm text-wg-text-muted">{service.target} · {service.group}</p>
+                                </div>
+                                <div class="shrink-0 text-sm text-wg-text-muted sm:text-right">
+                                    <p>{service.response_time_ms === null ? "—" : `${Math.round(service.response_time_ms)} ms`}</p>
+                                    <p class="mt-1 text-xs">{dateTime(service.last_checked_at)}</p>
+                                </div>
+                            </a>
+                        {/each}
+                    </div>
+                {/if}
+                <div class="mt-4"><Pagination page={pagination.current_page} pages={pagination.last_page} href={paginationHref} /></div>
+            </Card>
+        </div>
+
+        <section class="mt-6 grid gap-6 lg:grid-cols-2">
             <Card title="Maintenance" description="Scheduled and active maintenance windows.">
                 {#if dashboard.maintenance.length === 0}
                     <p class="text-sm text-wg-text-muted">No maintenance windows are scheduled.</p>
