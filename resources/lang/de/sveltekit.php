@@ -421,7 +421,6 @@ return [
         'WebGuard will use the selected monitoring type. Your first results appear on the monitoring details page.' => 'WebGuard verwendet den gewählten Überwachungstyp. Erste Ergebnisse finden Sie in den Überwachungsdetails.',
         'Advanced options' => 'Erweiterte Einstellungen',
         'Website details' => 'Website-Details',
-        'The endpoint is generated securely after this monitoring is saved.' => 'Der Prüf-Endpunkt wird nach dem Speichern sicher erstellt.',
         'Website monitoring started' => 'Website wird jetzt überwacht',
         'Website saved' => 'Website gespeichert',
         'WebGuard is checking your website. The first results may take a few minutes.' => 'WebGuard prüft Ihre Website. Erste Ergebnisse können einige Minuten dauern.',

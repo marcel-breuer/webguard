@@ -381,7 +381,6 @@ return [
         'SSL expiring' => 'SSL expiring',
         'SSL warning days' => 'SSL warning days',
         'Start monitoring the services your team depends on.' => 'Start monitoring the services your team depends on.',
-        'The endpoint is generated securely after this monitoring is saved.' => 'The endpoint is generated securely after this monitoring is saved.',
         'The first monitoring results can take up to' => 'The first monitoring results can take up to',
         'minutes, based on the configured check interval.' => 'minutes, based on the configured check interval.',
         'Write server health' => 'Write server health',
