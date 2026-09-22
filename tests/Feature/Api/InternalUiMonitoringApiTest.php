@@ -119,7 +119,7 @@ class InternalUiMonitoringApiTest extends TestCase
     public function test_monitoring_detail_includes_readable_check_location_names(): void
     {
         $user = User::factory()->create();
-        $location = ServerInstance::query()->create([
+        $serverInstance = ServerInstance::query()->create([
             'code' => 'location-1',
             'display_name' => 'Location 1',
             'country_code' => 'DE',
@@ -129,8 +129,8 @@ class InternalUiMonitoringApiTest extends TestCase
             'is_active' => true,
         ]);
         $monitoring = Monitoring::factory()->for($user)->create([
-            'preferred_location' => $location->code,
-            'preferred_locations' => [$location->code],
+            'preferred_location' => $serverInstance->code,
+            'preferred_locations' => [$serverInstance->code],
         ]);
 
         $this->actingAs($user)->getJson(route('app.monitorings.show', $monitoring))

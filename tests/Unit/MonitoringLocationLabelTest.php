@@ -12,32 +12,32 @@ class MonitoringLocationLabelTest extends TestCase
 {
     public function test_descriptive_display_name_is_used(): void
     {
-        $location = new ServerInstance([
+        $serverInstance = new ServerInstance([
             'code' => 'nl-ams-1',
             'display_name' => 'Amsterdam West',
             'country_code' => 'NL',
             'region' => 'Europe',
         ]);
 
-        $this->assertSame('Amsterdam West', (new MonitoringLocationLabel)->for($location));
+        $this->assertSame('Amsterdam West', (new MonitoringLocationLabel)->for($serverInstance));
     }
 
     public function test_generic_display_name_uses_region_and_country_code(): void
     {
-        $location = new ServerInstance([
+        $serverInstance = new ServerInstance([
             'code' => 'de-1',
             'display_name' => 'Location 1',
             'country_code' => 'DE',
             'region' => 'Frankfurt',
         ]);
 
-        $this->assertSame('Frankfurt, DE', (new MonitoringLocationLabel)->for($location));
+        $this->assertSame('Frankfurt, DE', (new MonitoringLocationLabel)->for($serverInstance));
     }
 
     public function test_missing_location_metadata_falls_back_to_code(): void
     {
-        $location = new ServerInstance(['code' => 'eu-1', 'display_name' => 'Location 1']);
+        $serverInstance = new ServerInstance(['code' => 'eu-1', 'display_name' => 'Location 1']);
 
-        $this->assertSame('eu-1', (new MonitoringLocationLabel)->for($location));
+        $this->assertSame('eu-1', (new MonitoringLocationLabel)->for($serverInstance));
     }
 }

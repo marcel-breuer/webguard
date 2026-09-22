@@ -21,7 +21,7 @@ class MonitoringShowController extends Controller
         string $monitoring,
         MonitoringDetailQuery $monitoringDetailQuery,
         MonitoringCheckIntervalService $monitoringCheckIntervalService,
-        MonitoringLocationLabel $locationLabel,
+        MonitoringLocationLabel $monitoringLocationLabel,
     ): JsonResponse {
         /** @var User $user */
         $user = $request->user();
@@ -34,12 +34,12 @@ class MonitoringShowController extends Controller
             ->get(['code', 'display_name', 'country_code', 'region'])
             ->keyBy('code');
         $payload['check_locations'] = array_map(
-            static function (string $code) use ($locationsByCode, $locationLabel): array {
-                $location = $locationsByCode->get($code);
+            static function (string $code) use ($locationsByCode, $monitoringLocationLabel): array {
+                $serverInstance = $locationsByCode->get($code);
 
                 return [
                     'code' => $code,
-                    'name' => $location instanceof ServerInstance ? $locationLabel->for($location) : $code,
+                    'name' => $serverInstance instanceof ServerInstance ? $monitoringLocationLabel->for($serverInstance) : $code,
                 ];
             },
             $locationCodes,

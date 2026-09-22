@@ -15,27 +15,27 @@ use Illuminate\Http\Request;
 
 class MonitoringFormOptionsController extends Controller
 {
-    public function create(Request $request, MonitoringLocationLabel $locationLabel): JsonResponse
+    public function create(Request $request, MonitoringLocationLabel $monitoringLocationLabel): JsonResponse
     {
         /** @var User $user */
         $user = $request->user();
 
-        return response()->json(['data' => $this->payload($user, $locationLabel)]);
+        return response()->json(['data' => $this->payload($user, $monitoringLocationLabel)]);
     }
 
-    public function edit(Request $request, Monitoring $monitoring, MonitoringLocationLabel $locationLabel): JsonResponse
+    public function edit(Request $request, Monitoring $monitoring, MonitoringLocationLabel $monitoringLocationLabel): JsonResponse
     {
         /** @var User $user */
         $user = $request->user();
         abort_unless($monitoring->isManageableBy($user) && ! $user->isDemo(), 403);
 
-        return response()->json(['data' => $this->payload($user, $locationLabel, $monitoring->loadMissing(['groups', 'team']))]);
+        return response()->json(['data' => $this->payload($user, $monitoringLocationLabel, $monitoring->loadMissing(['groups', 'team']))]);
     }
 
     /**
      * @return array<string, mixed>
      */
-    private function payload(User $user, MonitoringLocationLabel $locationLabel, ?Monitoring $monitoring = null): array
+    private function payload(User $user, MonitoringLocationLabel $monitoringLocationLabel, ?Monitoring $monitoring = null): array
     {
         $builder = ServerInstance::query();
 
@@ -56,9 +56,9 @@ class MonitoringFormOptionsController extends Controller
             'types' => array_map(static fn (MonitoringType $monitoringType): string => $monitoringType->value, MonitoringType::cases()),
             'locations' => $locations->pluck('code')->values()->all(),
             'location_options' => $locations
-                ->map(static fn (ServerInstance $location): array => [
-                    'code' => $location->code,
-                    'name' => $locationLabel->for($location),
+                ->map(static fn (ServerInstance $serverInstance): array => [
+                    'code' => $serverInstance->code,
+                    'name' => $monitoringLocationLabel->for($serverInstance),
                 ])
                 ->sortBy('name', SORT_NATURAL | SORT_FLAG_CASE)
                 ->values()
