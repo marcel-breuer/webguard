@@ -67,6 +67,23 @@ class SvelteKitQualityGateTest extends TestCase
         $this->assertStringContainsString('presentation="edit-modal"', $monitorings);
     }
 
+    public function test_dashboard_uses_shared_cards_and_links_attention_items_to_websites(): void
+    {
+        $dashboard = file_get_contents(base_path('frontend/src/routes/(app)/dashboard/+page.svelte'));
+        $card = file_get_contents(base_path('frontend/src/lib/components/Card.svelte'));
+
+        $this->assertIsString($dashboard);
+        $this->assertIsString($card);
+        $this->assertStringContainsString('titleId?: string;', $card);
+        $this->assertStringContainsString('id={titleId}', $card);
+        $this->assertStringContainsString('<Card title="Website health" titleId="health-heading"', $dashboard);
+        $this->assertStringContainsString('<Card title="Needs attention" titleId="attention-heading"', $dashboard);
+        $this->assertStringContainsString('href={`/monitorings/${item.monitoring_id}`}', $dashboard);
+        $this->assertStringContainsString('<StatusBadge tone={attentionTone(item.type)}', $dashboard);
+        $this->assertStringContainsString('Some websites are down', $dashboard);
+        $this->assertStringContainsString('No websites match your search or filters.', $dashboard);
+    }
+
     public function test_server_health_metrics_are_prominent_on_monitoring_details(): void
     {
         $monitoringDetail = file_get_contents(base_path('frontend/src/routes/(app)/monitorings/[id]/+page.svelte'));
