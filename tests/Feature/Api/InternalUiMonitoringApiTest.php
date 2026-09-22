@@ -116,6 +116,29 @@ class InternalUiMonitoringApiTest extends TestCase
             ->assertNotFound();
     }
 
+    public function test_monitoring_detail_includes_readable_check_location_names(): void
+    {
+        $user = User::factory()->create();
+        $location = ServerInstance::query()->create([
+            'code' => 'location-1',
+            'display_name' => 'Location 1',
+            'country_code' => 'DE',
+            'region' => 'Frankfurt',
+            'ip_address' => '192.0.2.151',
+            'api_key_hash' => 'location-label-test-token',
+            'is_active' => true,
+        ]);
+        $monitoring = Monitoring::factory()->for($user)->create([
+            'preferred_location' => $location->code,
+            'preferred_locations' => [$location->code],
+        ]);
+
+        $this->actingAs($user)->getJson(route('app.monitorings.show', $monitoring))
+            ->assertOk()
+            ->assertJsonPath('data.check_locations.0.code', 'location-1')
+            ->assertJsonPath('data.check_locations.0.name', 'Frankfurt, DE');
+    }
+
     public function test_internal_ui_monitoring_detail_data_returns_bounded_diagnostics_without_configuration_secrets(): void
     {
         Date::setTestNow('2026-08-22 12:00:00');
@@ -532,15 +555,22 @@ class InternalUiMonitoringApiTest extends TestCase
         $user = User::factory()->create();
         $serverInstance = ServerInstance::query()->create([
             'code' => 'ui-management-1',
+            'display_name' => 'Location 1',
+            'country_code' => 'DE',
+            'region' => 'Frankfurt',
             'ip_address' => '192.0.2.101',
             'api_key_hash' => 'test-token-1234567890',
             'is_active' => true,
         ]);
 
-        $this->actingAs($user)->getJson(route('app.monitorings.form-options'))
+        $locationOptionsResponse = $this->actingAs($user)->getJson(route('app.monitorings.form-options'));
+
+        $locationOptionsResponse
             ->assertOk()
             ->assertSee($serverInstance->code)
             ->assertJsonFragment(['http']);
+        $this->assertContains($serverInstance->code, $locationOptionsResponse->json('data.locations'));
+        $locationOptionsResponse->assertJsonFragment(['code' => $serverInstance->code, 'name' => 'Frankfurt, DE']);
 
         $payload = [
             'name' => 'First-party API check',
