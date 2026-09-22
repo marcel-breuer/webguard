@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { invalidateAll } from "$app/navigation";
+    import { goto, invalidateAll } from "$app/navigation";
     import { FirstPartyApiError, requestFirstPartyApi } from "$lib/api/client";
     import { appRoutes } from "$lib/routes";
     import { formatDateTime } from "$lib/i18n/format";
@@ -26,6 +26,7 @@
     let activeFilter = $state<"all" | "attention" | "maintenance" | "paused">("all");
     let createOpen = $state(false);
     let createForm = $state<MonitoringFormOptions | null>(null);
+    let createdMonitoring = $state<MonitoringMutationResult | null>(null);
     let createLoading = $state(false);
     let createError = $state("");
     const dashboard = $derived(data.dashboard.data);
@@ -93,6 +94,7 @@
 
         createLoading = true;
         createError = "";
+        createdMonitoring = null;
 
         try {
             createForm = (await requestFirstPartyApi<MonitoringFormOptions>("/api/monitorings/form-options")).data;
@@ -104,9 +106,20 @@
         }
     }
 
-    async function handleCreateSuccess(_monitoring: MonitoringMutationResult): Promise<void> {
+    function handleCreateSuccess(monitoring: MonitoringMutationResult): void {
+        createdMonitoring = monitoring;
+    }
+
+    async function finishCreate(): Promise<void> {
         createOpen = false;
+        createdMonitoring = null;
         await invalidateAll();
+    }
+
+    function handleCreateDialogClose(): void {
+        if (createdMonitoring) {
+            void finishCreate();
+        }
     }
 </script>
 
@@ -119,16 +132,16 @@
             <h1 class="mt-2 text-[clamp(2rem,6vw,3rem)] leading-[1.1] font-bold">Welcome back, {data.session.user.name}</h1>
             <p class="mt-3 max-w-2xl leading-6 text-wg-text-muted">Review your service health, incidents, maintenance, and operational follow-ups in one place.</p>
         </div>
-        {#if dashboard.capabilities.can_create_monitoring}
-            <Button type="button" loading={createLoading} onclick={openCreateModal}>Create monitoring</Button>
+        {#if dashboard.capabilities.can_create_monitoring && dashboard.summary.total > 0}
+            <Button type="button" loading={createLoading} onclick={openCreateModal}>Add your website</Button>
         {/if}
     </header>
 
     {#if createError}<p class="mb-6 text-sm font-bold text-wg-danger" role="alert">{createError}</p>{/if}
 
     {#if dashboard.summary.total === 0}
-        <EmptyState title="No monitorings yet" description="Create a monitoring to see service health, incidents, and operational insights here.">
-            {#snippet action()}<Button type="button" loading={createLoading} onclick={openCreateModal}>Create monitoring</Button>{/snippet}
+        <EmptyState title="No websites yet" description="Add your website and WebGuard will check it automatically.">
+            {#snippet action()}<Button type="button" loading={createLoading} onclick={openCreateModal}>Add your website</Button>{/snippet}
         </EmptyState>
     {:else}
         <section class="rounded-2xl border border-wg-border bg-wg-surface p-5 shadow-wg-surface sm:p-7" aria-labelledby="health-heading">
@@ -241,8 +254,20 @@
     {/if}
 </main>
 
-<Dialog bind:open={createOpen} title="Create monitoring" description="Configure a monitoring and start collecting results." size="wide">
-    {#if createForm}
-        <MonitoringForm options={createForm} action="/api/monitorings" method="POST" presentation="edit-modal" onSuccess={handleCreateSuccess} onCancel={() => (createOpen = false)} />
+<Dialog bind:open={createOpen} onclose={handleCreateDialogClose} title={createdMonitoring ? (createdMonitoring.lifecycle_status === "active" ? "Website monitoring started" : "Website saved") : "Add your website"} description={createdMonitoring ? (createdMonitoring.lifecycle_status === "active" ? "WebGuard is checking your website. The first results may take a few minutes." : "Monitoring is paused. Start it from the website details page to receive checks.") : "Enter a website address to start a standard availability check."} size="wide">
+    {#if createdMonitoring}
+        {@const createdMonitoringId = createdMonitoring.id}
+        {@const createdLifecycleStatus = createdMonitoring.lifecycle_status}
+        <div class="grid gap-5">
+            <Card title={createdMonitoring.name} description={createdLifecycleStatus === "active" ? "WebGuard is monitoring this website." : "Monitoring is paused. Start it from the website details page to receive checks."}>
+                {#snippet actions()}<StatusBadge tone={createdLifecycleStatus === "active" ? "healthy" : "paused"} label={createdLifecycleStatus === "active" ? "Monitoring is active" : "Paused"} />{/snippet}
+            </Card>
+            <div class="flex flex-wrap justify-end gap-3">
+                <Button variant="secondary" type="button" onclick={finishCreate}>Done</Button>
+                <Button type="button" onclick={() => goto(`/monitorings/${createdMonitoringId}`)}>View website details</Button>
+            </div>
+        </div>
+    {:else if createForm}
+        <MonitoringForm options={createForm} action="/api/monitorings" method="POST" presentation="first-website" onSuccess={handleCreateSuccess} onCancel={() => (createOpen = false)} />
     {/if}
 </Dialog>
