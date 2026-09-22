@@ -155,7 +155,7 @@ class CiWorkflowRedisExtensionTest extends TestCase
         $this->assertArrayHasKey('prettier', $packageConfig['devDependencies'] ?? []);
         $this->assertArrayHasKey('prettier-plugin-blade', $packageConfig['devDependencies'] ?? []);
         $this->assertArrayHasKey('prettier-plugin-tailwindcss', $packageConfig['devDependencies'] ?? []);
-        $this->assertSame('1.62.1', $packageConfig['devDependencies']['playwright'] ?? null);
+        $this->assertSame('1.63.0', $packageConfig['devDependencies']['playwright'] ?? null);
     }
 
     public function test_topology_job_installs_its_locked_playwright_dependency(): void
@@ -166,19 +166,19 @@ class CiWorkflowRedisExtensionTest extends TestCase
         $this->assertStringContainsString('bun install --frozen-lockfile', $workflow);
     }
 
-    public function test_captcha_uses_intervention_image_three_until_package_supports_v4(): void
+    public function test_captcha_uses_the_supported_intervention_image_v4_dependency(): void
     {
         $composerConfig = json_decode((string) file_get_contents(base_path('composer.json')), true, 512, JSON_THROW_ON_ERROR);
         $composerLock = json_decode((string) file_get_contents(base_path('composer.lock')), true, 512, JSON_THROW_ON_ERROR);
         $packages = collect($composerLock['packages'] ?? [])->keyBy('name');
 
-        $this->assertSame('^3.11', $composerConfig['require']['intervention/image'] ?? null);
+        $this->assertSame('^4.3', $composerConfig['require']['intervention/image'] ?? null);
         $this->assertTrue($packages->has('intervention/image'));
         $interventionImageVersion = mb_ltrim((string) $packages->get('intervention/image')['version'], 'v');
 
         $this->assertTrue(
-            version_compare($interventionImageVersion, '4.0.0', '<'),
-            'mews/captcha currently calls Intervention Image v3 APIs such as ImageManager::create().'
+            version_compare($interventionImageVersion, '4.0.0', '>='),
+            'The locked mews/captcha dependency must remain compatible with Intervention Image v4.'
         );
         $this->assertTrue($packages->has('mews/captcha'));
     }
