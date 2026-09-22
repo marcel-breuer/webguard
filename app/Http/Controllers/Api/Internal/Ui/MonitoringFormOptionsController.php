@@ -9,32 +9,33 @@ use App\Http\Controllers\Controller;
 use App\Models\Monitoring;
 use App\Models\ServerInstance;
 use App\Models\User;
+use App\Support\MonitoringLocationLabel;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class MonitoringFormOptionsController extends Controller
 {
-    public function create(Request $request): JsonResponse
+    public function create(Request $request, MonitoringLocationLabel $monitoringLocationLabel): JsonResponse
     {
         /** @var User $user */
         $user = $request->user();
 
-        return response()->json(['data' => $this->payload($user)]);
+        return response()->json(['data' => $this->payload($user, $monitoringLocationLabel)]);
     }
 
-    public function edit(Request $request, Monitoring $monitoring): JsonResponse
+    public function edit(Request $request, Monitoring $monitoring, MonitoringLocationLabel $monitoringLocationLabel): JsonResponse
     {
         /** @var User $user */
         $user = $request->user();
         abort_unless($monitoring->isManageableBy($user) && ! $user->isDemo(), 403);
 
-        return response()->json(['data' => $this->payload($user, $monitoring->loadMissing(['groups', 'team']))]);
+        return response()->json(['data' => $this->payload($user, $monitoringLocationLabel, $monitoring->loadMissing(['groups', 'team']))]);
     }
 
     /**
      * @return array<string, mixed>
      */
-    private function payload(User $user, ?Monitoring $monitoring = null): array
+    private function payload(User $user, MonitoringLocationLabel $monitoringLocationLabel, ?Monitoring $monitoring = null): array
     {
         $builder = ServerInstance::query();
 
@@ -47,9 +48,21 @@ class MonitoringFormOptionsController extends Controller
             $builder->active();
         }
 
+        $locations = $builder
+            ->orderBy('code')
+            ->get(['code', 'display_name', 'country_code', 'region']);
+
         return [
             'types' => array_map(static fn (MonitoringType $monitoringType): string => $monitoringType->value, MonitoringType::cases()),
-            'locations' => $builder->orderBy('code')->pluck('code')->values()->all(),
+            'locations' => $locations->pluck('code')->values()->all(),
+            'location_options' => $locations
+                ->map(static fn (ServerInstance $serverInstance): array => [
+                    'code' => $serverInstance->code,
+                    'name' => $monitoringLocationLabel->for($serverInstance),
+                ])
+                ->sortBy('name', SORT_NATURAL | SORT_FLAG_CASE)
+                ->values()
+                ->all(),
             'groups' => $user->monitoringGroups()->orderBy('name')->get(['id', 'name'])->map(
                 static fn ($group): array => ['id' => $group->id, 'name' => $group->name]
             )->values()->all(),

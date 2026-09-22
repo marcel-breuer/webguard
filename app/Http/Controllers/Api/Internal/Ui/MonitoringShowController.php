@@ -6,9 +6,11 @@ namespace App\Http\Controllers\Api\Internal\Ui;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\InternalUi\MonitoringResource;
+use App\Models\ServerInstance;
 use App\Models\User;
 use App\Queries\MonitoringDetailQuery;
 use App\Services\MonitoringCheckIntervalService;
+use App\Support\MonitoringLocationLabel;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -19,12 +21,29 @@ class MonitoringShowController extends Controller
         string $monitoring,
         MonitoringDetailQuery $monitoringDetailQuery,
         MonitoringCheckIntervalService $monitoringCheckIntervalService,
+        MonitoringLocationLabel $monitoringLocationLabel,
     ): JsonResponse {
         /** @var User $user */
         $user = $request->user();
 
         $monitoring = $monitoringDetailQuery->findVisible($user, $monitoring);
         $payload = MonitoringResource::make($monitoring)->resolve($request);
+        $locationCodes = $monitoring->preferredLocationCodes();
+        $locationsByCode = ServerInstance::query()
+            ->whereIn('code', $locationCodes)
+            ->get(['code', 'display_name', 'country_code', 'region'])
+            ->keyBy('code');
+        $payload['check_locations'] = array_map(
+            static function (string $code) use ($locationsByCode, $monitoringLocationLabel): array {
+                $serverInstance = $locationsByCode->get($code);
+
+                return [
+                    'code' => $code,
+                    'name' => $serverInstance instanceof ServerInstance ? $monitoringLocationLabel->for($serverInstance) : $code,
+                ];
+            },
+            $locationCodes,
+        );
         $payload['initial_results_wait_minutes'] = $monitoring->isActive()
             && $monitoring->latestResponseResult === null
             && ! $monitoring->isHeartbeat()

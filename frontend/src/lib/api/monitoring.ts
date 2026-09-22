@@ -80,6 +80,7 @@ export interface MonitoringSummary {
     } | null;
     open_incident: boolean;
     can_manage?: boolean;
+    check_locations?: Array<{ code: string; name: string }>;
     initial_results_wait_minutes?: number | null;
     maintenance: {
         starts_at: string | null;
@@ -154,6 +155,7 @@ export type MonitoringType = "http" | "ping" | "keyword" | "port" | "heartbeat" 
 export interface MonitoringFormOptions {
     types: MonitoringType[];
     locations: string[];
+    location_options: Array<{ code: string; name: string }>;
     groups: Array<{ id: string; name: string }>;
     teams: Array<{ id: string; name: string }>;
     notification_channels: string[];

@@ -32,7 +32,7 @@
 
     const httpTypes = $derived(type === "http" || type === "keyword");
     const generatedTarget = $derived(type === "heartbeat" || type === "server_health");
-    const locationOptions = $derived<SelectOption[]>(options.locations.map((location) => ({ value: location, label: location })));
+    const locationOptions = $derived<SelectOption[]>(options.location_options.map((location) => ({ value: location.code, label: location.name })));
     const groupOptions = $derived<SelectOption[]>(options.groups.map((group) => ({ value: group.id, label: group.name })));
 
     function initialState(): { monitoring: MonitoringFormOptions["monitoring"]; type: MonitoringType; locations: string[]; groups: string[] } {
