@@ -59,10 +59,12 @@ class SvelteKitQualityGateTest extends TestCase
         foreach ([$dashboard, $monitorings] as $page) {
             $this->assertStringContainsString('Dialog', $page);
             $this->assertStringContainsString('MonitoringForm', $page);
-            $this->assertStringContainsString('presentation="edit-modal"', $page);
             $this->assertStringContainsString('requestFirstPartyApi<MonitoringFormOptions>("/api/monitorings/form-options")', $page);
             $this->assertStringNotContainsString('/monitorings/create', $page);
         }
+
+        $this->assertStringContainsString('presentation="first-website"', $dashboard);
+        $this->assertStringContainsString('presentation="edit-modal"', $monitorings);
     }
 
     public function test_server_health_metrics_are_prominent_on_monitoring_details(): void
