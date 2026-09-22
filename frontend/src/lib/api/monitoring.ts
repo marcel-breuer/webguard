@@ -164,6 +164,7 @@ export interface MonitoringMutationResult {
     id: string;
     name: string;
     type: MonitoringType;
+    lifecycle_status: "active" | "paused";
 }
 
 export interface MonitoringDetailData {

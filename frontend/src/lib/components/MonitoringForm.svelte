@@ -13,7 +13,7 @@
         options: MonitoringFormOptions;
         action: string;
         method: "POST" | "PATCH";
-        presentation?: "default" | "edit-modal";
+        presentation?: "default" | "edit-modal" | "first-website";
         onSuccess?: (monitoring: MonitoringMutationResult) => void | Promise<void>;
         onCancel?: () => void;
     }
@@ -27,6 +27,8 @@
     let submitting = $state(false);
     let message = $state("");
     let errors = $state<Record<string, string[]>>({});
+    let firstTarget = $state("");
+    let advancedOpen = $state(false);
 
     const httpTypes = $derived(type === "http" || type === "keyword");
     const generatedTarget = $derived(type === "heartbeat" || type === "server_health");
@@ -48,6 +50,14 @@
         return errors[name]?.[0];
     }
 
+    function defaultWebsiteName(target: string): string {
+        try {
+            return new URL(target.includes("://") ? target : `https://${target}`).hostname.replace(/^www\./, "") || target;
+        } catch {
+            return target;
+        }
+    }
+
     async function submit(event: SubmitEvent): Promise<void> {
         event.preventDefault();
 
@@ -61,8 +71,14 @@
 
         try {
             const form = event.currentTarget as HTMLFormElement;
+            const body = new FormData(form);
+
+            if (presentation === "first-website" && !String(body.get("name") ?? "").trim()) {
+                body.set("name", defaultWebsiteName(String(body.get("target") ?? "")) || `${type.replaceAll("_", " ")} check`);
+            }
+
             const response = await requestFirstPartyApi<MonitoringMutationResult>(action, {
-                body: new FormData(form),
+                body,
                 method,
             });
 
@@ -75,6 +91,9 @@
             if (error instanceof FirstPartyApiError) {
                 errors = error.errors;
                 message = error.message;
+                if (presentation === "first-website" && Object.keys(error.errors).some((field) => field !== "target" && field !== "name")) {
+                    advancedOpen = true;
+                }
             } else {
                 message = "The monitoring could not be saved. Please try again.";
             }
@@ -149,7 +168,40 @@
 {/snippet}
 
 <form class={presentation === "edit-modal" ? "grid gap-0" : "grid gap-6"} onsubmit={submit} novalidate>
-    {#if presentation === "edit-modal"}
+    {#if presentation === "first-website"}
+        <section class="grid gap-4 pb-6">
+            {#if generatedTarget}
+                <p class="rounded-xl border border-dashed border-wg-border bg-wg-surface-muted p-3 text-sm text-wg-text-muted">The endpoint is generated securely after this monitoring is saved.</p>
+            {:else}
+                <Field label={type === "http" ? "Website URL" : "Target"} error={errorFor("target")} required>
+                    <Input name="target" type={type === "http" || type === "keyword" ? "url" : "text"} bind:value={firstTarget} placeholder={type === "http" ? "https://example.com" : "example.com"} required />
+                </Field>
+            {/if}
+            <p class="-mt-2 text-sm text-wg-text-muted">{type === "http" ? "WebGuard will use the standard HTTP availability check. Your first results appear on the website details page." : "WebGuard will use the selected monitoring type. Your first results appear on the monitoring details page."}</p>
+        </section>
+        <details class="group border-t border-wg-border" bind:open={advancedOpen}>
+            <summary class="flex min-h-12 cursor-pointer list-none items-center justify-between gap-4 py-4 text-base font-bold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-wg-focus [&::-webkit-details-marker]:hidden"><span>Advanced options</span><span class="text-base text-wg-text-muted transition group-open:rotate-180" aria-hidden="true">⌄</span></summary>
+            <div class="grid gap-5 pb-6">
+                <section class="grid gap-4">
+                    <h3 class="text-lg font-bold">Website details</h3>
+                    <Field label="Name" error={errorFor("name")}><Input name="name" placeholder={defaultWebsiteName(firstTarget)} /></Field>
+                    <Field label="Monitoring type" error={errorFor("type")}>
+                        <Select name="type" bind:value={type}>{#each options.types as option}<option value={option}>{option.replaceAll("_", " ")}</option>{/each}</Select>
+                    </Field>
+                    <Field label="Lifecycle" error={errorFor("status")}><Select name="status" value="active"><option value="active">Active</option><option value="paused">Paused</option></Select></Field>
+                </section>
+                <section class="grid gap-4 border-t border-wg-border pt-5">
+                    <h3 class="text-lg font-bold">Check settings</h3>
+                    {@render checkFields()}
+                </section>
+                <section class="grid gap-4 border-t border-wg-border pt-5">
+                    <h3 class="text-lg font-bold">Assignment and alerts</h3>
+                    {@render ownershipFields()}
+                    {@render notificationFields()}
+                </section>
+            </div>
+        </details>
+    {:else if presentation === "edit-modal"}
         <section class="grid gap-4 border-b border-wg-border pb-6">
             {#if monitoring}<p class="text-sm font-bold text-wg-text-muted">Ownership <span class="ml-2 rounded-full bg-violet-50 px-2.5 py-1 text-xs font-extrabold text-wg-accent dark:bg-violet-950/50">{monitoring.ownership.type === "team" ? "Team" : "Private"}</span></p>{/if}
             <h3 class="text-xl font-bold">Basics</h3>
@@ -199,6 +251,6 @@
         {:else}
             <a class="inline-flex min-h-11 items-center justify-center rounded-md border border-wg-border bg-wg-surface px-4 py-2.5 text-sm font-semibold tracking-[0.035em] text-wg-text no-underline transition hover:border-wg-focus hover:bg-wg-surface-muted" href={monitoring ? `/monitorings/${monitoring.id}` : "/monitorings"}>Cancel</a>
         {/if}
-        <Button type="submit" loading={submitting}>{monitoring ? (presentation === "edit-modal" ? "Update" : "Save monitoring") : "Create monitoring"}</Button>
+        <Button type="submit" loading={submitting}>{monitoring ? (presentation === "edit-modal" ? "Update" : "Save monitoring") : presentation === "first-website" ? "Add website" : "Create monitoring"}</Button>
     </div>
 </form>
