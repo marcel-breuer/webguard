@@ -183,7 +183,7 @@ class CiWorkflowRedisExtensionTest extends TestCase
         $this->assertTrue($packages->has('mews/captcha'));
     }
 
-    public function test_dependabot_updates_composer_and_bun_dependencies_daily_at_midnight(): void
+    public function test_dependabot_updates_composer_and_bun_dependencies_monthly_at_midnight(): void
     {
         $dependabotConfig = Yaml::parseFile(base_path('.github/dependabot.yml'));
 
@@ -193,7 +193,7 @@ class CiWorkflowRedisExtensionTest extends TestCase
                 'package-ecosystem' => 'composer',
                 'directory' => '/',
                 'schedule' => [
-                    'interval' => 'daily',
+                    'interval' => 'monthly',
                     'time' => '00:00',
                     'timezone' => 'Europe/Berlin',
                 ],
@@ -202,7 +202,7 @@ class CiWorkflowRedisExtensionTest extends TestCase
                 'package-ecosystem' => 'bun',
                 'directory' => '/',
                 'schedule' => [
-                    'interval' => 'daily',
+                    'interval' => 'monthly',
                     'time' => '00:00',
                     'timezone' => 'Europe/Berlin',
                 ],
