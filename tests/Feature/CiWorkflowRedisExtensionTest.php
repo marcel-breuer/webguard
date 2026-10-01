@@ -183,31 +183,68 @@ class CiWorkflowRedisExtensionTest extends TestCase
         $this->assertTrue($packages->has('mews/captcha'));
     }
 
-    public function test_dependabot_updates_composer_and_bun_dependencies_monthly_at_midnight(): void
+    public function test_dependabot_groups_supported_version_updates_and_assigns_prs(): void
     {
         $dependabotConfig = Yaml::parseFile(base_path('.github/dependabot.yml'));
 
         $this->assertSame(2, $dependabotConfig['version'] ?? null);
         $this->assertSame([
+            'all-dependencies' => [
+                'schedule' => [
+                    'interval' => 'monthly',
+                    'time' => '00:00',
+                    'timezone' => 'Europe/Berlin',
+                ],
+                'assignees' => ['marcel-breuer'],
+            ],
+        ], $dependabotConfig['multi-ecosystem-groups'] ?? null);
+
+        $this->assertSame([
             [
                 'package-ecosystem' => 'composer',
                 'directory' => '/',
-                'schedule' => [
-                    'interval' => 'monthly',
-                    'time' => '00:00',
-                    'timezone' => 'Europe/Berlin',
-                ],
+                'directories' => null,
             ],
             [
                 'package-ecosystem' => 'bun',
-                'directory' => '/',
-                'schedule' => [
-                    'interval' => 'monthly',
-                    'time' => '00:00',
-                    'timezone' => 'Europe/Berlin',
-                ],
+                'directory' => null,
+                'directories' => ['/', '/frontend'],
             ],
-        ], $dependabotConfig['updates'] ?? null);
+            [
+                'package-ecosystem' => 'github-actions',
+                'directory' => '/',
+                'directories' => null,
+            ],
+            [
+                'package-ecosystem' => 'docker',
+                'directory' => null,
+                'directories' => ['/', '/docker/gateway'],
+            ],
+            [
+                'package-ecosystem' => 'docker-compose',
+                'directory' => '/',
+                'directories' => null,
+            ],
+        ], array_map(
+            static fn (array $update): array => [
+                'package-ecosystem' => $update['package-ecosystem'],
+                'directory' => $update['directory'] ?? null,
+                'directories' => $update['directories'] ?? null,
+            ],
+            $dependabotConfig['updates'] ?? []
+        ));
+
+        foreach ($dependabotConfig['updates'] ?? [] as $update) {
+            $this->assertSame(['*'], $update['patterns'] ?? null);
+            $this->assertSame('all-dependencies', $update['multi-ecosystem-group'] ?? null);
+            $this->assertSame(1, $update['open-pull-requests-limit'] ?? null);
+            $this->assertSame(['marcel-breuer'], $update['assignees'] ?? null);
+            $this->assertSame([
+                'applies-to' => 'security-updates',
+                'patterns' => ['*'],
+            ], $update['groups']['security-updates'] ?? null);
+        }
+
         $this->assertFileDoesNotExist(base_path('.github/workflows/weekly-dependency-update.yml'));
     }
 }
