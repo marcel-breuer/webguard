@@ -5,7 +5,7 @@
     "": {
       "devDependencies": {
         "playwright": "1.63.0",
-        "prettier": "^3.9.8",
+        "prettier": "^3.9.9",
         "prettier-plugin-blade": "^3.3.3",
         "prettier-plugin-tailwindcss": "^0.8.1",
       },
@@ -300,7 +300,7 @@
 
     "postcss": ["postcss@8.5.28", "", { "dependencies": { "nanoid": "^3.3.18", "picocolors": "^1.1.1", "source-map-js": "^1.2.1" } }, "sha512-RRuzqDtt5Y9h3quz5hWhK+TPnsmVs6WwSU6LkJMeY4HstUEDuYTG8UJSdawMRzmzAtV+KEoG8N3Qg2qLy5vM/A=="],
 
-    "prettier": ["prettier@3.9.8", "", { "bin": { "prettier": "bin/prettier.cjs" } }, "sha512-WRFq3Wn3WId7LLROfMLdH7xaFr2jR62wU8nLO6rQUOLOxNZUviyJQs1M0iIhLexSFy+L+w0ch66wtoO2jRjG0A=="],
+    "prettier": ["prettier@3.9.9", "", { "bin": { "prettier": "bin/prettier.cjs" } }, "sha512-Z/CJHIkdujO/OtN7nXUii0Rf3VT5SRuhjBA82Xvu2XhBUgX3nhP67T0LHceBdQLex7OOFGTox+Q5Yg8Jk2Qivg=="],
 
     "prettier-plugin-blade": ["prettier-plugin-blade@3.3.3", "", { "dependencies": { "@prettier/html-tags": "^2.2.0", "@prettier/parse-srcset": "^3.1.0", "html-element-attributes": "^3.5.0" }, "peerDependencies": { "@prettier/plugin-php": "^0.24.0 || ^0.25.0", "prettier": "^3.0.0", "prettier-plugin-tailwindcss": "^0.7.0 || ^0.8.0" }, "optionalPeers": ["@prettier/plugin-php", "prettier-plugin-tailwindcss"] }, "sha512-ZjilA3czAFLSdGjM/F+T8jlXv20vSI7zb6ZqfVp3vX/+313mFZspuPz2DHN26xemjgOfW5mnyuOXjBvY399gsA=="],
 
