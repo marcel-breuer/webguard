@@ -1,14 +1,81 @@
 version: 2
+
+multi-ecosystem-groups:
+  all-dependencies:
+    schedule:
+      interval: monthly
+      time: "00:00"
+      timezone: Europe/Berlin
+    assignees:
+      - marcel-breuer
+
 updates:
-  - package-ecosystem: composer
+  - package-ecosystem: "composer"
     directory: /
-    schedule:
-      interval: monthly
-      time: "00:00"
-      timezone: Europe/Berlin
-  - package-ecosystem: bun
+    patterns:
+      - "*"
+    multi-ecosystem-group: all-dependencies
+    open-pull-requests-limit: 1
+    assignees:
+      - marcel-breuer
+    groups:
+      security-updates:
+        applies-to: security-updates
+        patterns:
+          - "*"
+  - package-ecosystem: "bun"
+    directories:
+      - /
+      - /frontend
+    patterns:
+      - "*"
+    multi-ecosystem-group: all-dependencies
+    open-pull-requests-limit: 1
+    assignees:
+      - marcel-breuer
+    groups:
+      security-updates:
+        applies-to: security-updates
+        patterns:
+          - "*"
+  - package-ecosystem: "github-actions"
     directory: /
-    schedule:
-      interval: monthly
-      time: "00:00"
-      timezone: Europe/Berlin
+    patterns:
+      - "*"
+    multi-ecosystem-group: all-dependencies
+    open-pull-requests-limit: 1
+    assignees:
+      - marcel-breuer
+    groups:
+      security-updates:
+        applies-to: security-updates
+        patterns:
+          - "*"
+  - package-ecosystem: "docker"
+    directories:
+      - /
+      - /docker/gateway
+    patterns:
+      - "*"
+    multi-ecosystem-group: all-dependencies
+    open-pull-requests-limit: 1
+    assignees:
+      - marcel-breuer
+    groups:
+      security-updates:
+        applies-to: security-updates
+        patterns:
+          - "*"
+  - package-ecosystem: "docker-compose"
+    directory: /
+    patterns:
+      - "*"
+    multi-ecosystem-group: all-dependencies
+    open-pull-requests-limit: 1
+    assignees:
+      - marcel-breuer
+    groups:
+      security-updates:
+        applies-to: security-updates
+        patterns:
+          - "*"
