@@ -139,6 +139,23 @@ class InternalUiMonitoringApiTest extends TestCase
             ->assertJsonPath('data.check_locations.0.name', 'Frankfurt, DE');
     }
 
+    public function test_monitoring_detail_keeps_the_code_when_a_check_location_is_missing(): void
+    {
+        $user = User::factory()->create();
+        $monitoring = Monitoring::factory()->for($user)->create([
+            'status' => MonitoringLifecycleStatus::PAUSED,
+            'preferred_location' => 'retired-1',
+            'preferred_locations' => ['retired-1'],
+        ]);
+
+        $this->actingAs($user)->getJson(route('app.monitorings.show', $monitoring))
+            ->assertOk()
+            ->assertJsonPath('data.check_locations', [
+                ['code' => 'retired-1', 'name' => 'retired-1'],
+            ])
+            ->assertJsonPath('data.initial_results_wait_minutes', null);
+    }
+
     public function test_internal_ui_monitoring_detail_data_returns_bounded_diagnostics_without_configuration_secrets(): void
     {
         Date::setTestNow('2026-08-22 12:00:00');
