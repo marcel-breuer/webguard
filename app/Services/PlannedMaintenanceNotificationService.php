@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Services;
 
-use App\Mail\PublicStatusPageMaintenanceScheduledMail;
 use App\Models\MaintenanceWindow;
 use App\Models\Monitoring;
 use App\Models\StatusPage;
@@ -12,7 +11,6 @@ use App\Models\StatusPageMaintenanceDelivery;
 use App\Models\StatusPageSubscription;
 use Carbon\CarbonInterface;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Mail;
 
 final class PlannedMaintenanceNotificationService
 {
@@ -111,27 +109,21 @@ final class PlannedMaintenanceNotificationService
                 $fingerprint = $this->fingerprint($source, $affectedMonitorings, $startsAt, $endsAt, $timezone, $recurring);
 
                 $statusPage->subscriptions->each(function (StatusPageSubscription $statusPageSubscription) use ($fingerprint, $affectedMonitorings, $startsAt, $endsAt, $timezone, $recurring): void {
-                    $statusPageMaintenanceDelivery = StatusPageMaintenanceDelivery::query()->firstOrCreate([
+                    StatusPageMaintenanceDelivery::query()->firstOrCreate([
                         'status_page_subscription_id' => $statusPageSubscription->id,
                         'fingerprint' => $fingerprint,
+                    ], [
+                        'payload' => [
+                            'monitorings' => $affectedMonitorings->map(fn (Monitoring $monitoring): array => [
+                                'id' => $monitoring->id,
+                                'name' => $monitoring->name,
+                            ])->all(),
+                            'starts_at' => $startsAt->toIso8601String(),
+                            'ends_at' => $endsAt?->toIso8601String(),
+                            'timezone' => $timezone,
+                            'recurring' => $recurring,
+                        ],
                     ]);
-
-                    if ($statusPageMaintenanceDelivery->sent_at !== null) {
-                        return;
-                    }
-
-                    Mail::to($statusPageSubscription->email)->send(
-                        new PublicStatusPageMaintenanceScheduledMail(
-                            $statusPageSubscription,
-                            $affectedMonitorings,
-                            $startsAt,
-                            $endsAt,
-                            $timezone,
-                            $recurring,
-                        )
-                    );
-
-                    $statusPageMaintenanceDelivery->update(['sent_at' => now()]);
                 });
             });
     }

@@ -312,6 +312,36 @@ AUTORUN_LARAVEL_SCRIBE_GENERATE=false
 
 If you already have an older `.env`, align it with `.env.example` before using Docker.
 
+### Planned maintenance email delivery
+
+Planned maintenance saves a notice for each verified public status-page subscriber in
+the same transaction as the maintenance change. The scheduler dispatches pending
+notices every minute to the existing `default` queue. Run both the scheduler and a
+default-queue worker in production.
+
+Each recipient has at most five delivery attempts, with delays of one minute,
+five minutes, fifteen minutes, and one hour after successive failures. Failed
+enqueueing is retried on the next scheduler run; an interrupted dispatch or worker
+is recoverable after a five-minute lease. Subscribers who unsubscribe or lose
+verification, and status pages made private, are excluded before sending.
+
+To dispatch due notices manually:
+
+```bash
+docker compose -f docker-compose.yml -f docker-compose.override.yml exec php php artisan notifications:dispatch-planned-maintenance
+```
+
+Inspect `status_page_maintenance_deliveries` for delivery state. Unsent,
+uncancelled rows with `attempts = 5` have exhausted automatic retries; after
+resolving the mail failure, an operator can reset their `attempts`, `available_at`,
+and `queued_at` to retry them. Logs identify delivery IDs without subscriber
+addresses or SMTP exception details. Existing records without a saved payload
+are retained but cannot be automatically replayed.
+
+Email delivery is at least once: a worker crash after SMTP accepts a message but
+before `sent_at` is saved may cause a duplicate. Deploy the migration before
+restarting application, scheduler, and queue workers.
+
 ### Local Commands
 
 Run migrations:
