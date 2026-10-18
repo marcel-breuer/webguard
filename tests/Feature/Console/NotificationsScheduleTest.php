@@ -10,6 +10,16 @@ use Tests\TestCase;
 
 class NotificationsScheduleTest extends TestCase
 {
+    public function test_planned_maintenance_delivery_is_scheduled_every_minute_without_overlap(): void
+    {
+        $event = collect(resolve(Schedule::class)->events())
+            ->first(fn (Event $event): bool => str_contains((string) $event->command, 'notifications:dispatch-planned-maintenance'));
+
+        $this->assertNotNull($event);
+        $this->assertSame('* * * * *', $event->expression);
+        $this->assertTrue($event->withoutOverlapping);
+    }
+
     public function test_unread_notifications_reminder_is_scheduled_daily_at_eight_am(): void
     {
         /** @var Event|null $event */

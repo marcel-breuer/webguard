@@ -117,7 +117,7 @@ final class MobileMaintenanceWorkspaceService
         $idempotencyKey = (string) Arr::pull($attributes, 'idempotency_key');
         $fingerprint = hash('sha256', json_encode(Arr::sortRecursive($attributes), JSON_THROW_ON_ERROR));
 
-        $result = DB::transaction(function () use ($user, $attributes, $idempotencyKey, $fingerprint): array {
+        return DB::transaction(function () use ($user, $attributes, $idempotencyKey, $fingerprint): array {
             $operation = MobileMaintenanceOperation::query()
                 ->where('user_id', $user->id)
                 ->where('idempotency_key', $idempotencyKey)
@@ -167,12 +167,8 @@ final class MobileMaintenanceWorkspaceService
                 'result' => $result,
             ]);
 
-            return ['operation' => $operation, 'created' => true];
-        });
-
-        if ($result['created']) {
             if ($attributes['mode'] === 'recurring') {
-                $maintenanceWindow = MaintenanceWindow::query()->findOrFail($result['operation']->maintenance_window_id);
+                $maintenanceWindow = MaintenanceWindow::query()->findOrFail($operation->maintenance_window_id);
                 $this->plannedMaintenanceNotificationService->notifyForRecurring($maintenanceWindow);
             } else {
                 $this->plannedMaintenanceNotificationService->notifyForOneOff(
@@ -181,9 +177,9 @@ final class MobileMaintenanceWorkspaceService
                     isset($attributes['maintenance_until']) ? Date::parse((string) $attributes['maintenance_until']) : null,
                 );
             }
-        }
 
-        return $result;
+            return ['operation' => $operation, 'created' => true];
+        });
     }
 
     public function recurringWindowFor(User $user, string $maintenanceWindow): MaintenanceWindow
@@ -197,13 +193,15 @@ final class MobileMaintenanceWorkspaceService
     public function updateRecurringEnabled(MaintenanceWindow $maintenanceWindow, User $user, bool $enabled): MaintenanceWindow
     {
         abort_unless($maintenanceWindow->isManageableBy($user), 404);
-        $maintenanceWindow->update(['enabled' => $enabled]);
+        DB::transaction(function () use ($maintenanceWindow, $enabled): void {
+            $maintenanceWindow->update(['enabled' => $enabled]);
 
-        if ($enabled) {
-            $this->plannedMaintenanceNotificationService->notifyForRecurring(
-                MaintenanceWindow::query()->findOrFail($maintenanceWindow->id)
-            );
-        }
+            if ($enabled) {
+                $this->plannedMaintenanceNotificationService->notifyForRecurring(
+                    MaintenanceWindow::query()->findOrFail($maintenanceWindow->id)
+                );
+            }
+        });
 
         return $maintenanceWindow->refresh()->load([
             'monitoring:id,name',

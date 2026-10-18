@@ -12,6 +12,8 @@ use Illuminate\Support\Facades\Schedule;
 // Dispatch status change notifications immediately.
 Schedule::command('notifications:dispatch-status-changes')->everyMinute()->withoutOverlapping();
 
+Schedule::command('notifications:dispatch-planned-maintenance')->everyMinute()->withoutOverlapping();
+
 // Remind users daily about unread notifications in their board.
 Schedule::command('notifications:remind-unread-weekly')->dailyAt('08:00')->withoutOverlapping();
 

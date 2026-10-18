@@ -6,12 +6,14 @@ namespace Tests\Feature\Api;
 
 use App\Enums\MaintenanceWindowRecurrence;
 use App\Enums\TeamRole;
+use App\Jobs\SendPlannedMaintenanceNotification;
 use App\Mail\PublicStatusPageMaintenanceScheduledMail;
 use App\Models\MaintenanceWindow;
 use App\Models\Monitoring;
 use App\Models\MonitoringGroup;
 use App\Models\Package;
 use App\Models\StatusPage;
+use App\Models\StatusPageMaintenanceDelivery;
 use App\Models\StatusPageSubscription;
 use App\Models\Team;
 use App\Models\User;
@@ -181,9 +183,48 @@ class MobileMaintenanceApiTest extends TestCase
             ])
             ->assertCreated();
 
+        Mail::assertNothingSent();
+        $statusPageMaintenanceDelivery = StatusPageMaintenanceDelivery::query()->firstOrFail();
+        (new SendPlannedMaintenanceNotification($statusPageMaintenanceDelivery->id))->handle();
+
         Mail::assertSent(PublicStatusPageMaintenanceScheduledMail::class, function (PublicStatusPageMaintenanceScheduledMail $publicStatusPageMaintenanceScheduledMail) use ($statusPageSubscription): bool {
             return $publicStatusPageMaintenanceScheduledMail->hasTo('subscriber@example.com') && $publicStatusPageMaintenanceScheduledMail->subscription->is($statusPageSubscription);
         });
+    }
+
+    public function test_maintenance_scheduling_does_not_contact_smtp_and_replays_without_duplicate_notices(): void
+    {
+        Mail::shouldReceive('to')->never();
+        $user = $this->user();
+        $monitoring = Monitoring::factory()->for($user)->create(['name' => 'Checkout API']);
+        $statusPage = StatusPage::query()->create([
+            'user_id' => $user->id,
+            'name' => 'Acme Status',
+            'slug' => 'maintenance-retry',
+            'is_public' => true,
+        ]);
+        $statusPageComponent = $statusPage->components()->create(['name' => 'Checkout', 'position' => 0]);
+        $statusPageComponent->monitorings()->attach($monitoring->id, ['position' => 0]);
+        $statusPage->subscriptions()->create([
+            'email' => 'subscriber@example.com',
+            'unsubscribe_token' => 'unsubscribe-token',
+            'verified_at' => Date::now(),
+        ]);
+        $this->actingAsMobile($user);
+        $payload = [
+            'scope' => 'monitoring',
+            'monitoring_id' => $monitoring->id,
+            'maintenance_from' => '2026-08-20T10:00:00+00:00',
+            'maintenance_until' => '2026-08-20T11:00:00+00:00',
+        ];
+
+        $this->withHeaders(['Idempotency-Key' => 'maintenance-retry'])
+            ->postJson('/api/mobile/maintenance', $payload)->assertCreated();
+        $this->postJson('/api/mobile/maintenance', $payload)
+            ->assertOk()->assertJsonPath('idempotent', true);
+
+        $this->assertDatabaseCount('status_page_maintenance_deliveries', 1);
+        $this->assertNull(StatusPageMaintenanceDelivery::query()->firstOrFail()->sent_at);
     }
 
     private function user(): User
