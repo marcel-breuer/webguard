@@ -123,6 +123,11 @@ issue in that repository before Core implementation begins.
   response bytes, and application timing without query bindings or request data.
   Dashboard budgets are 30 queries and 128 KiB per uncached response; cached
   responses target zero database queries.
+- API latency, slow-query fingerprints, cache hit rate, queue lag and backlog,
+  and scheduled-task duration are recorded as internal operational metrics.
+  They do not alter browser, instance, external API, or public response payloads;
+  collection and retention are documented in
+  [operational metrics](operational-metrics.md).
 - Authenticated standard-token responses include a server-generated `X-Request-Id`,
   including rate-limit responses, without changing their JSON bodies. New API
   work follows the documented problem-response format; existing contracts retain

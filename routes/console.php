@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 use Illuminate\Support\Facades\Schedule;
 
+Schedule::command('webguard:report-operational-metrics')->everyMinute()->withoutOverlapping();
+
 /**
  * =================================================================
  * NOTIFICATIONS

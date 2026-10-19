@@ -170,6 +170,52 @@ class InternalMonitoringCallbackTest extends TestCase
         $this->assertDatabaseCount('monitoring_response_results', 1);
     }
 
+    public function test_callback_idempotency_keys_are_scoped_to_the_authenticated_instance(): void
+    {
+        Package::factory()->create();
+        $firstUser = User::factory()->create();
+        $secondUser = User::factory()->create();
+        $firstInstance = $this->serverInstance('internal-callback-tenant-one');
+        $secondInstance = $this->serverInstance('internal-callback-tenant-two');
+        $firstMonitoring = Monitoring::factory()->for($firstUser)->create([
+            'preferred_location' => $firstInstance->code,
+            'preferred_locations' => [$firstInstance->code],
+        ]);
+        $secondMonitoring = Monitoring::factory()->for($secondUser)->create([
+            'preferred_location' => $secondInstance->code,
+            'preferred_locations' => [$secondInstance->code],
+        ]);
+        $idempotencyKey = '82a41f81-4a68-478f-a910-d4723c9f0dd2';
+
+        $this->withHeaders([
+            ...$this->instanceHeaders($firstInstance),
+            'Idempotency-Key' => $idempotencyKey,
+        ])->postJson(route('instances.monitoring-responses.store'), [
+            'monitoring_id' => $firstMonitoring->id,
+            'status' => MonitoringStatus::UP->value,
+            'response_time' => 100,
+        ])->assertOk();
+
+        $this->withHeaders([
+            ...$this->instanceHeaders($secondInstance),
+            'Idempotency-Key' => $idempotencyKey,
+        ])->postJson(route('instances.monitoring-responses.store'), [
+            'monitoring_id' => $secondMonitoring->id,
+            'status' => MonitoringStatus::DOWN->value,
+            'response_time' => 200,
+        ])->assertOk();
+
+        $this->assertDatabaseCount('monitoring_response_results', 2);
+        $this->assertDatabaseHas('monitoring_response_results', [
+            'monitoring_id' => $firstMonitoring->id,
+            'status' => MonitoringStatus::UP->value,
+        ]);
+        $this->assertDatabaseHas('monitoring_response_results', [
+            'monitoring_id' => $secondMonitoring->id,
+            'status' => MonitoringStatus::DOWN->value,
+        ]);
+    }
+
     public function test_reusing_an_idempotency_key_with_a_different_payload_returns_conflict(): void
     {
         Package::factory()->create();

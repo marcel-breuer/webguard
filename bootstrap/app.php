@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\Enums\SupportedLanguage;
 use App\Http\Middleware\AuthenticateInstance;
 use App\Http\Middleware\CheckUserRole;
+use App\Http\Middleware\MeasureApiRequestMetrics;
 use App\Http\Middleware\PreventCrawling;
 use App\Http\Middleware\RequireApiKeyAbility;
 use App\Http\Middleware\RequireApiKeyManagement;
@@ -23,6 +24,7 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->append(PreventCrawling::class);
+        $middleware->append(MeasureApiRequestMetrics::class);
         $middleware->encryptCookies([SupportedLanguage::cookieName()]);
         $middleware->web(SetLocaleMiddleware::class);
         $middleware->preventRequestsDuringMaintenance([

@@ -25,10 +25,22 @@ use App\Observers\MonitoringResponseObserver;
 use App\Observers\MonitoringStatsCacheObserver;
 use App\Observers\OperationsOverviewCacheObserver;
 use App\Observers\UserObserver;
+use App\Services\OperationalMetricsService;
 use Illuminate\Auth\Notifications\VerifyEmail;
+use Illuminate\Cache\Events\CacheHit;
+use Illuminate\Cache\Events\CacheMissed;
+use Illuminate\Console\Events\ScheduledTaskFailed;
+use Illuminate\Console\Events\ScheduledTaskFinished;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Events\QueryExecuted;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Queue\Events\JobExceptionOccurred;
+use Illuminate\Queue\Events\JobFailed;
+use Illuminate\Queue\Events\JobProcessed;
+use Illuminate\Queue\Events\JobProcessing;
 use Illuminate\Routing\Router;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
@@ -41,7 +53,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        $this->app->singleton(OperationalMetricsService::class);
     }
 
     /**
@@ -49,6 +61,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(Router $router): void
     {
+        $this->registerOperationalMetricsListeners();
+
         Sanctum::usePersonalAccessTokenModel(PersonalAccessToken::class);
 
         if (app()->isProduction()) {
@@ -89,5 +103,55 @@ class AppServiceProvider extends ServiceProvider
         View::composer('layouts.navigation', NotificationComposer::class);
 
         JsonResource::withoutWrapping();
+    }
+
+    private function registerOperationalMetricsListeners(): void
+    {
+        $metrics = $this->app->make(OperationalMetricsService::class);
+
+        DB::listen(static function (QueryExecuted $query) use ($metrics): void {
+            $metrics->recordSlowQuery($query->sql, $query->time, $query->connectionName);
+        });
+
+        Event::listen(CacheHit::class, static function () use ($metrics): void {
+            $metrics->recordCacheHit();
+        });
+
+        Event::listen(CacheMissed::class, static function () use ($metrics): void {
+            $metrics->recordCacheMiss();
+        });
+
+        Event::listen(JobProcessing::class, static function (JobProcessing $event) use ($metrics): void {
+            $payload = $event->job->payload();
+            $createdAt = $payload['created_at'] ?? null;
+
+            if (! is_numeric($createdAt)) {
+                $metrics->flushCacheMetrics();
+
+                return;
+            }
+
+            $queue = method_exists($event->job, 'getQueue') ? (string) $event->job->getQueue() : 'unknown';
+            $lagMs = max(0.0, (microtime(true) - (float) $createdAt) * 1000);
+
+            $metrics->recordQueueJob($queue, $lagMs);
+        });
+
+        Event::listen([JobProcessed::class, JobFailed::class, JobExceptionOccurred::class], static function () use ($metrics): void {
+            $metrics->flushCacheMetrics();
+        });
+
+        Event::listen(ScheduledTaskFinished::class, static function (ScheduledTaskFinished $event) use ($metrics): void {
+            $summary = $event->task->getSummaryForDisplay();
+            $taskName = preg_match('/\bartisan\s+([a-z0-9:_-]+)/i', $summary, $matches) === 1
+                ? $matches[1]
+                : 'scheduled-task';
+
+            $metrics->recordScheduledTask((float) $event->runtime * 1000, $taskName);
+        });
+
+        Event::listen(ScheduledTaskFailed::class, static function () use ($metrics): void {
+            $metrics->flushCacheMetrics();
+        });
     }
 }
