@@ -58,6 +58,48 @@ class InternalUiAdminWorkspaceApiTest extends TestCase
         $this->assertInternalUiTelemetry($this->actingAs($admin)->getJson(route('app.admin.dashboard')), 6, 131072);
     }
 
+    public function test_admin_can_rotate_an_instance_key_and_the_previous_key_stops_authenticating(): void
+    {
+        Package::factory()->create();
+        $admin = User::factory()->create(['role' => UserRole::ADMIN]);
+        $serverInstance = ServerInstance::query()->create([
+            'code' => 'de-admin-rotation',
+            'display_name' => 'Admin Germany',
+            'country_code' => 'DE',
+            'region' => 'Frankfurt',
+            'ip_address' => '192.0.2.43',
+            'api_key_hash' => 'original-instance-secret-123',
+            'is_active' => true,
+        ]);
+        $newKey = 'replacement-instance-secret-456';
+
+        $this->actingAs($admin)->patchJson(route('app.admin.server-instances.update', $serverInstance), [
+            'code' => $serverInstance->code,
+            'display_name' => $serverInstance->display_name,
+            'country_code' => $serverInstance->country_code,
+            'region' => $serverInstance->region,
+            'ip_address' => $serverInstance->ip_address,
+            'api_key' => $newKey,
+            'is_active' => true,
+        ])->assertOk()
+            ->assertJsonMissing(['api_key' => $newKey])
+            ->assertJsonMissing(['api_key_hash' => $serverInstance->api_key_hash]);
+
+        $this->assertTrue($serverInstance->fresh()->verifyApiKey($newKey));
+        $this->assertFalse($serverInstance->fresh()->verifyApiKey('original-instance-secret-123'));
+
+        $route = route('instances.monitorings.list', ['location' => $serverInstance->code]);
+        $this->withHeaders([
+            'X-INSTANCE-CODE' => $serverInstance->code,
+            'X-API-KEY' => 'original-instance-secret-123',
+        ])->getJson($route)->assertUnauthorized();
+
+        $this->withHeaders([
+            'X-INSTANCE-CODE' => $serverInstance->code,
+            'X-API-KEY' => $newKey,
+        ])->getJson($route)->assertOk();
+    }
+
     public function test_admin_contract_validates_destructive_and_log_workflows(): void
     {
         $assignedPackage = Package::factory()->create();

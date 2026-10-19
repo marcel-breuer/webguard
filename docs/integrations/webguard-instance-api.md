@@ -41,6 +41,13 @@ Core rejects missing, inactive, unknown, or invalid credentials with `401` and
 its authenticated instance code. It must use HTTPS outside trusted local Docker
 networks.
 
+Core stores instance keys as one-way hashes. An administrator can rotate a key
+through server-instance management; the previous key stops working as soon as
+the update succeeds, and the key is never included in the response. Instance
+routes do not currently have an additional per-instance request quota. Any
+future quota must be coordinated with the instance client because `429` and
+`Retry-After` behavior affects callback retry handling.
+
 ## Endpoints
 
 Prefix every path with `https://core.example/api/instances`.

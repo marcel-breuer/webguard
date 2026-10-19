@@ -32,6 +32,10 @@ class PublicStatusPayloadApiTest extends TestCase
         $monitoring = Monitoring::factory()->for($user)->create([
             'name' => 'Checkout API',
             'target' => 'https://internal.example.test/private-path',
+            'auth_username' => 'private-status-user',
+            'auth_password' => 'private-status-password',
+            'http_headers' => ['Authorization' => 'Bearer private-status-token'],
+            'http_body' => 'private-status-request-body',
         ]);
         MonitoringResponse::query()->create([
             'monitoring_id' => $monitoring->id,
@@ -55,7 +59,8 @@ class PublicStatusPayloadApiTest extends TestCase
             'up_at' => Date::now()->subHours(23),
         ]);
 
-        $this->getJson(route('public.status.show', $statusPage))
+        $testResponse = $this->getJson(route('public.status.show', $statusPage));
+        $testResponse
             ->assertOk()
             ->assertHeader('Cache-Control')
             ->assertJsonPath('data.kind', 'status_page')
@@ -63,6 +68,12 @@ class PublicStatusPayloadApiTest extends TestCase
             ->assertJsonPath('data.components.0.monitorings.0.name', 'Checkout API')
             ->assertJsonPath('data.incidents.0.monitoring_name', 'Checkout API')
             ->assertJsonMissing(['target' => 'https://internal.example.test/private-path']);
+
+        $publicStatusPayload = (string) $testResponse->getContent();
+        $this->assertStringNotContainsString('private-status-user', $publicStatusPayload);
+        $this->assertStringNotContainsString('private-status-password', $publicStatusPayload);
+        $this->assertStringNotContainsString('private-status-token', $publicStatusPayload);
+        $this->assertStringNotContainsString('private-status-request-body', $publicStatusPayload);
 
         $this->getJson(route('public.status.show', ['status' => 'acme-status']))
             ->assertOk()
