@@ -175,11 +175,11 @@ class InternalMonitoringCallbackTest extends TestCase
         Package::factory()->create();
         $firstUser = User::factory()->create();
         $secondUser = User::factory()->create();
-        $firstInstance = $this->serverInstance('internal-callback-tenant-one');
+        $serverInstance = $this->serverInstance('internal-callback-tenant-one');
         $secondInstance = $this->serverInstance('internal-callback-tenant-two');
         $firstMonitoring = Monitoring::factory()->for($firstUser)->create([
-            'preferred_location' => $firstInstance->code,
-            'preferred_locations' => [$firstInstance->code],
+            'preferred_location' => $serverInstance->code,
+            'preferred_locations' => [$serverInstance->code],
         ]);
         $secondMonitoring = Monitoring::factory()->for($secondUser)->create([
             'preferred_location' => $secondInstance->code,
@@ -188,7 +188,7 @@ class InternalMonitoringCallbackTest extends TestCase
         $idempotencyKey = '82a41f81-4a68-478f-a910-d4723c9f0dd2';
 
         $this->withHeaders([
-            ...$this->instanceHeaders($firstInstance),
+            ...$this->instanceHeaders($serverInstance),
             'Idempotency-Key' => $idempotencyKey,
         ])->postJson(route('instances.monitoring-responses.store'), [
             'monitoring_id' => $firstMonitoring->id,

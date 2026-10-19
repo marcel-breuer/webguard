@@ -6,10 +6,12 @@ namespace Tests\Feature;
 
 use App\Models\Package;
 use App\Models\User;
+use App\Services\OperationalMetricsService;
 use Illuminate\Cache\Events\CacheHit;
 use Illuminate\Cache\Events\CacheMissed;
 use Illuminate\Console\Events\ScheduledTaskFinished;
 use Illuminate\Console\Scheduling\Event as ScheduledEvent;
+use Illuminate\Contracts\Queue\Job;
 use Illuminate\Database\Events\QueryExecuted;
 use Illuminate\Queue\Events\JobProcessing;
 use Illuminate\Support\Facades\DB;
@@ -37,16 +39,16 @@ final class OperationalMetricsTest extends TestCase
             DB::connection(),
         ));
 
-        $job = Mockery::mock(\Illuminate\Contracts\Queue\Job::class);
-        $job->shouldReceive('payload')->andReturn(['created_at' => microtime(true) - 61]);
-        $job->shouldReceive('getQueue')->andReturn('default');
-        Event::dispatch(new JobProcessing('redis', $job));
+        $mock = Mockery::mock(Job::class);
+        $mock->shouldReceive('payload')->andReturn(['created_at' => microtime(true) - 61]);
+        $mock->shouldReceive('getQueue')->andReturn('default');
+        Event::dispatch(new JobProcessing('redis', $mock));
 
         $scheduledTask = Mockery::mock(ScheduledEvent::class);
         $scheduledTask->shouldReceive('getSummaryForDisplay')->andReturn('/usr/bin/php artisan notifications:dispatch-status-changes');
         Event::dispatch(new ScheduledTaskFinished($scheduledTask, 6));
 
-        app(\App\Services\OperationalMetricsService::class)->recordApiRequest('api.dashboard', 'GET', 200, 1250);
+        resolve(OperationalMetricsService::class)->recordApiRequest('api.dashboard', 'GET', 200, 1250);
 
         $this->assertSame(1, $recordedMetrics['cache_hits']);
         $this->assertSame(1, $recordedMetrics['cache_misses']);
@@ -78,8 +80,8 @@ final class OperationalMetricsTest extends TestCase
     public function test_previous_minute_metrics_are_reported_with_derived_rates(): void
     {
         $key = 'webguard:operational-metrics:' . now()->subMinute()->startOfMinute()->format('YmdHi');
-        $redis = Mockery::mock();
-        $redis->shouldReceive('hgetall')->once()->with($key)->andReturn([
+        $mock = Mockery::mock();
+        $mock->shouldReceive('hgetall')->once()->with($key)->andReturn([
             'api_requests' => '4',
             'api_duration_ms' => '1000',
             'cache_hits' => '3',
@@ -89,11 +91,11 @@ final class OperationalMetricsTest extends TestCase
             'scheduler_runs' => '1',
             'scheduler_duration_ms' => '500',
         ]);
-        $redis->shouldReceive('del')->once()->with($key)->andReturn(1);
-        Redis::shouldReceive('connection')->with('cache')->once()->andReturn($redis);
+        $mock->shouldReceive('del')->once()->with($key)->andReturn(1);
+        Redis::shouldReceive('connection')->with('cache')->once()->andReturn($mock);
         Log::spy();
 
-        app(\App\Services\OperationalMetricsService::class)->flushPreviousMinute();
+        resolve(OperationalMetricsService::class)->flushPreviousMinute();
 
         Log::shouldHaveReceived('info')->with('webguard.operational_metrics.window', Mockery::on(
             static fn (array $context): bool => $context['metrics']['api_average_duration_ms'] === 250.0
@@ -118,10 +120,10 @@ final class OperationalMetricsTest extends TestCase
 
     public function test_metrics_command_reports_both_operational_queues_and_warns_at_the_backlog_threshold(): void
     {
-        $queue = Mockery::mock();
-        $queue->shouldReceive('size')->with('default')->once()->andReturn(5);
-        $queue->shouldReceive('size')->with('heartbeat')->once()->andReturn(100);
-        Queue::shouldReceive('connection')->with('sync')->once()->andReturn($queue);
+        $mock = Mockery::mock();
+        $mock->shouldReceive('size')->with('default')->once()->andReturn(5);
+        $mock->shouldReceive('size')->with('heartbeat')->once()->andReturn(100);
+        Queue::shouldReceive('connection')->with('sync')->once()->andReturn($mock);
 
         $redis = Mockery::mock();
         $redis->shouldReceive('hgetall')->once()->andReturn([]);
@@ -145,17 +147,17 @@ final class OperationalMetricsTest extends TestCase
     /** @param array<string, int> $recordedMetrics */
     private function mockRedisPipeline(array &$recordedMetrics): void
     {
-        $pipeline = Mockery::mock();
-        $pipeline->shouldReceive('hIncrBy')->withArgs(static function (string $key, string $name, int $value) use (&$recordedMetrics): bool {
+        $mock = Mockery::mock();
+        $mock->shouldReceive('hIncrBy')->withArgs(static function (string $key, string $name, int $value) use (&$recordedMetrics): bool {
             $recordedMetrics[$name] = ($recordedMetrics[$name] ?? 0) + $value;
 
             return str_starts_with($key, 'webguard:operational-metrics:');
         })->andReturn(1);
-        $pipeline->shouldReceive('expire')->withArgs(static fn (string $key, int $seconds): bool => $seconds >= 60)->andReturn(1);
+        $mock->shouldReceive('expire')->withArgs(static fn (string $key, int $seconds): bool => $seconds >= 60)->andReturn(1);
 
         $redis = Mockery::mock();
-        $redis->shouldReceive('pipeline')->andReturnUsing(static function (callable $callback) use ($pipeline): array {
-            $callback($pipeline);
+        $redis->shouldReceive('pipeline')->andReturnUsing(static function (callable $callback) use ($mock): array {
+            $callback($mock);
 
             return [];
         });

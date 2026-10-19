@@ -59,8 +59,8 @@ class PublicStatusPayloadApiTest extends TestCase
             'up_at' => Date::now()->subHours(23),
         ]);
 
-        $publicStatusResponse = $this->getJson(route('public.status.show', $statusPage));
-        $publicStatusResponse
+        $testResponse = $this->getJson(route('public.status.show', $statusPage));
+        $testResponse
             ->assertOk()
             ->assertHeader('Cache-Control')
             ->assertJsonPath('data.kind', 'status_page')
@@ -69,7 +69,7 @@ class PublicStatusPayloadApiTest extends TestCase
             ->assertJsonPath('data.incidents.0.monitoring_name', 'Checkout API')
             ->assertJsonMissing(['target' => 'https://internal.example.test/private-path']);
 
-        $publicStatusPayload = (string) $publicStatusResponse->getContent();
+        $publicStatusPayload = (string) $testResponse->getContent();
         $this->assertStringNotContainsString('private-status-user', $publicStatusPayload);
         $this->assertStringNotContainsString('private-status-password', $publicStatusPayload);
         $this->assertStringNotContainsString('private-status-token', $publicStatusPayload);

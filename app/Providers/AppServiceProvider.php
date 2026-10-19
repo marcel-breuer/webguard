@@ -107,51 +107,51 @@ class AppServiceProvider extends ServiceProvider
 
     private function registerOperationalMetricsListeners(): void
     {
-        $metrics = $this->app->make(OperationalMetricsService::class);
+        $operationalMetricsService = $this->app->make(OperationalMetricsService::class);
 
-        DB::listen(static function (QueryExecuted $query) use ($metrics): void {
-            $metrics->recordSlowQuery($query->sql, $query->time, $query->connectionName);
+        DB::listen(static function (QueryExecuted $queryExecuted) use ($operationalMetricsService): void {
+            $operationalMetricsService->recordSlowQuery($queryExecuted->sql, $queryExecuted->time, $queryExecuted->connectionName);
         });
 
-        Event::listen(CacheHit::class, static function () use ($metrics): void {
-            $metrics->recordCacheHit();
+        Event::listen(CacheHit::class, static function () use ($operationalMetricsService): void {
+            $operationalMetricsService->recordCacheHit();
         });
 
-        Event::listen(CacheMissed::class, static function () use ($metrics): void {
-            $metrics->recordCacheMiss();
+        Event::listen(CacheMissed::class, static function () use ($operationalMetricsService): void {
+            $operationalMetricsService->recordCacheMiss();
         });
 
-        Event::listen(JobProcessing::class, static function (JobProcessing $event) use ($metrics): void {
-            $payload = $event->job->payload();
+        Event::listen(JobProcessing::class, static function (JobProcessing $jobProcessing) use ($operationalMetricsService): void {
+            $payload = $jobProcessing->job->payload();
             $createdAt = $payload['created_at'] ?? null;
 
             if (! is_numeric($createdAt)) {
-                $metrics->flushCacheMetrics();
+                $operationalMetricsService->flushCacheMetrics();
 
                 return;
             }
 
-            $queue = method_exists($event->job, 'getQueue') ? (string) $event->job->getQueue() : 'unknown';
+            $queue = method_exists($jobProcessing->job, 'getQueue') ? (string) $jobProcessing->job->getQueue() : 'unknown';
             $lagMs = max(0.0, (microtime(true) - (float) $createdAt) * 1000);
 
-            $metrics->recordQueueJob($queue, $lagMs);
+            $operationalMetricsService->recordQueueJob($queue, $lagMs);
         });
 
-        Event::listen([JobProcessed::class, JobFailed::class, JobExceptionOccurred::class], static function () use ($metrics): void {
-            $metrics->flushCacheMetrics();
+        Event::listen([JobProcessed::class, JobFailed::class, JobExceptionOccurred::class], static function () use ($operationalMetricsService): void {
+            $operationalMetricsService->flushCacheMetrics();
         });
 
-        Event::listen(ScheduledTaskFinished::class, static function (ScheduledTaskFinished $event) use ($metrics): void {
-            $summary = $event->task->getSummaryForDisplay();
+        Event::listen(ScheduledTaskFinished::class, static function (ScheduledTaskFinished $scheduledTaskFinished) use ($operationalMetricsService): void {
+            $summary = $scheduledTaskFinished->task->getSummaryForDisplay();
             $taskName = preg_match('/\bartisan\s+([a-z0-9:_-]+)/i', $summary, $matches) === 1
                 ? $matches[1]
                 : 'scheduled-task';
 
-            $metrics->recordScheduledTask((float) $event->runtime * 1000, $taskName);
+            $operationalMetricsService->recordScheduledTask($scheduledTaskFinished->runtime * 1000, $taskName);
         });
 
-        Event::listen(ScheduledTaskFailed::class, static function () use ($metrics): void {
-            $metrics->flushCacheMetrics();
+        Event::listen(ScheduledTaskFailed::class, static function () use ($operationalMetricsService): void {
+            $operationalMetricsService->flushCacheMetrics();
         });
     }
 }
