@@ -1,0 +1,77 @@
+name: Dependabot auto-merge
+
+on:
+  pull_request_target:
+    types: [opened, reopened, synchronize]
+
+permissions:
+  actions: read
+  contents: write
+  pull-requests: write
+
+jobs:
+  enable-auto-merge:
+    if: github.event.pull_request.user.login == 'dependabot[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Read Dependabot update metadata
+        id: metadata
+        uses: dependabot/fetch-metadata@25dd0e34f4fe68f24cc83900b1fe3fe149efef98
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Wait for all pull request checks
+        if: contains(fromJSON('["version-update:semver-patch", "version-update:semver-minor"]'), steps.metadata.outputs.update-type)
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          GITHUB_PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          set -euo pipefail
+
+          deadline=$((SECONDS + 1800))
+          empty_since=0
+          stable_since=0
+          previous_signature=''
+
+          while (( SECONDS < deadline )); do
+            checks=$(gh api "repos/${GITHUB_REPOSITORY}/commits/${PR_HEAD_SHA}/check-runs?per_page=100" --jq '[.check_runs[] | select(.name != "dependabot-automerge-gate") | {name, status, conclusion}] | sort_by(.name, .status, .conclusion)')
+            count=$(jq 'length' <<< "$checks")
+
+            failing=$(jq '[.[] | select(.status == "completed" and (.conclusion != "success" and .conclusion != "skipped" and .conclusion != "neutral"))] | length' <<< "$checks")
+            if (( failing > 0 )); then
+              echo "At least one pull request check failed; leaving the Dependabot pull request open."
+              exit 1
+            fi
+
+            pending=$(jq '[.[] | select(.status != "completed")] | length' <<< "$checks")
+            if (( count == 0 )); then
+              if (( empty_since == 0 )); then
+                empty_since=$SECONDS
+              fi
+              if (( SECONDS - empty_since >= 180 )); then
+                break
+              fi
+            elif (( pending > 0 )); then
+              stable_since=0
+              previous_signature=''
+            else
+              empty_since=0
+              signature=$(jq -c '.' <<< "$checks")
+              if [[ "$signature" != "$previous_signature" ]]; then
+                previous_signature=$signature
+                stable_since=$SECONDS
+              elif (( stable_since > 0 && SECONDS - stable_since >= 45 )); then
+                break
+              fi
+            fi
+
+            sleep 15
+          done
+
+          if (( SECONDS >= deadline )); then
+            echo "Timed out waiting for pull request checks; leaving the Dependabot pull request open."
+            exit 1
+          fi
+
+          gh pr merge "$GITHUB_PR_NUMBER" --repo "$GITHUB_REPOSITORY" --auto --merge
