@@ -35,7 +35,7 @@ jobs:
           previous_signature=''
 
           while (( SECONDS < deadline )); do
-            checks=$(gh api "repos/${GITHUB_REPOSITORY}/commits/${PR_HEAD_SHA}/check-runs?per_page=100" --jq '[.check_runs[] | select(.name != "dependabot-automerge-gate") | {name, status, conclusion}] | sort_by(.name, .status, .conclusion)')
+            checks=$(gh api "repos/${GITHUB_REPOSITORY}/commits/${PR_HEAD_SHA}/check-runs?per_page=100" --jq '[.check_runs[] | select(.name != "enable-auto-merge") | {name, status, conclusion}] | sort_by(.name, .status, .conclusion)')
             count=$(jq 'length' <<< "$checks")
 
             failing=$(jq '[.[] | select(.status == "completed" and (.conclusion != "success" and .conclusion != "skipped" and .conclusion != "neutral"))] | length' <<< "$checks")
