@@ -35,16 +35,17 @@ jobs:
           previous_signature=''
 
           while (( SECONDS < deadline )); do
-            checks=$(gh api "repos/${GITHUB_REPOSITORY}/commits/${PR_HEAD_SHA}/check-runs?per_page=100" --jq '[.check_runs[] | select(.name != "enable-auto-merge") | {name, status, conclusion}] | sort_by(.name, .status, .conclusion)')
-            count=$(jq 'length' <<< "$checks")
+            response=$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs?head_sha=${PR_HEAD_SHA}&per_page=100")
+            runs=$(jq --argjson current_run "$GITHUB_RUN_ID" '[.workflow_runs[] | select(.id != $current_run) | {id, status, conclusion}] | sort_by(.id)' <<< "$response")
+            count=$(jq 'length' <<< "$runs")
 
-            failing=$(jq '[.[] | select(.status == "completed" and (.conclusion != "success" and .conclusion != "skipped" and .conclusion != "neutral"))] | length' <<< "$checks")
+            failing=$(jq '[.[] | select(.status == "completed" and (.conclusion != "success" and .conclusion != "skipped" and .conclusion != "neutral"))] | length' <<< "$runs")
             if (( failing > 0 )); then
               echo "At least one pull request check failed; leaving the Dependabot pull request open."
               exit 1
             fi
 
-            pending=$(jq '[.[] | select(.status != "completed")] | length' <<< "$checks")
+            pending=$(jq '[.[] | select(.status != "completed")] | length' <<< "$runs")
             if (( count == 0 )); then
               if (( empty_since == 0 )); then
                 empty_since=$SECONDS
@@ -57,7 +58,7 @@ jobs:
               previous_signature=''
             else
               empty_since=0
-              signature=$(jq -c '.' <<< "$checks")
+              signature=$(jq -c '.' <<< "$runs")
               if [[ "$signature" != "$previous_signature" ]]; then
                 previous_signature=$signature
                 stable_since=$SECONDS
