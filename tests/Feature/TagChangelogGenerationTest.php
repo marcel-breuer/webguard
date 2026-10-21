@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
+use Illuminate\Support\Facades\File;
 use Symfony\Component\Process\Process;
 use Symfony\Component\Yaml\Yaml;
 use Tests\TestCase;
@@ -174,7 +175,7 @@ class TagChangelogGenerationTest extends TestCase
                 continue;
             }
 
-            unlink($path);
+            File::delete($path);
         }
 
         rmdir($directory);
