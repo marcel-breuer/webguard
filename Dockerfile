@@ -6,7 +6,7 @@
 
 # Learn more about the Server Side Up PHP Docker Images at:
 # https://serversideup.net/open-source/docker-php/
-FROM serversideup/php:8.5-fpm-nginx AS base
+FROM serversideup/php:8.5.12-fpm-nginx AS base
 
 # Additional production PHP extensions
 USER root
@@ -102,7 +102,7 @@ COPY --link --from=sveltekit_build /app/frontend/package.json ./package.json
 HEALTHCHECK --interval=10s --timeout=3s --start-period=15s --retries=6 CMD bun -e 'const response = await fetch("http://127.0.0.1:3000/_health/frontend"); process.exit(response.ok ? 0 : 1)'
 CMD ["bun", "build/index.js"]
 
-FROM serversideup/php:8.5-cli AS worker
+FROM serversideup/php:8.5.12-cli AS worker
 # Copy application code from the build stage
 COPY --link --from=app_build --chown=33:33 /app /var/www/html
 USER www-data
