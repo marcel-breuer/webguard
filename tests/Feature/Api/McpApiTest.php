@@ -50,7 +50,7 @@ class McpApiTest extends TestCase
             [ApiKeyAbility::ANALYTICS_READ->value]
         )->plainTextToken;
 
-        $initialize = $this->postMcp([
+        $testResponse = $this->postMcp([
             'jsonrpc' => '2.0',
             'id' => 1,
             'method' => 'initialize',
@@ -61,7 +61,7 @@ class McpApiTest extends TestCase
             ],
         ], $token)->assertOk();
 
-        $sessionId = (string) $initialize->headers->get('Mcp-Session-Id');
+        $sessionId = (string) $testResponse->headers->get('Mcp-Session-Id');
         $this->assertNotSame('', $sessionId);
 
         $this->postMcp([

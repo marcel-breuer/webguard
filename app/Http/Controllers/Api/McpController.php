@@ -23,7 +23,7 @@ final class McpController extends Controller
         /** @var User $user */
         $user = $request->user();
         $psr17Factory = new Psr17Factory();
-        $psrRequest = (new PsrHttpFactory(
+        $serverRequest = (new PsrHttpFactory(
             $psr17Factory,
             $psr17Factory,
             $psr17Factory,
@@ -31,8 +31,8 @@ final class McpController extends Controller
         ))->createRequest($request);
         $allowedHost = parse_url((string) config('app.url'), PHP_URL_HOST);
 
-        $transport = new StreamableHttpTransport(
-            $psrRequest,
+        $streamableHttpTransport = new StreamableHttpTransport(
+            $serverRequest,
             $psr17Factory,
             $psr17Factory,
             middleware: [
@@ -43,7 +43,7 @@ final class McpController extends Controller
             ],
         );
 
-        $response = $mcpServerFactory->make($user)->run($transport);
+        $response = $mcpServerFactory->make($user)->run($streamableHttpTransport);
 
         return (new HttpFoundationFactory())->createResponse($response);
     }

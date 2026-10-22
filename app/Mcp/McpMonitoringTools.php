@@ -12,7 +12,7 @@ final class McpMonitoringTools
 {
     public function __construct(
         private readonly User $user,
-        private readonly McpMonitoringQueryService $monitoringQueryService,
+        private readonly McpMonitoringQueryService $mcpMonitoringQueryService,
     ) {}
 
     /**
@@ -22,11 +22,9 @@ final class McpMonitoringTools
      */
     public function listMonitorings(int $limit = 50): array
     {
-        if ($limit < 1 || $limit > 100) {
-            throw new ToolCallException('The limit must be between 1 and 100.');
-        }
+        throw_if($limit < 1 || $limit > 100, ToolCallException::class, 'The limit must be between 1 and 100.');
 
-        return $this->monitoringQueryService->listAccessible($this->user, $limit);
+        return $this->mcpMonitoringQueryService->listAccessible($this->user, $limit);
     }
 
     /**
@@ -36,10 +34,8 @@ final class McpMonitoringTools
      */
     public function getMonitoringAnalytics(string $monitoring_id, int $days = 30): array
     {
-        if ($days < 1 || $days > 365) {
-            throw new ToolCallException('The days value must be between 1 and 365.');
-        }
+        throw_if($days < 1 || $days > 365, ToolCallException::class, 'The days value must be between 1 and 365.');
 
-        return $this->monitoringQueryService->analytics($this->user, $monitoring_id, $days);
+        return $this->mcpMonitoringQueryService->analytics($this->user, $monitoring_id, $days);
     }
 }

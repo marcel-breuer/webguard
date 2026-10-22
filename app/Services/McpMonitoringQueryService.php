@@ -24,8 +24,8 @@ final class McpMonitoringQueryService
     public function listAccessible(User $user, int $limit): array
     {
         $monitorings = Monitoring::query()
-            ->where(function (Builder $query) use ($user): void {
-                $query->visibleTo($user)->orWhere('public_label_enabled', true);
+            ->where(function (Builder $builder) use ($user): void {
+                $builder->visibleTo($user)->orWhere('public_label_enabled', true);
             })
             ->select(['id', 'name', 'type', 'status'])
             ->orderBy('name')
@@ -57,12 +57,12 @@ final class McpMonitoringQueryService
             abort(404, 'Monitoring not found or not accessible.');
         }
 
-        $range = MonitoringDateRange::pastDays($days);
-        $payload = $this->monitoringDashboardPayloadService->getPayload(
+        $monitoringDateRange = MonitoringDateRange::pastDays($days);
+        $monitoringDashboardPayload = $this->monitoringDashboardPayloadService->getPayload(
             $monitoring,
             $days,
-            $range->startDate,
-            $range->endDate
+            $monitoringDateRange->startDate,
+            $monitoringDateRange->endDate
         );
 
         return [
@@ -71,7 +71,7 @@ final class McpMonitoringQueryService
                 'name' => (string) $monitoring->name,
             ],
             'days' => $days,
-            'analytics' => json_decode(json_encode($payload, JSON_THROW_ON_ERROR), true, 512, JSON_THROW_ON_ERROR),
+            'analytics' => json_decode(json_encode($monitoringDashboardPayload, JSON_THROW_ON_ERROR), true, 512, JSON_THROW_ON_ERROR),
         ];
     }
 }

@@ -14,13 +14,13 @@ use Mcp\Server\Session\Psr16SessionStore;
 final class McpServerFactory
 {
     public function __construct(
-        private readonly McpMonitoringQueryService $monitoringQueryService,
+        private readonly McpMonitoringQueryService $mcpMonitoringQueryService,
     ) {}
 
     public function make(User $user): Server
     {
-        $tools = new McpMonitoringTools($user, $this->monitoringQueryService);
-        $readOnly = new ToolAnnotations(
+        $mcpMonitoringTools = new McpMonitoringTools($user, $this->mcpMonitoringQueryService);
+        $toolAnnotations = new ToolAnnotations(
             readOnlyHint: true,
             destructiveHint: false,
             idempotentHint: true,
@@ -36,11 +36,11 @@ final class McpServerFactory
                 ttl: 3600,
             ))
             ->addTool(
-                [$tools, 'listMonitorings'],
+                [$mcpMonitoringTools, 'listMonitorings'],
                 name: 'list_monitorings',
                 title: 'List monitorings',
                 description: 'List monitorings visible to the authenticated WebGuard user. Returns IDs, names, types, and statuses without targets or credentials.',
-                annotations: $readOnly,
+                annotations: $toolAnnotations,
                 inputSchema: [
                     'type' => 'object',
                     'properties' => [
@@ -72,11 +72,11 @@ final class McpServerFactory
                 ],
             )
             ->addTool(
-                [$tools, 'getMonitoringAnalytics'],
+                [$mcpMonitoringTools, 'getMonitoringAnalytics'],
                 name: 'get_monitoring_analytics',
                 title: 'Get monitoring analytics',
                 description: 'Return the monitoring analytics payload exposed by the WebGuard API for a monitoring visible to the authenticated user. Days defaults to 30 and may be from 1 to 365.',
-                annotations: $readOnly,
+                annotations: $toolAnnotations,
                 inputSchema: [
                     'type' => 'object',
                     'properties' => [
