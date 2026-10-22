@@ -152,6 +152,7 @@ Route::middleware(MeasureInternalUiRequest::class)->group(function (): void {
         Route::post('/monitorings/{monitoring}/ownership/private', [MonitoringOwnershipController::class, 'moveToPrivate'])->name('monitorings.ownership.private.store');
         Route::patch('/monitorings/{monitoring}', [MonitoringManagementController::class, 'update'])->name('monitorings.update');
         Route::delete('/monitorings/{monitoring}', [MonitoringManagementController::class, 'destroy'])->name('monitorings.destroy');
+        Route::delete('/monitorings/{monitoring}/results', [MonitoringManagementController::class, 'resetResults'])->name('monitorings.results.destroy');
         Route::get('/monitorings/{monitoring}', MonitoringShowController::class)->name('monitorings.show');
     });
 });

@@ -3,6 +3,7 @@
     import { FirstPartyApiError, requestFirstPartyApi } from "$lib/api/client";
     import { appRoutes } from "$lib/routes";
     import { formatDateTime } from "$lib/i18n/format";
+    import { translate, type TranslationMessages } from "$lib/i18n/localize";
     import Button from "$lib/components/Button.svelte";
     import Dialog from "$lib/components/Dialog.svelte";
     import MonitoringAnalytics from "$lib/components/MonitoringAnalytics.svelte";
@@ -15,6 +16,8 @@
 
     interface Props {
         data: {
+            locale: string;
+            messages: TranslationMessages;
             monitoring: MonitoringSummary;
             detail: MonitoringDetailData;
             incidentsMeta: { limit: number; offset: number; has_more: boolean; next_offset: number | null };
@@ -24,6 +27,7 @@
     }
     let { data }: Props = $props();
     let deleting = $state(false);
+    let resettingResults = $state(false);
     let editForm = $state<MonitoringFormOptions | null>(null);
     let editLoading = $state(false);
     let editOpen = $state(false);
@@ -100,6 +104,24 @@
         }
     }
 
+    async function resetResults(): Promise<void> {
+        const confirmation = translate("Reset all results for :name? This also removes its check history and incidents.", data.locale, data.messages)
+            .replace(":name", data.monitoring.name);
+        if (resettingResults || !window.confirm(confirmation)) return;
+
+        resettingResults = true;
+        error = "";
+
+        try {
+            await requestFirstPartyApi(`/api/monitorings/${data.monitoring.id}/results`, { method: "DELETE" });
+            await invalidateAll();
+        } catch (exception) {
+            error = exception instanceof FirstPartyApiError ? exception.message : translate("The monitoring results could not be reset.", data.locale, data.messages);
+        } finally {
+            resettingResults = false;
+        }
+    }
+
     async function openEdit(): Promise<void> {
         if (editLoading) return;
 
@@ -145,7 +167,7 @@
                 <a class="inline-grid size-8 place-items-center rounded-md text-wg-accent transition hover:bg-violet-50 dark:hover:bg-violet-950/50" href={linkedTarget} target="_blank" rel="noreferrer" aria-label="Open target" title="Open target"><NavIcon name="external" size={16} /></a>
             {/if}
             {#if data.monitoring.can_manage}
-                <details class="relative"><summary class="inline-grid size-10 cursor-pointer list-none place-items-center rounded-md border border-wg-focus text-wg-accent transition hover:bg-violet-50 [&::-webkit-details-marker]:hidden dark:hover:bg-violet-950/50" aria-label="Monitoring actions" title="Monitoring actions"><NavIcon name="ellipsis" size={18} /></summary><div class="absolute left-0 z-20 mt-2 grid w-44 gap-1 rounded-lg border border-wg-border bg-wg-surface p-1.5 shadow-lg"><Button class="justify-start px-3 py-2 text-sm normal-case" variant="quiet" type="button" loading={editLoading} onclick={openEdit}>Edit monitoring</Button><Button class="justify-start px-3 py-2 text-sm normal-case" variant="danger" type="button" disabled={deleting} onclick={remove}>Delete monitoring</Button></div></details>
+                <details class="relative"><summary class="inline-grid size-10 cursor-pointer list-none place-items-center rounded-md border border-wg-focus text-wg-accent transition hover:bg-violet-50 [&::-webkit-details-marker]:hidden dark:hover:bg-violet-950/50" aria-label="Monitoring actions" title="Monitoring actions"><NavIcon name="ellipsis" size={18} /></summary><div class="absolute left-0 z-20 mt-2 grid w-48 gap-1 rounded-lg border border-wg-border bg-wg-surface p-1.5 shadow-lg"><Button class="justify-start px-3 py-2 text-sm normal-case" variant="quiet" type="button" loading={editLoading} onclick={openEdit}>Edit monitoring</Button><Button class="justify-start px-3 py-2 text-sm normal-case" variant="quiet" type="button" loading={resettingResults} onclick={resetResults}>{translate("Reset results", data.locale, data.messages)}</Button><Button class="justify-start px-3 py-2 text-sm normal-case" variant="danger" type="button" disabled={deleting} onclick={remove}>Delete monitoring</Button></div></details>
             {/if}
         </div>
         {#if checkLocations.length > 0}
