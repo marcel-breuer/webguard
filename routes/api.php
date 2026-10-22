@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\External\ApiKeyController;
 use App\Http\Controllers\Api\External\BearerServerHealthReportController;
 use App\Http\Controllers\Api\External\PublicMonitoringLocationController;
 use App\Http\Controllers\Api\FrontendTranslationController;
+use App\Http\Controllers\Api\McpController;
 use App\Http\Controllers\Api\Mobile\MobileAuthController;
 use App\Http\Controllers\Api\PublicStatusPayloadController;
 use App\Http\Controllers\Api\PublicStatusSubscriptionController;
@@ -58,6 +59,10 @@ Route::post('/server-health/monitorings/{monitoring}', BearerServerHealthReportC
 Route::post('/v1/server-health/monitorings/{monitoring}', BearerServerHealthReportController::class)
     ->middleware(['auth:sanctum', 'api-key.ability:server-health:write', 'throttle:60,1'])
     ->name('server-health.bearer.legacy.store');
+
+Route::any('/mcp', McpController::class)
+    ->middleware(['auth:sanctum', 'mcp.read', 'throttle:60,1'])
+    ->name('mcp');
 
 Route::group(['prefix' => 'api-keys', 'as' => 'api-keys.', 'middleware' => ['auth:sanctum', 'api-key.manage']], function (): void {
     Route::get('/', [ApiKeyController::class, 'index'])->name('index');

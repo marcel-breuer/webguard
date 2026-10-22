@@ -100,6 +100,29 @@ The analytics routes are `GET /api/monitorings/{monitoring}` and its
 `checks`, `incidents`, `heatmap`, `ssl`, and `uptime-calendar` subresources.
 All retain their existing ownership checks and response contracts.
 
+## Model Context Protocol
+
+`POST /api/mcp` exposes monitoring queries through the MCP Streamable HTTP
+transport. Connect with a WebGuard API key that has the `analytics:read`
+ability, using `Authorization: Bearer <token>`. The endpoint uses the existing
+monitoring analytics read boundary and does not provide write tools. Legacy
+personal-access tokens follow the `EXTERNAL_API_ENFORCE_TOKEN_ABILITIES`
+setting and require `external:read` when enforcement is enabled. Mobile-app
+tokens are not accepted.
+
+The server exposes these tools:
+
+| Tool | Inputs | Result |
+| --- | --- | --- |
+| `list_monitorings` | Optional `limit` from 1 to 100 (default 50) | Visible monitoring IDs, names, types, and statuses. Targets and credentials are omitted. |
+| `get_monitoring_analytics` | Required `monitoring_id`; optional `days` from 1 to 365 (default 30) | The monitoring analytics payload exposed by the Core API, scoped to a monitoring visible to the authenticated user. |
+
+Create a key from the profile's API key settings and select **Read analytics**.
+Configure an MCP client to connect to `<APP_URL>/api/mcp` and pass the key as
+its bearer token. MCP clients make several protocol requests per connection;
+the endpoint applies a 60-request-per-minute rate limit per authenticated
+caller.
+
 Existing pre-scoped tokens remain compatible. They are not converted
 to new keys automatically; rotate them from the profile when practical.
 
