@@ -16,8 +16,11 @@
         "laravel/framework": "^13.0",
         "laravel/sanctum": "^4.1",
         "laravel/tinker": "^3.0",
+        "mcp/sdk": "^0.9.0",
         "mews/captcha": "^3.4",
-        "spatie/laravel-activitylog": "^5.0"
+        "nyholm/psr7": "^1.8",
+        "spatie/laravel-activitylog": "^5.0",
+        "symfony/psr-http-message-bridge": "^8.1"
     },
     "require-dev": {
         "driftingly/rector-laravel": "^2.1",

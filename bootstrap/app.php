@@ -9,6 +9,7 @@ use App\Http\Middleware\MeasureApiRequestMetrics;
 use App\Http\Middleware\PreventCrawling;
 use App\Http\Middleware\RequireApiKeyAbility;
 use App\Http\Middleware\RequireApiKeyManagement;
+use App\Http\Middleware\RequireMcpReadAbility;
 use App\Http\Middleware\SetLocaleMiddleware;
 use App\Http\Middleware\SetPublicCacheHeaders;
 use Illuminate\Foundation\Application;
@@ -44,6 +45,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'auth.instance' => AuthenticateInstance::class,
             'public.cache' => SetPublicCacheHeaders::class,
             'api-key.ability' => RequireApiKeyAbility::class,
+            'mcp.read' => RequireMcpReadAbility::class,
             'api-key.manage' => RequireApiKeyManagement::class,
         ]);
     })
