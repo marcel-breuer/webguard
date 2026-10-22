@@ -14,6 +14,7 @@ use App\Models\Monitoring;
 use App\Models\MonitoringDailyResult;
 use App\Models\MonitoringGroup;
 use App\Models\MonitoringResponse;
+use App\Models\MonitoringResponseArchived;
 use App\Models\Package;
 use App\Models\ServerInstance;
 use App\Models\StatusPage;
@@ -652,6 +653,68 @@ class InternalUiMonitoringApiTest extends TestCase
         ])
             ->assertUnprocessable()
             ->assertJsonPath('message', __('monitoring.messages.limit_reached'));
+    }
+
+    public function test_monitoring_owner_can_reset_all_results_without_deleting_monitoring_configuration(): void
+    {
+        $user = User::factory()->create();
+        $monitoring = Monitoring::factory()->for($user)->create(['name' => 'Keep this monitoring']);
+        MonitoringResponse::query()->create([
+            'monitoring_id' => $monitoring->id,
+            'status' => MonitoringStatus::DOWN,
+            'response_time' => 42,
+        ]);
+        MonitoringResponseArchived::query()->create([
+            'id' => (string) str()->ulid(),
+            'monitoring_id' => $monitoring->id,
+            'status' => MonitoringStatus::UP,
+            'response_time' => 20,
+        ]);
+        MonitoringDailyResult::query()->create([
+            'monitoring_id' => $monitoring->id,
+            'date' => now()->subDay()->toDateString(),
+            'uptime_total' => 1440,
+            'downtime_total' => 0,
+            'unknown_total' => 0,
+            'uptime_percentage' => 100,
+            'downtime_percentage' => 0,
+            'unknown_percentage' => 0,
+            'uptime_minutes' => 1440,
+            'downtime_minutes' => 0,
+            'unknown_minutes' => 0,
+            'incidents_count' => 0,
+        ]);
+        Incident::query()->create([
+            'monitoring_id' => $monitoring->id,
+            'down_at' => now()->subHours(2),
+            'up_at' => now()->subHour(),
+        ]);
+
+        $this->actingAs($user)->deleteJson(route('app.monitorings.results.destroy', $monitoring))
+            ->assertOk()
+            ->assertJsonPath('data.reset', true);
+
+        $this->assertDatabaseHas('monitorings', ['id' => $monitoring->id, 'name' => 'Keep this monitoring']);
+        $this->assertDatabaseCount('monitoring_response_results', 0);
+        $this->assertDatabaseCount('monitoring_response_archived', 0);
+        $this->assertDatabaseCount('monitoring_daily_results', 0);
+        $this->assertDatabaseCount('incidents', 0);
+    }
+
+    public function test_monitoring_results_cannot_be_reset_by_another_user(): void
+    {
+        $monitoring = Monitoring::factory()->create();
+        MonitoringResponse::query()->create([
+            'monitoring_id' => $monitoring->id,
+            'status' => MonitoringStatus::UP,
+            'response_time' => 42,
+        ]);
+
+        $this->actingAs(User::factory()->create())
+            ->deleteJson(route('app.monitorings.results.destroy', $monitoring))
+            ->assertNotFound();
+
+        $this->assertDatabaseHas('monitoring_response_results', ['monitoring_id' => $monitoring->id]);
     }
 
     public function test_demo_user_cannot_create_an_internal_ui_monitoring(): void

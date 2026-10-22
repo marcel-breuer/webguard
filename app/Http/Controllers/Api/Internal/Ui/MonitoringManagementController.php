@@ -10,6 +10,7 @@ use App\Http\Requests\InternalUiMonitoringRequest;
 use App\Models\Monitoring;
 use App\Models\User;
 use App\Services\Monitorings\MonitoringGroupAssignmentService;
+use App\Services\Monitorings\ResetMonitoringResultsService;
 use App\Support\MonitoringPayload;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -110,6 +111,18 @@ class MonitoringManagementController extends Controller
         $monitoring->delete();
 
         return response()->json(['data' => ['deleted' => true]]);
+    }
+
+    public function resetResults(Request $request, Monitoring $monitoring, ResetMonitoringResultsService $resetMonitoringResultsService): JsonResponse
+    {
+        /** @var User $user */
+        $user = $request->user();
+        abort_if($user->isDemo(), 403);
+        abort_unless($monitoring->isManageableBy($user), 403);
+
+        $resetMonitoringResultsService->reset($monitoring);
+
+        return response()->json(['data' => ['reset' => true]]);
     }
 
     /**
