@@ -105,6 +105,12 @@ services:
       PORT: "3000"
       ORIGIN: "${APP_URL:?APP_URL must be set to the canonical application URL}"
       BODY_SIZE_LIMIT: "100M"
+    healthcheck:
+      test: ["CMD", "bun", "-e", "const response = await fetch('http://127.0.0.1:3000/_health/frontend'); process.exit(response.ok ? 0 : 1)"]
+      interval: 15s
+      timeout: 5s
+      start_period: 30s
+      retries: 3
     depends_on:
       php:
         condition: service_healthy
@@ -121,6 +127,12 @@ services:
     stop_signal: SIGQUIT
     expose:
       - "8080"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -T 1 -t 1 -O /dev/null http://127.0.0.1:8080/_health/gateway && wget -q -T 1 -t 1 -O /dev/null http://127.0.0.1:8080/_health/frontend && wget -q -T 1 -t 1 -O /dev/null http://127.0.0.1:8080/_health/laravel"]
+      interval: 15s
+      timeout: 5s
+      start_period: 30s
+      retries: 3
     depends_on:
       php:
         condition: service_healthy
@@ -153,6 +165,12 @@ services:
           sleep 60 & wait %1
         done
     stop_signal: SIGTERM
+    healthcheck:
+      test: ["CMD", "php", "artisan", "schedule:list", "--no-interaction", "--no-ansi"]
+      interval: 60s
+      timeout: 10s
+      start_period: 30s
+      retries: 3
     depends_on:
       mysql:
         condition: service_healthy

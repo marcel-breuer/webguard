@@ -35,6 +35,38 @@ $compose build php frontend gateway queue-default
 export MYSQL_ROOT_PASSWORD="$mysql_root_password"
 $compose up --no-build --detach --wait --wait-timeout 180 php frontend gateway schedule queue-default mysql redis
 
+assert_service_healthy() {
+    service="$1"
+    container_id="$($compose ps --quiet "$service")"
+
+    if [ -z "$container_id" ]; then
+        printf 'Expected a running container for service %s.\n' "$service" >&2
+        return 1
+    fi
+
+    healthcheck="$(docker inspect --format '{{if .Config.Healthcheck}}configured{{else}}missing{{end}}' "$container_id")"
+
+    if [ "$healthcheck" != "configured" ]; then
+        printf 'Expected service %s to define a Docker healthcheck.\n' "$service" >&2
+        return 1
+    fi
+
+    health_status="$(docker inspect --format '{{.State.Health.Status}}' "$container_id")"
+
+    if [ "$health_status" != "healthy" ]; then
+        printf 'Expected service %s to be healthy, got %s.\n' "$service" "$health_status" >&2
+        return 1
+    fi
+}
+
+assert_service_healthy php
+assert_service_healthy frontend
+assert_service_healthy gateway
+assert_service_healthy schedule
+assert_service_healthy queue-default
+assert_service_healthy mysql
+assert_service_healthy redis
+
 $compose exec --no-TTY gateway wget --quiet --output-document=/dev/null http://127.0.0.1:8080/_health/gateway
 $compose exec --no-TTY gateway wget --quiet --output-document=/dev/null http://127.0.0.1:8080/_health/frontend
 $compose exec --no-TTY gateway wget --quiet --output-document=/dev/null http://127.0.0.1:8080/_health/laravel
