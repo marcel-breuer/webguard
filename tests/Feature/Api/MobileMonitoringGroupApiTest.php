@@ -125,7 +125,7 @@ class MobileMonitoringGroupApiTest extends TestCase
         $user = User::factory()->create();
         Sanctum::actingAs($user);
 
-        $response = $this->postJson('/api/mobile/monitoring-groups', [
+        $testResponse = $this->postJson('/api/mobile/monitoring-groups', [
             'name' => 'Production SLA',
             'sla_target_percentage' => '99.95',
             'sla_report_enabled' => true,
@@ -134,7 +134,7 @@ class MobileMonitoringGroupApiTest extends TestCase
             ->assertJsonPath('data.sla.target_percentage', 99.95)
             ->assertJsonPath('data.sla.monthly_reports_enabled', true);
 
-        $groupId = $response->json('data.id');
+        $groupId = $testResponse->json('data.id');
         $this->patchJson('/api/mobile/monitoring-groups/' . $groupId, [
             'sla_target_percentage' => '101',
         ])->assertUnprocessable()->assertJsonValidationErrors('sla_target_percentage');

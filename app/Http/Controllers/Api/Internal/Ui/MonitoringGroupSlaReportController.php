@@ -13,7 +13,7 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class MonitoringGroupSlaReportController extends Controller
 {
-    public function __invoke(Request $request, string $monitoringGroup, MonitoringGroupSlaReportService $reportService): StreamedResponse
+    public function __invoke(Request $request, string $monitoringGroup, MonitoringGroupSlaReportService $monitoringGroupSlaReportService): StreamedResponse
     {
         /** @var User $user */
         $user = $request->user();
@@ -24,12 +24,12 @@ class MonitoringGroupSlaReportController extends Controller
 
         abort_if($group->sla_target_percentage === null, 404);
 
-        $report = $reportService->previousCalendarMonth($group);
+        $report = $monitoringGroupSlaReportService->previousCalendarMonth($group);
         $filename = sprintf('webguard-sla-%s-%s.csv', $group->id, $report['period_start']->format('Y-m'));
 
         return response()->streamDownload(
-            static function () use ($reportService, $report): void {
-                echo $reportService->csv($report);
+            static function () use ($monitoringGroupSlaReportService, $report): void {
+                echo $monitoringGroupSlaReportService->csv($report);
             },
             $filename,
             ['Content-Type' => 'text/csv; charset=UTF-8'],

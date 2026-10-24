@@ -26,7 +26,7 @@ class AutomaticStatusPageIncidentUpdatesTest extends TestCase
     {
         $user = $this->user();
         $monitoring = Monitoring::factory()->for($user)->create(['name' => 'Checkout API']);
-        $statusPage = $this->statusPageFor($user, $monitoring, true);
+        $this->statusPageFor($user, $monitoring, true);
 
         $incident = Incident::query()->create([
             'monitoring_id' => $monitoring->id,
@@ -71,7 +71,7 @@ class AutomaticStatusPageIncidentUpdatesTest extends TestCase
         $user = $this->user();
         $monitoring = Monitoring::factory()->for($user)->create();
         $statusPage = $this->statusPageFor($user, $monitoring, true);
-        $verified = StatusPageSubscription::query()->create([
+        $statusPageSubscription = StatusPageSubscription::query()->create([
             'status_page_id' => $statusPage->id,
             'email' => 'verified@example.test',
             'unsubscribe_token' => 'verified-unsubscribe-token',
@@ -87,8 +87,8 @@ class AutomaticStatusPageIncidentUpdatesTest extends TestCase
 
         (new SendStatusPageIncidentUpdateNotifications($statusPage->id, $incidentUpdate->id, 'investigating'))->handle();
 
-        Mail::assertSent(PublicStatusPageIncidentUpdateMail::class, fn (PublicStatusPageIncidentUpdateMail $mail): bool => $mail->hasTo($verified->email));
-        Mail::assertNotSent(PublicStatusPageIncidentUpdateMail::class, fn (PublicStatusPageIncidentUpdateMail $mail): bool => $mail->hasTo('pending@example.test'));
+        Mail::assertSent(PublicStatusPageIncidentUpdateMail::class, fn (PublicStatusPageIncidentUpdateMail $publicStatusPageIncidentUpdateMail): bool => $publicStatusPageIncidentUpdateMail->hasTo($statusPageSubscription->email));
+        Mail::assertNotSent(PublicStatusPageIncidentUpdateMail::class, fn (PublicStatusPageIncidentUpdateMail $publicStatusPageIncidentUpdateMail): bool => $publicStatusPageIncidentUpdateMail->hasTo('pending@example.test'));
     }
 
     private function statusPageFor(User $user, Monitoring $monitoring, bool $isPublic, bool $autoPublish = true): StatusPage
@@ -99,12 +99,12 @@ class AutomaticStatusPageIncidentUpdatesTest extends TestCase
             'is_public' => $isPublic,
             'auto_publish_incident_updates' => $autoPublish,
         ]);
-        $component = $statusPage->components()->create([
+        $statusPageComponent = $statusPage->components()->create([
             'name' => 'Checkout',
             'position' => 0,
             'source_type' => 'manual',
         ]);
-        $component->monitorings()->attach($monitoring, ['position' => 0]);
+        $statusPageComponent->monitorings()->attach($monitoring, ['position' => 0]);
 
         return $statusPage;
     }

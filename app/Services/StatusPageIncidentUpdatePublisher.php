@@ -9,6 +9,7 @@ use App\Jobs\SendStatusPageIncidentUpdateNotifications;
 use App\Models\Incident;
 use App\Models\IncidentUpdate;
 use App\Models\StatusPage;
+use Illuminate\Support\Collection;
 
 final class StatusPageIncidentUpdatePublisher
 {
@@ -40,8 +41,8 @@ final class StatusPageIncidentUpdatePublisher
             );
         }
 
-        foreach ($pages as $statusPage) {
-            SendStatusPageIncidentUpdateNotifications::dispatch($statusPage->id, $incidentUpdate->id, 'investigating')->afterCommit();
+        foreach ($pages as $page) {
+            dispatch(new SendStatusPageIncidentUpdateNotifications($page->id, $incidentUpdate->id, 'investigating'))->afterCommit();
         }
     }
 
@@ -76,15 +77,15 @@ final class StatusPageIncidentUpdatePublisher
             ],
         );
 
-        foreach ($pages as $statusPage) {
-            SendStatusPageIncidentUpdateNotifications::dispatch($statusPage->id, $incidentUpdate->id, 'resolved')->afterCommit();
+        foreach ($pages as $page) {
+            dispatch(new SendStatusPageIncidentUpdateNotifications($page->id, $incidentUpdate->id, 'resolved'))->afterCommit();
         }
     }
 
     /**
-     * @return \Illuminate\Support\Collection<int, StatusPage>
+     * @return Collection<int, StatusPage>
      */
-    private function eligiblePages(Incident $incident): \Illuminate\Support\Collection
+    private function eligiblePages(Incident $incident): Collection
     {
         return StatusPage::query()
             ->where('is_public', true)

@@ -49,9 +49,9 @@ class SendStatusPageIncidentUpdateNotifications implements ShouldBeUnique, Shoul
         }
 
         $statusPage->subscriptions()->verified()->orderBy('id')->each(
-            function (StatusPageSubscription $subscription) use ($statusPage, $incidentUpdate): void {
-                Mail::to($subscription->email)->send(
-                    new PublicStatusPageIncidentUpdateMail($subscription, $statusPage, $incidentUpdate, $this->status),
+            function (StatusPageSubscription $statusPageSubscription) use ($statusPage, $incidentUpdate): void {
+                Mail::to($statusPageSubscription->email)->send(
+                    new PublicStatusPageIncidentUpdateMail($statusPageSubscription, $statusPage, $incidentUpdate, $this->status),
                 );
             },
         );

@@ -18,7 +18,7 @@ use Throwable;
 #[Signature('monitoring:send-sla-reports {--period-end= : Final date of the report period.} {--force : Send reports even when the current month has not started.}')]
 class SendMonitoringGroupSlaReportsCommand extends Command
 {
-    public function __construct(private readonly MonitoringGroupSlaReportService $reportService)
+    public function __construct(private readonly MonitoringGroupSlaReportService $monitoringGroupSlaReportService)
     {
         parent::__construct();
     }
@@ -45,7 +45,7 @@ class SendMonitoringGroupSlaReportsCommand extends Command
             ->orderBy('id')
             ->chunkById(100, function ($groups) use ($asOf): void {
                 foreach ($groups as $group) {
-                    $report = $this->reportService->previousCalendarMonth($group, $asOf);
+                    $report = $this->monitoringGroupSlaReportService->previousCalendarMonth($group, $asOf);
 
                     if ($report['monitorings'] === []) {
                         continue;
@@ -53,7 +53,7 @@ class SendMonitoringGroupSlaReportsCommand extends Command
 
                     try {
                         Mail::to($group->user->email)
-                            ->send(new MonitoringGroupSlaReportMail($group, $report, $this->reportService->csv($report)));
+                            ->send(new MonitoringGroupSlaReportMail($group, $report, $this->monitoringGroupSlaReportService->csv($report)));
                     } catch (Throwable $throwable) {
                         report($throwable);
                         $this->components->error("Could not send SLA report for monitoring group {$group->id}.");

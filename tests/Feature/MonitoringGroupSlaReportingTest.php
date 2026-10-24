@@ -11,8 +11,8 @@ use App\Models\MonitoringGroup;
 use App\Models\Package;
 use App\Models\User;
 use App\Services\MonitoringGroupSlaReportService;
-use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Tests\TestCase;
@@ -51,8 +51,8 @@ class MonitoringGroupSlaReportingTest extends TestCase
 
         $report = resolve(MonitoringGroupSlaReportService::class)->build(
             $monitoringGroup,
-            Carbon::parse('2026-08-01'),
-            Carbon::parse('2026-08-01'),
+            Date::parse('2026-08-01'),
+            Date::parse('2026-08-01'),
         );
 
         $this->assertEquals(100.0, $report['uptime_percentage']);
@@ -125,6 +125,6 @@ class MonitoringGroupSlaReportingTest extends TestCase
 
         $this->artisan('monitoring:send-sla-reports --period-end=2026-08-31')->assertSuccessful();
 
-        Mail::assertSent(MonitoringGroupSlaReportMail::class, fn (MonitoringGroupSlaReportMail $mail): bool => $mail->monitoringGroup->is($monitoringGroup));
+        Mail::assertSent(MonitoringGroupSlaReportMail::class, fn (MonitoringGroupSlaReportMail $monitoringGroupSlaReportMail): bool => $monitoringGroupSlaReportMail->monitoringGroup->is($monitoringGroup));
     }
 }

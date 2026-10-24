@@ -35,8 +35,8 @@ final class MonitoringGroupSlaReportService
      */
     public function build(MonitoringGroup $monitoringGroup, CarbonInterface $periodStart, CarbonInterface $periodEnd): array
     {
-        $periodStart = Carbon::instance($periodStart)->startOfDay();
-        $periodEnd = Carbon::instance($periodEnd)->endOfDay();
+        $periodStart = Date::instance($periodStart)->startOfDay();
+        $periodEnd = Date::instance($periodEnd)->endOfDay();
         $monitoringGroup->loadMissing(['monitorings', 'maintenanceWindows']);
 
         $totalUptimeMinutes = 0;
@@ -103,7 +103,7 @@ final class MonitoringGroupSlaReportService
 
     public function previousCalendarMonth(MonitoringGroup $monitoringGroup, ?CarbonInterface $asOf = null): array
     {
-        $asOf = Carbon::instance($asOf ?? Date::now());
+        $asOf = Date::instance($asOf ?? Date::now());
         $periodStart = $asOf->copy()->startOfMonth()->subMonthNoOverflow()->startOfMonth();
 
         return $this->build($monitoringGroup, $periodStart, $periodStart->copy()->endOfMonth());
@@ -202,20 +202,20 @@ final class MonitoringGroupSlaReportService
     /**
      * @return list<array{0: Carbon, 1: Carbon}>
      */
-    private function windowIntervals(MaintenanceWindow $window, Carbon $periodStart, Carbon $periodEnd): array
+    private function windowIntervals(MaintenanceWindow $maintenanceWindow, Carbon $periodStart, Carbon $periodEnd): array
     {
         $intervals = [];
         $cursor = $periodStart->copy();
 
         while ($cursor->lte($periodEnd)) {
-            $occurrence = $this->maintenanceWindowService->occurrence($window, $cursor);
+            $occurrence = $this->maintenanceWindowService->occurrence($maintenanceWindow, $cursor);
 
             if ($occurrence === null) {
                 break;
             }
 
-            $startsAt = Carbon::instance($occurrence['starts_at']);
-            $endsAt = Carbon::instance($occurrence['ends_at']);
+            $startsAt = Date::instance($occurrence['starts_at']);
+            $endsAt = Date::instance($occurrence['ends_at']);
 
             if ($startsAt->gt($periodEnd)) {
                 break;
