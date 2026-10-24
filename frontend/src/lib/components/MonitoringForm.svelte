@@ -22,6 +22,7 @@
     const initial = initialState();
     const monitoring = initial.monitoring;
     let type = $state<MonitoringType>(initial.type);
+    let checkIntervalMinutes = $state(String(monitoring?.check_interval_minutes ?? 15));
     let selectedLocations = $state<string[]>(initial.locations);
     let selectedGroups = $state<string[]>(initial.groups);
     let submitting = $state(false);
@@ -104,6 +105,16 @@
     }
 </script>
 
+{#snippet websiteIntervalField()}
+    {#if httpTypes}
+        <Field label="Check interval (minutes)" error={errorFor("check_interval_minutes")} required>
+            <Select name="check_interval_minutes" bind:value={checkIntervalMinutes}>
+                {#each websiteIntervalOptions as interval}<option value={interval}>{interval} {interval === 1 ? "minute" : "minutes"}</option>{/each}
+            </Select>
+        </Field>
+    {/if}
+{/snippet}
+
 {#snippet basicFields()}
     <div class="grid gap-4 sm:grid-cols-2">
         <Field label="Monitoring type" error={errorFor("type")} required>
@@ -128,6 +139,7 @@
     {:else}
         <Field label="Target" error={errorFor("target")} required><Input name="target" value={monitoring?.target ?? ""} required /></Field>
     {/if}
+    {@render websiteIntervalField()}
 {/snippet}
 
 {#snippet ownershipFields()}
@@ -153,11 +165,6 @@
         <div class="grid gap-4 sm:grid-cols-2"><Field label="CPU threshold (%)" error={errorFor("server_health_cpu_threshold_percent")} required><Input name="server_health_cpu_threshold_percent" type="number" min="1" max="100" value={monitoring?.server_health_cpu_threshold_percent ?? 90} required /></Field><Field label="RAM threshold (%)" error={errorFor("server_health_ram_threshold_percent")} required><Input name="server_health_ram_threshold_percent" type="number" min="1" max="100" value={monitoring?.server_health_ram_threshold_percent ?? 90} required /></Field><Field label="Storage threshold (%)" error={errorFor("server_health_storage_threshold_percent")} required><Input name="server_health_storage_threshold_percent" type="number" min="1" max="100" value={monitoring?.server_health_storage_threshold_percent ?? 90} required /></Field><Field label="Report interval (minutes)" error={errorFor("server_health_report_interval_minutes")} required><Input name="server_health_report_interval_minutes" type="number" min="1" value={monitoring?.server_health_report_interval_minutes ?? 1} required /></Field><Field label="Grace period (minutes)" error={errorFor("server_health_grace_minutes")} required><Input name="server_health_grace_minutes" type="number" min="0" value={monitoring?.server_health_grace_minutes ?? 5} required /></Field></div>
     {/if}
     {#if httpTypes}
-        <Field label="Check interval (minutes)" error={errorFor("check_interval_minutes")} required>
-            <Select name="check_interval_minutes" value={String(monitoring?.check_interval_minutes ?? 15)}>
-                {#each websiteIntervalOptions as interval}<option value={interval}>{interval} {interval === 1 ? "minute" : "minutes"}</option>{/each}
-            </Select>
-        </Field>
         <div class="grid gap-4 sm:grid-cols-2">
             <Field label="HTTP method" error={errorFor("http_method")}><Select name="http_method" value={monitoring?.http_method ?? "get"}>{#each ["get", "post", "put", "patch", "delete"] as httpMethod}<option value={httpMethod}>{httpMethod.toUpperCase()}</option>{/each}</Select></Field>
             <Field label="Timeout (seconds)" error={errorFor("timeout")} required><Input name="timeout" type="number" min="1" max="60" value={monitoring?.timeout ?? 5} required /></Field>
@@ -184,6 +191,7 @@
                 </Field>
             {/if}
             <p class="-mt-2 text-sm text-wg-text-muted">{type === "http" ? "WebGuard will use the standard HTTP availability check. Your first results appear on the website details page." : "WebGuard will use the selected monitoring type. Your first results appear on the monitoring details page."}</p>
+            {@render websiteIntervalField()}
         </section>
         <details class="group border-t border-wg-border" bind:open={advancedOpen}>
             <summary class="flex min-h-12 cursor-pointer list-none items-center justify-between gap-4 py-4 text-base font-bold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-wg-focus [&::-webkit-details-marker]:hidden"><span>Advanced options</span><span class="text-base text-wg-text-muted transition group-open:rotate-180" aria-hidden="true">⌄</span></summary>

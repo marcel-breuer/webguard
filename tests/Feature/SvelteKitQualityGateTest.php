@@ -67,6 +67,26 @@ class SvelteKitQualityGateTest extends TestCase
         $this->assertStringContainsString('presentation="edit-modal"', $monitorings);
     }
 
+    public function test_website_check_interval_is_visible_and_prefilled_in_create_and_edit_forms(): void
+    {
+        $monitoringForm = file_get_contents(base_path('frontend/src/lib/components/MonitoringForm.svelte'));
+
+        $this->assertIsString($monitoringForm);
+        $this->assertStringContainsString('let checkIntervalMinutes = $state(String(monitoring?.check_interval_minutes ?? 15));', $monitoringForm);
+        $this->assertStringContainsString('<Select name="check_interval_minutes" bind:value={checkIntervalMinutes}>', $monitoringForm);
+        $this->assertSame(2, mb_substr_count($monitoringForm, '{@render websiteIntervalField()}'));
+        $this->assertSame(2, mb_substr_count($monitoringForm, '{@render basicFields()}'));
+
+        $quickCreate = mb_strpos($monitoringForm, '{#if presentation === "first-website"');
+        $quickCreateDisclosure = mb_strpos($monitoringForm, '<details class="group border-t', $quickCreate);
+        $visibleIntervalField = mb_strpos($monitoringForm, '{@render websiteIntervalField()}', $quickCreate);
+
+        $this->assertIsInt($quickCreate);
+        $this->assertIsInt($quickCreateDisclosure);
+        $this->assertIsInt($visibleIntervalField);
+        $this->assertLessThan($quickCreateDisclosure, $visibleIntervalField);
+    }
+
     public function test_dashboard_uses_shared_cards_and_links_attention_items_to_websites(): void
     {
         $dashboard = file_get_contents(base_path('frontend/src/routes/(app)/dashboard/+page.svelte'));
