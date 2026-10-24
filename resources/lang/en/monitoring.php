@@ -496,6 +496,8 @@ return [
         'timeout_invalid_range' => 'The timeout must be a number between 1 and 60 seconds.',
         'http_method_invalid_config' => 'HTTP method configuration is only valid for HTTP or Keyword monitoring.',
         'http_method_invalid_value' => 'The HTTP method must be a valid HTTP method.',
+        'check_interval_invalid_config' => 'Check interval selection is only valid for HTTP or Keyword monitoring.',
+        'check_interval_invalid_value' => 'Choose a check interval of 1, 5, 10, 15, 30, or 60 minutes.',
         'expected_http_statuses_invalid_config' => 'Expected HTTP status codes are only valid for HTTP or Keyword monitoring.',
         'expected_http_statuses_invalid_format' => 'Expected HTTP status codes must use values or ascending ranges between 100 and 599, for example 200-299, 204.',
         'response_time_threshold_invalid_config' => 'Response time alert configuration is only valid for HTTP or Keyword monitoring.',

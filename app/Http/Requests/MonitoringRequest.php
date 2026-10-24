@@ -101,7 +101,7 @@ class MonitoringRequest extends FormRequest
                     $type = MonitoringType::tryFrom((string) $this->input('type'));
 
                     if (! in_array($type, [MonitoringType::HTTP, MonitoringType::KEYWORD], true) && $this->has('check_interval_minutes')) {
-                        $fail('Check interval selection is only valid for HTTP or Keyword monitoring.');
+                        $fail(__('monitoring.validation.check_interval_invalid_config'));
                     }
                 },
             ],
@@ -292,6 +292,16 @@ class MonitoringRequest extends FormRequest
         }
 
         return $rules;
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    public function messages(): array
+    {
+        return [
+            'check_interval_minutes.in' => __('monitoring.validation.check_interval_invalid_value'),
+        ];
     }
 
     protected function notificationChannelUser(): ?User

@@ -496,6 +496,8 @@ return [
         'timeout_invalid_range' => 'Das Timeout muss eine Zahl zwischen 1 und 60 Sekunden sein.',
         'http_method_invalid_config' => 'Die HTTP-Methodenkonfiguration ist nur für HTTP- oder Keyword-Überwachung gültig.',
         'http_method_invalid_value' => 'Die HTTP-Methode muss eine gültige HTTP-Methode sein.',
+        'check_interval_invalid_config' => 'Das Prüfintervall ist nur für HTTP- oder Keyword-Überwachungen gültig.',
+        'check_interval_invalid_value' => 'Wählen Sie ein Prüfintervall von 1, 5, 10, 15, 30 oder 60 Minuten.',
         'expected_http_statuses_invalid_config' => 'Erwartete HTTP-Statuscodes sind nur für HTTP- oder Keyword-Überwachung gültig.',
         'expected_http_statuses_invalid_format' => 'Erwartete HTTP-Statuscodes müssen Werte oder aufsteigende Bereiche zwischen 100 und 599 verwenden, z. B. 200-299, 204.',
         'response_time_threshold_invalid_config' => 'Die Antwortzeit-Warnkonfiguration ist nur für HTTP- oder Keyword-Überwachung gültig.',
