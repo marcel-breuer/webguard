@@ -13,7 +13,7 @@ class MonitoringCheckIntervalServiceTest extends TestCase
 {
     public function test_http_and_keyword_intervals_use_the_persisted_selection(): void
     {
-        $service = resolve(MonitoringCheckIntervalService::class);
+        $monitoringCheckIntervalService = resolve(MonitoringCheckIntervalService::class);
 
         foreach ([MonitoringType::HTTP, MonitoringType::KEYWORD] as $type) {
             foreach ([1, 5, 10, 15, 30, 60] as $minutes) {
@@ -22,19 +22,19 @@ class MonitoringCheckIntervalServiceTest extends TestCase
                     'check_interval_minutes' => $minutes,
                 ]);
 
-                $this->assertSame($minutes * 60, $service->secondsFor($monitoring));
+                $this->assertSame($minutes * 60, $monitoringCheckIntervalService->secondsFor($monitoring));
             }
         }
     }
 
     public function test_http_and_keyword_fallback_to_fifteen_minutes_without_a_selection(): void
     {
-        $service = resolve(MonitoringCheckIntervalService::class);
+        $monitoringCheckIntervalService = resolve(MonitoringCheckIntervalService::class);
 
         foreach ([MonitoringType::HTTP, MonitoringType::KEYWORD] as $type) {
             $monitoring = new Monitoring(['type' => $type]);
 
-            $this->assertSame(900, $service->secondsFor($monitoring));
+            $this->assertSame(900, $monitoringCheckIntervalService->secondsFor($monitoring));
         }
     }
 

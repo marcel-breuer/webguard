@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Api;
 
+use App\Http\Middleware\TrackApiUsage;
 use App\Enums\MonitoringLifecycleStatus;
 use App\Enums\MonitoringType;
 use App\Enums\TeamRole;
@@ -68,7 +69,7 @@ class MonitoringManagementApiTest extends TestCase
 
     public function test_http_and_keyword_monitorings_accept_only_the_supported_per_monitoring_intervals(): void
     {
-        $this->withoutMiddleware(\App\Http\Middleware\TrackApiUsage::class);
+        $this->withoutMiddleware(TrackApiUsage::class);
         $package = Package::factory()->create(['monitoring_limit' => 20]);
         $user = User::factory()->create(['package_id' => $package->id]);
         $serverInstance = $this->serverInstance('api-interval-selection');

@@ -90,7 +90,7 @@ class InternalInstanceRouteCompatibilityTest extends TestCase
     {
         Package::factory()->create();
         $user = User::factory()->create();
-        $firstLocation = ServerInstance::query()->create([
+        $serverInstance = ServerInstance::query()->create([
             'code' => 'last-response-de-1',
             'ip_address' => '192.0.2.61',
             'api_key_hash' => 'test-token-1234567890',
@@ -105,13 +105,13 @@ class InternalInstanceRouteCompatibilityTest extends TestCase
         $monitoring = Monitoring::factory()->for($user)->create([
             'type' => MonitoringType::HTTP,
             'check_interval_minutes' => 5,
-            'preferred_location' => $firstLocation->code,
-            'preferred_locations' => [$firstLocation->code, $secondLocation->code],
+            'preferred_location' => $serverInstance->code,
+            'preferred_locations' => [$serverInstance->code, $secondLocation->code],
         ]);
         $firstResponseAt = now()->subMinutes(4)->startOfSecond();
         $secondResponseAt = now()->subMinute()->startOfSecond();
 
-        foreach ([[$firstLocation, $firstResponseAt], [$secondLocation, $secondResponseAt]] as [$location, $responseAt]) {
+        foreach ([[$serverInstance, $firstResponseAt], [$secondLocation, $secondResponseAt]] as [$location, $responseAt]) {
             $response = MonitoringResponse::query()->create([
                 'monitoring_id' => $monitoring->id,
                 'location_code' => $location->code,
@@ -120,8 +120,8 @@ class InternalInstanceRouteCompatibilityTest extends TestCase
             $response->forceFill(['created_at' => $responseAt, 'updated_at' => $responseAt])->save();
         }
 
-        $this->withHeaders($this->instanceHeaders($firstLocation, 'test-token-1234567890'))
-            ->getJson(route('instances.monitorings.list', ['location' => $firstLocation->code]))
+        $this->withHeaders($this->instanceHeaders($serverInstance, 'test-token-1234567890'))
+            ->getJson(route('instances.monitorings.list', ['location' => $serverInstance->code]))
             ->assertOk()
             ->assertJsonPath('0.last_response_at', $firstResponseAt->toIso8601String())
             ->assertJsonPath('0.check_interval_seconds', 300);

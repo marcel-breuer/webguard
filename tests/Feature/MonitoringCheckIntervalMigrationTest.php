@@ -35,8 +35,8 @@ class MonitoringCheckIntervalMigrationTest extends TestCase
             'check_interval_minutes' => null,
         ]);
 
-        Schema::table('monitorings', function (Blueprint $table): void {
-            $table->dropColumn('check_interval_minutes');
+        Schema::table('monitorings', function (Blueprint $blueprint): void {
+            $blueprint->dropColumn('check_interval_minutes');
         });
 
         /** @var Migration $migration */
