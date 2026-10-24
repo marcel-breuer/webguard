@@ -26,6 +26,10 @@ final class MobileMonitoringGroupResource extends JsonResource
             'id' => $monitoringGroup->id,
             'name' => $monitoringGroup->name,
             'description' => $monitoringGroup->description,
+            'sla' => [
+                'target_percentage' => $monitoringGroup->sla_target_percentage === null ? null : (float) $monitoringGroup->sla_target_percentage,
+                'monthly_reports_enabled' => $monitoringGroup->sla_report_enabled,
+            ],
             'ownership' => [
                 'type' => 'private',
                 'user_id' => $monitoringGroup->user_id,

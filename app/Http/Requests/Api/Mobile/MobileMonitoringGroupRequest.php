@@ -7,6 +7,7 @@ namespace App\Http\Requests\Api\Mobile;
 use App\Models\Monitoring;
 use App\Models\MonitoringGroup;
 use Closure;
+use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -38,6 +39,8 @@ class MobileMonitoringGroupRequest extends FormRequest
                     ->ignore($monitoringGroupId),
             ],
             'description' => ['sometimes', 'nullable', 'string'],
+            'sla_target_percentage' => ['sometimes', 'nullable', 'numeric', 'between:0,100', 'required_if:sla_report_enabled,1'],
+            'sla_report_enabled' => ['sometimes', 'boolean'],
             'monitoring_ids' => ['sometimes', 'array', 'max:100'],
             'monitoring_ids.*' => [
                 'string',
@@ -53,6 +56,30 @@ class MobileMonitoringGroupRequest extends FormRequest
         ];
     }
 
+    public function withValidator(Validator $validator): void
+    {
+        $validator->after(function (Validator $validator): void {
+            if (! $this->boolean('sla_report_enabled')) {
+                return;
+            }
+
+            $target = $this->input('sla_target_percentage');
+            if ($target !== null && $target !== '') {
+                return;
+            }
+
+            /** @var MonitoringGroup|string|null $monitoringGroup */
+            $monitoringGroup = $this->route('monitoringGroup');
+            $existingGroup = $monitoringGroup instanceof MonitoringGroup
+                ? $monitoringGroup
+                : (is_string($monitoringGroup) ? MonitoringGroup::query()->find($monitoringGroup) : null);
+
+            if ($existingGroup?->sla_target_percentage === null) {
+                $validator->errors()->add('sla_target_percentage', __('validation.required'));
+            }
+        });
+    }
+
     protected function prepareForValidation(): void
     {
         $prepared = [];
@@ -64,6 +91,15 @@ class MobileMonitoringGroupRequest extends FormRequest
         if ($this->has('description')) {
             $description = mb_trim((string) $this->input('description'));
             $prepared['description'] = $description !== '' ? $description : null;
+        }
+
+        if ($this->has('sla_target_percentage')) {
+            $target = mb_trim((string) $this->input('sla_target_percentage'));
+            $prepared['sla_target_percentage'] = $target !== '' ? $target : null;
+        }
+
+        if ($this->has('sla_report_enabled')) {
+            $prepared['sla_report_enabled'] = $this->boolean('sla_report_enabled');
         }
 
         if ($this->has('monitoring_ids')) {

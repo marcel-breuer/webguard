@@ -26,6 +26,7 @@ class StatusPageRequest extends FormRequest
             'name' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string', 'max:1000'],
             'is_public' => ['boolean'],
+            'auto_publish_incident_updates' => ['boolean'],
             'components' => ['required', 'array', 'min:1'],
             'components.*.name' => ['required', 'string', 'max:255'],
             'components.*.description' => ['nullable', 'string', 'max:1000'],
@@ -81,6 +82,7 @@ class StatusPageRequest extends FormRequest
     {
         $this->merge([
             'is_public' => $this->boolean('is_public'),
+            'auto_publish_incident_updates' => $this->boolean('auto_publish_incident_updates'),
             'components' => $this->normalizeComponents(),
         ]);
     }

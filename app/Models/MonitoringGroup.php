@@ -18,6 +18,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
     'user_id',
     'name',
     'description',
+    'sla_target_percentage',
+    'sla_report_enabled',
 ])]
 #[Table(name: 'monitoring_groups', key: 'id', keyType: 'string')]
 #[WithoutIncrementing]
@@ -57,6 +59,8 @@ class MonitoringGroup extends Model
     protected function casts(): array
     {
         return [
+            'sla_target_percentage' => 'decimal:2',
+            'sla_report_enabled' => 'boolean',
             'created_at' => 'datetime',
             'updated_at' => 'datetime',
         ];

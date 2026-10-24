@@ -22,11 +22,13 @@ WebGuard helps teams observe public websites, operational tasks, certificates, d
 - **Real-time dashboard:** visualize monitoring data with statistics and charts.
 - **Monitoring management:** create and edit monitorings through structured forms, assign them to monitoring groups, and manage ownership with team-admin controls.
 - **Team collaboration:** create teams, invite registered or new users by email, assign admin/member roles, and share team-owned monitorings with read-only members.
+- **SLA reporting:** set a monthly uptime target for a monitoring group, download its previous calendar month's CSV report, and optionally email the report to the verified group owner on the first of each month. Unknown monitoring time is excluded from the measured uptime denominator; planned maintenance is excluded from reported totals.
 - **Admin panel:** manage users, subscription packages, and API usage logs.
 - **REST API:** access monitoring data, manage teams, and create or move team monitorings programmatically.
 - **Mobile app:** use the implemented WebGuard mobile app from the separate [WebGuard App Repository](https://github.com/marcel-breuer/webguard-app).
 - **SLA badge:** display website monitoring status on external sites with a compact SLA badge that shows live status, uptime proof, and public trust context.
 - **Public status pages:** publish monitoring status, uptime, a calculated 30-day aggregate uptime calendar for multi-monitoring pages, recent incidents, active or upcoming maintenance windows, and operator-managed announcements for users and customers. Components can select individual monitorings or dynamically use an existing monitoring group. Verified subscribers receive proactive notices when affected planned maintenance is scheduled or an operator elects to notify them about an announcement. New public status page URLs use ULIDs, while legacy slug URLs remain available through compatibility routes.
+- **Automatic incident updates:** opt in per public status page to publish neutral investigating and resolved messages for incidents affecting mapped components. Verified subscribers receive email updates; private incident notes and diagnostics are never included.
 - **Private incident reviews:** record the problem and resolution for each status-page incident in the management interface without exposing internal notes on public status pages.
 - **Incident follow-ups and timelines:** track private preventive actions, owners, due dates, and custom timeline events alongside automatically collected incident activity.
 - **Incident analytics:** classify incidents by type, severity, customer impact, and affected service, then review recurrence and average recovery time for the selected period.

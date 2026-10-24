@@ -19,6 +19,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
     'slug',
     'description',
     'is_public',
+    'auto_publish_incident_updates',
 ])]
 #[WithoutIncrementing]
 class StatusPage extends Model
@@ -75,6 +76,7 @@ class StatusPage extends Model
     {
         return [
             'is_public' => 'boolean',
+            'auto_publish_incident_updates' => 'boolean',
             'created_at' => 'datetime',
             'updated_at' => 'datetime',
         ];

@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\Internal\Ui\LocaleController;
 use App\Http\Controllers\Api\Internal\Ui\MonitoringCardsController;
 use App\Http\Controllers\Api\Internal\Ui\MonitoringDetailDataController;
 use App\Http\Controllers\Api\Internal\Ui\MonitoringFormOptionsController;
+use App\Http\Controllers\Api\Internal\Ui\MonitoringGroupSlaReportController;
 use App\Http\Controllers\Api\Internal\Ui\MonitoringIndexController;
 use App\Http\Controllers\Api\Internal\Ui\MonitoringManagementController;
 use App\Http\Controllers\Api\Internal\Ui\MonitoringOwnershipController;
@@ -130,6 +131,7 @@ Route::middleware(MeasureInternalUiRequest::class)->group(function (): void {
         Route::patch('/status-pages/{statusPage}/incidents/{incident}/timeline/{incidentTimelineEvent}', [MobileStatusPageWorkspaceController::class, 'updateTimelineEvent'])->name('status-pages.incidents.timeline.update');
         Route::delete('/status-pages/{statusPage}/incidents/{incident}/timeline/{incidentTimelineEvent}', [MobileStatusPageWorkspaceController::class, 'destroyTimelineEvent'])->name('status-pages.incidents.timeline.destroy');
         Route::get('/monitoring-groups', [MobileMonitoringGroupController::class, 'index'])->name('monitoring-groups.index');
+        Route::get('/monitoring-groups/{monitoringGroup}/sla-report', MonitoringGroupSlaReportController::class)->name('monitoring-groups.sla-report');
         Route::get('/monitoring-groups/assignment-options', [MobileMonitoringGroupController::class, 'assignmentOptions'])->name('monitoring-groups.assignment-options');
         Route::post('/monitoring-groups', [MobileMonitoringGroupController::class, 'store'])->name('monitoring-groups.store');
         Route::get('/monitoring-groups/{monitoringGroup}', [MobileMonitoringGroupController::class, 'show'])->name('monitoring-groups.show');

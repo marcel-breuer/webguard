@@ -10,6 +10,7 @@ use App\Models\Monitoring;
 use App\Models\MonitoringNotification;
 use App\Services\MonitoringStatsCache;
 use App\Services\OperationsOverviewCache;
+use App\Services\StatusPageIncidentUpdatePublisher;
 
 class IncidentObserver
 {
@@ -28,6 +29,8 @@ class IncidentObserver
             'read' => false,
             'sent' => false,
         ]);
+
+        resolve(StatusPageIncidentUpdatePublisher::class)->publishInvestigating($incident);
     }
 
     /**
@@ -46,6 +49,8 @@ class IncidentObserver
                 'read' => false,
                 'sent' => false,
             ]);
+
+            resolve(StatusPageIncidentUpdatePublisher::class)->publishResolved($incident);
         }
     }
 

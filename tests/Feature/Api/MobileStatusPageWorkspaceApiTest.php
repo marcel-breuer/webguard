@@ -75,6 +75,14 @@ class MobileStatusPageWorkspaceApiTest extends TestCase
             ->assertJsonPath('data.readiness.requires_public_update', true)
             ->assertJsonPath('data.lifecycle.state', 'open');
 
+        $this->withHeaders(['Idempotency-Key' => 'webguard-auto-status-open'])
+            ->postJson($base . '/updates', [
+                'status' => IncidentUpdateStatus::IDENTIFIED->value,
+                'message' => 'Client supplied update.',
+            ])
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors('idempotency_key');
+
         $this->withHeaders(['Idempotency-Key' => 'incident-update-001'])
             ->postJson($base . '/updates', [
                 'status' => IncidentUpdateStatus::IDENTIFIED->value,

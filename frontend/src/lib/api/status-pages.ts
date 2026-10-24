@@ -25,6 +25,7 @@ export interface StatusPage {
     name: string;
     description: string | null;
     publication: { is_public: boolean; can_change: boolean };
+    auto_publish_incident_updates: boolean;
     component_count: number;
     verified_subscriber_count: number;
     open_incident_count: number;

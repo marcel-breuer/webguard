@@ -18,6 +18,6 @@ trait RequiresMobileIdempotencyKey
      */
     protected function mobileIdempotencyKeyRules(): array
     {
-        return ['required', 'string', 'max:100'];
+        return ['required', 'string', 'max:100', 'not_regex:/^webguard-auto-status-/i'];
     }
 }
