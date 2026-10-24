@@ -33,7 +33,13 @@ class MonitoringListController extends Controller
         $builder = Monitoring::query()
             ->where('status', 'active')
             ->assignedToLocation($location)
-            ->with(['domainResult', 'latestResponseResult']);
+            ->with([
+                'domainResult',
+                'latestResponseResult',
+            ])
+            ->withMax([
+                'responseResults as latest_response_at_for_location' => fn ($query) => $query->where('location_code', $location),
+            ], 'created_at');
 
         if ($type) {
             $builder->where('type', $type);

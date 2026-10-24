@@ -441,7 +441,18 @@ class InternalUiMonitoringApiTest extends TestCase
     public function test_internal_ui_monitoring_projections_validate_bounded_queries_and_return_a_scoped_detail(): void
     {
         $user = User::factory()->create();
-        $monitoring = Monitoring::factory()->for($user)->create(['name' => 'Scoped detail API']);
+        $monitoring = Monitoring::factory()->for($user)->create([
+            'name' => 'Scoped detail API',
+            'type' => MonitoringType::KEYWORD,
+            'keyword' => 'healthy',
+            'check_interval_minutes' => 30,
+        ]);
+
+        $this->actingAs($user)
+            ->getJson(route('app.monitorings.index'))
+            ->assertOk()
+            ->assertJsonPath('data.0.keyword', 'healthy')
+            ->assertJsonPath('data.0.check_interval_minutes', 30);
 
         $this->actingAs($user)
             ->getJson(route('app.monitorings.index', ['per_page' => 101]))
@@ -461,6 +472,8 @@ class InternalUiMonitoringApiTest extends TestCase
         $this->assertDataEnvelope($testResponse, ['data.id', 'data.name']);
         $testResponse->assertJsonPath('data.id', $monitoring->id)
             ->assertJsonPath('data.name', 'Scoped detail API')
+            ->assertJsonPath('data.check_interval_minutes', 30)
+            ->assertJsonPath('data.initial_results_wait_minutes', 1)
             ->assertJsonStructure(['data' => ['initial_results_wait_minutes']]);
         $this->assertInternalUiTelemetry($testResponse, 15, 131072);
     }

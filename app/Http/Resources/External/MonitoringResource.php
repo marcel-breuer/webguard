@@ -29,6 +29,7 @@ final class MonitoringResource extends CompatibilityResource
             'team_id' => $monitoring->team_id,
             'can_manage' => $this->canManage($monitoring, $user),
         ];
+        $payload['check_interval_minutes'] = $monitoring->check_interval_minutes;
         $payload['group_assignments'] = $monitoring->relationLoaded('groups')
             ? $monitoring->groups
                 ->map(fn ($monitoringGroup): array => [

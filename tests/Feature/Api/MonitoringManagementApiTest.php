@@ -7,6 +7,7 @@ namespace Tests\Feature\Api;
 use App\Enums\MonitoringLifecycleStatus;
 use App\Enums\MonitoringType;
 use App\Enums\TeamRole;
+use App\Http\Middleware\TrackApiUsage;
 use App\Models\Monitoring;
 use App\Models\Package;
 use App\Models\ServerInstance;
@@ -34,6 +35,8 @@ class MonitoringManagementApiTest extends TestCase
         $testResponse->assertCreated();
         $monitoring = Monitoring::query()->where('name', 'API Created Check')->firstOrFail();
         $this->assertSame($user->id, $monitoring->user_id);
+        $this->assertSame(15, $monitoring->check_interval_minutes);
+        $testResponse->assertJsonPath('data.check_interval_minutes', 15);
 
         $this->getJson('/api/monitorings?per_page=1')
             ->assertOk()
@@ -47,6 +50,7 @@ class MonitoringManagementApiTest extends TestCase
         ]))->assertOk()
             ->assertJsonPath('data.name', 'API Updated Check');
         $this->assertSame(MonitoringLifecycleStatus::PAUSED, $monitoring->fresh()->status);
+        $this->assertSame(15, $monitoring->fresh()->check_interval_minutes);
 
         $this->patchJson('/api/monitorings/' . $monitoring->id, $this->monitoringPayload([
             'name' => 'API Updated Check',
@@ -61,6 +65,65 @@ class MonitoringManagementApiTest extends TestCase
             ->assertJsonPath('data.deleted', true);
         $this->assertSoftDeleted('monitorings', ['id' => $monitoring->id]);
         $this->deleteJson('/api/monitorings/' . $monitoring->id)->assertNotFound();
+    }
+
+    public function test_http_and_keyword_monitorings_accept_only_the_supported_per_monitoring_intervals(): void
+    {
+        $this->withoutMiddleware(TrackApiUsage::class);
+        $package = Package::factory()->create(['monitoring_limit' => 20]);
+        $user = User::factory()->create(['package_id' => $package->id]);
+        $serverInstance = $this->serverInstance('api-interval-selection');
+        Sanctum::actingAs($user);
+
+        foreach ([MonitoringType::HTTP, MonitoringType::KEYWORD] as $type) {
+            foreach ([1, 5, 10, 15, 30, 60] as $interval) {
+                $response = $this->postJson('/api/monitorings', $this->monitoringPayload([
+                    'name' => $type->value . ' ' . $interval,
+                    'type' => $type->value,
+                    'keyword' => $type === MonitoringType::KEYWORD ? 'healthy' : null,
+                    'check_interval_minutes' => $interval,
+                    'preferred_locations' => [$serverInstance->code],
+                ]));
+
+                $response->assertCreated()
+                    ->assertJsonPath('data.check_interval_minutes', $interval);
+                $response->assertJsonPath('data.keyword', $type === MonitoringType::KEYWORD ? 'healthy' : null);
+                $monitoringId = (string) $response->json('data.id');
+                $this->assertDatabaseHas('monitorings', [
+                    'id' => $monitoringId,
+                    'check_interval_minutes' => $interval,
+                ]);
+            }
+        }
+
+        $this->postJson('/api/monitorings', $this->monitoringPayload([
+            'name' => 'Unsupported cadence',
+            'check_interval_minutes' => 2,
+            'preferred_locations' => [$serverInstance->code],
+        ]))->assertUnprocessable()
+            ->assertJsonValidationErrors(['check_interval_minutes']);
+    }
+
+    public function test_update_without_an_interval_preserves_the_existing_choice(): void
+    {
+        $package = Package::factory()->create(['monitoring_limit' => 5]);
+        $user = User::factory()->create(['package_id' => $package->id]);
+        $serverInstance = $this->serverInstance('api-interval-preserve');
+        $monitoring = Monitoring::factory()->for($user)->create([
+            'type' => MonitoringType::HTTP,
+            'check_interval_minutes' => 60,
+            'preferred_location' => $serverInstance->code,
+            'preferred_locations' => [$serverInstance->code],
+        ]);
+        Sanctum::actingAs($user);
+
+        $this->patchJson('/api/monitorings/' . $monitoring->id, $this->monitoringPayload([
+            'name' => 'Updated without cadence',
+            'preferred_locations' => [$serverInstance->code],
+        ]))->assertOk()
+            ->assertJsonPath('data.check_interval_minutes', 60);
+
+        $this->assertSame(60, $monitoring->fresh()->check_interval_minutes);
     }
 
     public function test_monitoring_list_uses_a_stable_name_and_id_order(): void

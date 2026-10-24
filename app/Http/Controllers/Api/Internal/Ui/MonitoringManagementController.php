@@ -126,7 +126,7 @@ class MonitoringManagementController extends Controller
     }
 
     /**
-     * @return array{id: string, name: string, type: string, lifecycle_status: string, public_label_enabled: bool, ownership: array{type: string, can_manage: bool, team_id: string|null}, group_assignments: Collection<int, array{id: string, name: string}>}
+     * @return array{id: string, name: string, type: string, keyword: string|null, lifecycle_status: string, public_label_enabled: bool, check_interval_minutes: int|null, ownership: array{type: string, can_manage: bool, team_id: string|null}, group_assignments: Collection<int, array{id: string, name: string}>}
      */
     private function successPayload(Monitoring $monitoring, User $user): array
     {
@@ -138,8 +138,10 @@ class MonitoringManagementController extends Controller
             'id' => $monitoring->id,
             'name' => $monitoring->name,
             'type' => $monitoring->type->value,
+            'keyword' => $monitoring->keyword,
             'lifecycle_status' => $monitoring->status->value,
             'public_label_enabled' => $monitoring->public_label_enabled,
+            'check_interval_minutes' => $monitoring->check_interval_minutes,
             'ownership' => [
                 'type' => $monitoring->isTeamOwned() ? 'team' : 'private',
                 'can_manage' => $monitoring->isManageableBy($user),

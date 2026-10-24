@@ -46,6 +46,8 @@ class MonitoringController extends Controller
             return response()->json(['message' => 'Unauthorized monitoring'], 403);
         }
 
+        $monitoring = Monitoring::query()->findOrFail($validated['monitoring_id']);
+
         if (! isset($validated['status']) && ! isset($validated['http_status_code']) && ! isset($validated['vital_values'])) {
             return response()->json([
                 'message' => 'Provide raw monitoring evidence or the legacy status during the compatibility period.',
@@ -53,7 +55,7 @@ class MonitoringController extends Controller
         }
 
         $validated['location_code'] = (string) $request->attributes->get('authenticated_instance_code');
-        $validated['check_interval_seconds'] ??= $monitoringCheckIntervalService->defaultSeconds();
+        $validated['check_interval_seconds'] ??= $monitoringCheckIntervalService->secondsFor($monitoring);
 
         return $instanceCallbackIdempotencyService->execute($request, 'monitoring-responses', function () use ($validated): JsonResponse {
             MonitoringResponse::query()->create($validated);

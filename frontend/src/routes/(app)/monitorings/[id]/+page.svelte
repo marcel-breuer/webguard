@@ -182,7 +182,7 @@
 <main class="bg-wg-canvas">
     <div class="mx-auto w-[min(76rem,calc(100%_-_2rem))] py-6 sm:py-7">
         {#if data.monitoring.latest_check === null && data.monitoring.initial_results_wait_minutes !== null && data.monitoring.initial_results_wait_minutes !== undefined}
-            <p class="mb-6 rounded-xl border border-blue-200 bg-blue-50 p-4 text-sm leading-6 text-blue-900 dark:border-blue-900 dark:bg-blue-950/40 dark:text-blue-100">The first monitoring results can take up to {data.monitoring.initial_results_wait_minutes} minutes, based on the configured check interval.</p>
+            <p class="mb-6 rounded-xl border border-blue-200 bg-blue-50 p-4 text-sm leading-6 text-blue-900 dark:border-blue-900 dark:bg-blue-950/40 dark:text-blue-100">The first check is scheduled on the next monitoring poll and usually starts within about {data.monitoring.initial_results_wait_minutes} {data.monitoring.initial_results_wait_minutes === 1 ? "minute" : "minutes"}. Queue pressure can delay it.</p>
         {/if}
 
         <section class="grid gap-4 md:grid-cols-3" aria-label="Monitoring summary">

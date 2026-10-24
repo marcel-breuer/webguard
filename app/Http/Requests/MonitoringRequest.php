@@ -9,6 +9,7 @@ use App\Enums\MonitoringLifecycleStatus;
 use App\Enums\MonitoringType;
 use App\Models\Team;
 use App\Models\User;
+use App\Services\MonitoringCheckIntervalService;
 use App\Support\DnsRecordExpectation;
 use App\Support\HttpStatusCodeRanges;
 use Illuminate\Contracts\Validation\ValidationRule;
@@ -92,6 +93,18 @@ class MonitoringRequest extends FormRequest
             'status' => ['required', Rule::enum(MonitoringLifecycleStatus::class)],
             'heartbeat_interval_minutes' => ['nullable', 'required_if:type,heartbeat', 'integer', 'min:1', 'max:10080'],
             'heartbeat_grace_minutes' => ['nullable', 'required_if:type,heartbeat', 'integer', 'min:0', 'max:1440'],
+            'check_interval_minutes' => [
+                'nullable',
+                'integer',
+                Rule::in(MonitoringCheckIntervalService::WEBSITE_INTERVAL_OPTIONS_MINUTES),
+                function ($attribute, $value, $fail): void {
+                    $type = MonitoringType::tryFrom((string) $this->input('type'));
+
+                    if (! in_array($type, [MonitoringType::HTTP, MonitoringType::KEYWORD], true) && $this->has('check_interval_minutes')) {
+                        $fail('Check interval selection is only valid for HTTP or Keyword monitoring.');
+                    }
+                },
+            ],
             'server_health_cpu_threshold_percent' => $this->serverHealthThresholdRules(),
             'server_health_ram_threshold_percent' => $this->serverHealthThresholdRules(),
             'server_health_storage_threshold_percent' => $this->serverHealthThresholdRules(),

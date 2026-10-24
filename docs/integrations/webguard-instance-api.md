@@ -76,15 +76,20 @@ maintenance state, preferred locations, heartbeat settings, and type-specific
 domain or server-health fields. The exact current projection is implemented by
 `App\\Http\\Resources\\Instance\\MonitoringResource`.
 
-Every active monitoring item additionally includes the additive
-`check_interval_seconds` field. It is the minimum start-to-start interval for a
-regular check at the requesting location. HTTP and keyword monitorings currently
-receive `900`; other active polling types retain `300` until they receive a
-dedicated cadence policy. Instances must not run a regular check earlier than
-this value. Queue pressure, maintenance, and bounded jitter may delay a check.
-Heartbeat and server-health monitorings continue to use their dedicated report
-fields and are not redefined by this value. Older instances may ignore the
-unknown field during the rollout.
+Every active monitoring item includes `check_interval_seconds` and nullable
+`last_response_at`. `last_response_at` is the newest response timestamp for the
+requesting location, not a result from another location. HTTP and keyword
+monitorings use their saved 1, 5, 10, 15, 30, or 60-minute selection; existing
+and newly created monitorings default to 15 minutes. Other active polling types
+retain the configured default cadence. Instances poll this endpoint every
+minute and run a regular response check when the location has no result yet or
+the selected interval has elapsed since `last_response_at`. Queue pressure and
+maintenance may delay a due check. Heartbeat and server-health monitorings
+continue to use their dedicated report fields and are not redefined by this
+value. Roll out Core's migration and API together with the updated Instance
+workers; until every worker understands these additive fields, older workers
+may continue using their legacy cadence and will not honor the selected
+intervals.
 
 The projection can include `auth_username`, `auth_password`, `http_headers`, and
 `http_body` when a monitoring needs them. Treat these as secrets: hold them only
@@ -121,9 +126,11 @@ Validation failures use Laravel's `422` JSON validation response.
 
 Compatible instances should return the interval they actually used in
 `check_interval_seconds`. Core persists it with the result so historical
-heatmaps retain the five-minute legacy cadence for old workers and the
-15-minute cadence for updated website checks. Callbacks from older instances
-without the field are stored with the documented 300-second legacy fallback.
+heatmaps retain the interval used for each check. If an older instance omits
+the field, Core derives the fallback from the monitoring configuration: HTTP
+and keyword callbacks use that monitoring's selected interval (15 minutes for
+existing monitors by default), while other response checks retain the configured
+default cadence.
 
 For monitorings with more than one preferred location, Core manages incident
 state through regional consensus. Incident open/close callbacks return `200`

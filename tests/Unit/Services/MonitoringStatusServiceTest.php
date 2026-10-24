@@ -127,20 +127,42 @@ class MonitoringStatusServiceTest extends TestCase
         $this->assertSame(180, $statusNow['interval']);
     }
 
-    public function test_status_now_uses_the_website_interval_for_http_and_the_default_for_other_active_checks(): void
+    public function test_status_now_uses_the_selected_interval_and_shows_the_first_poll_for_website_checks(): void
     {
         Date::setTestNow('2026-04-12 12:00:00');
 
-        $httpMonitoring = $this->createMonitoring(['type' => MonitoringType::HTTP]);
+        $httpMonitoring = $this->createMonitoring([
+            'type' => MonitoringType::HTTP,
+            'check_interval_minutes' => 15,
+        ]);
+        $keywordMonitoring = $this->createMonitoring([
+            'type' => MonitoringType::KEYWORD,
+            'check_interval_minutes' => 1,
+        ]);
         $pingMonitoring = $this->createMonitoring(['type' => MonitoringType::PING]);
 
         $httpStatus = resolve(MonitoringStatusService::class)->getStatusNow($httpMonitoring->fresh());
+        $keywordStatus = resolve(MonitoringStatusService::class)->getStatusNow($keywordMonitoring->fresh());
         $pingStatus = resolve(MonitoringStatusService::class)->getStatusNow($pingMonitoring->fresh());
 
         $this->assertSame(900, $httpStatus['interval']);
-        $this->assertSame('2026-04-12T12:15:00+02:00', $httpStatus['next']);
+        $this->assertSame('2026-04-12T12:01:00+02:00', $httpStatus['next']);
+        $this->assertSame(60, $keywordStatus['interval']);
+        $this->assertSame('2026-04-12T12:01:00+02:00', $keywordStatus['next']);
         $this->assertSame(300, $pingStatus['interval']);
         $this->assertSame('2026-04-12T12:05:00+02:00', $pingStatus['next']);
+
+        MonitoringResponse::query()->forceCreate([
+            'monitoring_id' => $httpMonitoring->id,
+            'status' => MonitoringStatus::UP,
+            'http_status_code' => 200,
+            'response_time' => 120.0,
+            'created_at' => Date::parse('2026-04-12 11:55:00'),
+            'updated_at' => Date::parse('2026-04-12 11:55:00'),
+        ]);
+
+        $recurringHttpStatus = resolve(MonitoringStatusService::class)->getStatusNow($httpMonitoring->fresh());
+        $this->assertSame('2026-04-12T12:10:00+02:00', $recurringHttpStatus['next']);
     }
 
     /**

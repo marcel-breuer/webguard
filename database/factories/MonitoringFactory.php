@@ -7,6 +7,7 @@ namespace Database\Factories;
 use App\Enums\MonitoringLifecycleStatus;
 use App\Enums\MonitoringType;
 use App\Models\Monitoring;
+use App\Services\MonitoringCheckIntervalService;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -42,6 +43,7 @@ class MonitoringFactory extends Factory
             },
             'preferred_location' => 'de-1',
             'status' => MonitoringLifecycleStatus::ACTIVE,
+            'check_interval_minutes' => in_array($type, [MonitoringType::HTTP, MonitoringType::KEYWORD], true) ? MonitoringCheckIntervalService::DEFAULT_WEBSITE_INTERVAL_MINUTES : null,
             'expected_http_statuses' => in_array($type, [MonitoringType::HTTP, MonitoringType::KEYWORD], true) ? '200-299' : null,
         ];
 

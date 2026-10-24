@@ -8,13 +8,12 @@ return [
     | Monitoring Interval
     |--------------------------------------------------------------------------
     |
-    | Active website checks are paced separately from infrastructure checks.
-    | HTTP and keyword monitorings use the website interval to avoid overly
-    | frequent requests to public targets. Other active checks retain the
-    | current default cadence until they receive a dedicated product policy.
+    | HTTP and keyword monitorings store a customer-selected interval. This
+    | default is used only when older records or internal callers have no saved
+    | value. Other active checks retain their existing default cadence.
     |
     */
-    'website_interval_minutes' => (int) env('MONITORING_WEBSITE_INTERVAL_MINUTES', 15),
+    'website_interval_minutes' => 15,
     'default_interval_minutes' => (int) env('MONITORING_DEFAULT_INTERVAL_MINUTES', 5),
 
     /*
