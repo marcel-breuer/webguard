@@ -199,7 +199,7 @@ services:
     image: mysql:8.4
     restart: unless-stopped
     environment:
-      MYSQL_ROOT_PASSWORD: "${MYSQL_ROOT_PASSWORD:?MYSQL_ROOT_PASSWORD must be set when using bundled MySQL}"
+      MYSQL_ROOT_PASSWORD: "${MYSQL_ROOT_PASSWORD:-}"
       MYSQL_DATABASE: "${DB_DATABASE:-webguard_core}"
       MYSQL_USER: "${DB_USERNAME:-webguard}"
       MYSQL_PASSWORD: "${DB_PASSWORD:?DB_PASSWORD must be set for production deployments}"

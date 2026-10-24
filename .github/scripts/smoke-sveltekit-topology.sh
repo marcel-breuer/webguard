@@ -25,10 +25,14 @@ smoke_secret() {
     od -An -N32 -tx1 /dev/urandom | tr -d ' \n'
 }
 export DB_PASSWORD="${DB_PASSWORD:-$(smoke_secret)}"
-export MYSQL_ROOT_PASSWORD="${MYSQL_ROOT_PASSWORD:-$(smoke_secret)}"
 export REDIS_PASSWORD="${REDIS_PASSWORD:-$(smoke_secret)}"
+mysql_root_password="${MYSQL_ROOT_PASSWORD:-$(smoke_secret)}"
+# Coolify parses every Compose service even when the internal-services profile is inactive.
+unset MYSQL_ROOT_PASSWORD
+$compose config --quiet
 
 $compose build php frontend gateway queue-default
+export MYSQL_ROOT_PASSWORD="$mysql_root_password"
 $compose up --no-build --detach --wait --wait-timeout 180 php frontend gateway schedule queue-default mysql redis
 
 $compose exec --no-TTY gateway wget --quiet --output-document=/dev/null http://127.0.0.1:8080/_health/gateway
