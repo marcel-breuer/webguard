@@ -114,11 +114,11 @@ MAIL_FROM_ADDRESS=noreply@example.com
 MAIL_FROM_NAME=WebGuard
 ```
 
-`DB_PASSWORD`, `MYSQL_ROOT_PASSWORD`, and `REDIS_PASSWORD` are required
-production secrets. `MYSQL_ROOT_PASSWORD` is used only when the bundled
-`internal-services` MySQL profile is enabled; use the database provider's
-corresponding credentials when MySQL and Redis are managed externally. Never
-reuse the local development values from `docker-compose.override.yml`.
+`DB_PASSWORD` and `REDIS_PASSWORD` are required production secrets.
+`MYSQL_ROOT_PASSWORD` is required only when the bundled `internal-services`
+MySQL profile is enabled. Leave it unset when using an external database;
+provide the database provider's credentials through `DB_PASSWORD` instead.
+Never reuse the local development values from `docker-compose.override.yml`.
 
 For a non-Coolify Docker deployment, set `APP_URL` to the canonical public URL. The Compose file passes the same value to Laravel and SvelteKit as `ORIGIN`. Set concrete values for SMTP as well, for example `SMTP_USERNAME=noreply@example.com` and `MAIL_FROM_NAME=WebGuard`. Do not use values such as `MAIL_USERNAME=${MAIL_FROM_ADDRESS}` because Docker Compose evaluates the env file during build and can warn or substitute empty strings before the container starts.
 
