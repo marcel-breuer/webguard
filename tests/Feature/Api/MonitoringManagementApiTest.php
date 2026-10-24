@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Api;
 
-use App\Http\Middleware\TrackApiUsage;
 use App\Enums\MonitoringLifecycleStatus;
 use App\Enums\MonitoringType;
 use App\Enums\TeamRole;
+use App\Http\Middleware\TrackApiUsage;
 use App\Models\Monitoring;
 use App\Models\Package;
 use App\Models\ServerInstance;

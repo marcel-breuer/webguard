@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\Http\Resources\Instance;
 
-use Illuminate\Support\Facades\Date;
 use App\Enums\MonitoringType;
 use App\Models\Monitoring;
 use App\Services\MonitoringCheckIntervalService;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\Date;
 
 class MonitoringResource extends JsonResource
 {
