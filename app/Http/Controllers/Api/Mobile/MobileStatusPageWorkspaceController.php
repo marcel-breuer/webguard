@@ -13,12 +13,14 @@ use App\Http\Requests\StatusPages\UpdateIncidentFollowUpRequest;
 use App\Http\Requests\StatusPages\UpdateIncidentMetadataRequest;
 use App\Http\Requests\StatusPages\UpdateIncidentReviewRequest;
 use App\Http\Requests\StatusPages\UpdateIncidentTimelineEventRequest;
+use App\Http\Requests\StatusPages\UpdateIncidentUpdateRequest;
 use App\Http\Requests\StatusPages\UpdateStatusPageAnnouncementRequest;
 use App\Http\Resources\External\MobileIncidentWorkspaceResource;
 use App\Http\Resources\External\MobileStatusPageResource;
 use App\Models\Incident;
 use App\Models\IncidentFollowUp;
 use App\Models\IncidentTimelineEvent;
+use App\Models\IncidentUpdate;
 use App\Models\StatusPage;
 use App\Models\StatusPageAnnouncement;
 use App\Models\User;
@@ -165,6 +167,30 @@ class MobileStatusPageWorkspaceController extends Controller
         ], $result['created'] ? 201 : 200);
     }
 
+    public function updateIncidentUpdate(UpdateIncidentUpdateRequest $updateIncidentUpdateRequest, string $statusPage, string $incident, string $incidentUpdate): JsonResponse
+    {
+        /** @var User $user */
+        $user = $updateIncidentUpdateRequest->user();
+        $incidentModel = $this->incidentFor($user, $statusPage, $incident);
+        $this->mobileStatusPageWorkspaceService->updateIncidentUpdate(
+            $this->incidentUpdateFor($incidentModel, $incidentUpdate),
+            $user,
+            $updateIncidentUpdateRequest->validated(),
+        );
+
+        return response()->json(['data' => $this->incidentResource($this->incidentFor($user, $statusPage, $incident))->resolve($updateIncidentUpdateRequest)]);
+    }
+
+    public function suppressIncidentUpdate(Request $request, string $statusPage, string $incident, string $incidentUpdate): JsonResponse
+    {
+        /** @var User $user */
+        $user = $request->user();
+        $incidentModel = $this->incidentFor($user, $statusPage, $incident);
+        $this->mobileStatusPageWorkspaceService->suppressIncidentUpdate($this->incidentUpdateFor($incidentModel, $incidentUpdate), $user);
+
+        return response()->json(status: 204);
+    }
+
     public function updateMetadata(UpdateIncidentMetadataRequest $updateIncidentMetadataRequest, string $statusPage, string $incident): JsonResponse
     {
         /** @var User $user */
@@ -281,6 +307,11 @@ class MobileStatusPageWorkspaceController extends Controller
     private function followUpFor(Incident $incident, string $incidentFollowUp): IncidentFollowUp
     {
         return $incident->followUps()->whereKey($incidentFollowUp)->firstOrFail();
+    }
+
+    private function incidentUpdateFor(Incident $incident, string $incidentUpdate): IncidentUpdate
+    {
+        return $incident->updates()->whereKey($incidentUpdate)->firstOrFail();
     }
 
     private function timelineEventFor(Incident $incident, string $incidentTimelineEvent): IncidentTimelineEvent

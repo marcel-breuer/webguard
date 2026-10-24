@@ -122,6 +122,8 @@ Route::middleware(MeasureInternalUiRequest::class)->group(function (): void {
         Route::get('/status-pages/{statusPage}/incidents', [MobileStatusPageWorkspaceController::class, 'incidents'])->name('status-pages.incidents.index');
         Route::get('/status-pages/{statusPage}/incidents/{incident}', [MobileStatusPageWorkspaceController::class, 'showIncident'])->name('status-pages.incidents.show');
         Route::post('/status-pages/{statusPage}/incidents/{incident}/updates', [MobileStatusPageWorkspaceController::class, 'storeIncidentUpdate'])->name('status-pages.incidents.updates.store');
+        Route::patch('/status-pages/{statusPage}/incidents/{incident}/updates/{incidentUpdate}', [MobileStatusPageWorkspaceController::class, 'updateIncidentUpdate'])->name('status-pages.incidents.updates.update');
+        Route::delete('/status-pages/{statusPage}/incidents/{incident}/updates/{incidentUpdate}', [MobileStatusPageWorkspaceController::class, 'suppressIncidentUpdate'])->name('status-pages.incidents.updates.suppress');
         Route::patch('/status-pages/{statusPage}/incidents/{incident}/metadata', [MobileStatusPageWorkspaceController::class, 'updateMetadata'])->name('status-pages.incidents.metadata.update');
         Route::patch('/status-pages/{statusPage}/incidents/{incident}/review', [MobileStatusPageWorkspaceController::class, 'updateReview'])->name('status-pages.incidents.review.update');
         Route::post('/status-pages/{statusPage}/incidents/{incident}/follow-ups', [MobileStatusPageWorkspaceController::class, 'storeFollowUp'])->name('status-pages.incidents.follow-ups.store');

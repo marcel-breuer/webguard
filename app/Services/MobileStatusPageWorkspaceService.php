@@ -124,6 +124,34 @@ class MobileStatusPageWorkspaceService
     }
 
     /**
+     * @param  array{status: string, message: string}  $attributes
+     */
+    public function updateIncidentUpdate(IncidentUpdate $incidentUpdate, User $user, array $attributes): IncidentUpdate
+    {
+        abort_if($user->isDemo(), 403);
+        abort_if($incidentUpdate->suppressed_at !== null, 409);
+
+        $incidentUpdate->update($attributes);
+        $this->recordPublicationEvent($incidentUpdate, $user, 'Public incident update edited', 'incident_update_edited');
+
+        return $incidentUpdate->refresh();
+    }
+
+    public function suppressIncidentUpdate(IncidentUpdate $incidentUpdate, User $user): IncidentUpdate
+    {
+        abort_if($user->isDemo(), 403);
+
+        if ($incidentUpdate->suppressed_at !== null) {
+            return $incidentUpdate;
+        }
+
+        $incidentUpdate->forceFill(['suppressed_at' => Date::now()])->save();
+        $this->recordPublicationEvent($incidentUpdate, $user, 'Public incident update suppressed', 'incident_update_suppressed');
+
+        return $incidentUpdate->refresh();
+    }
+
+    /**
      * @param  array<string, mixed>  $attributes
      */
     public function updateMetadata(Incident $incident, User $user, array $attributes): Incident
@@ -268,6 +296,18 @@ class MobileStatusPageWorkspaceService
     private function assertAssignedUserIsStatusPageOwner(StatusPage $statusPage, ?string $assignedUserId): void
     {
         abort_unless($assignedUserId === null || $assignedUserId === $statusPage->user_id, 422);
+    }
+
+    private function recordPublicationEvent(IncidentUpdate $incidentUpdate, User $user, string $title, string $activityEvent): void
+    {
+        $incident = $incidentUpdate->incident;
+        $incident->timelineEvents()->create([
+            'title' => $title,
+            'description' => 'An operator changed the publication state of an incident update.',
+            'occurred_at' => Date::now(),
+            'source_type' => 'status_page',
+        ]);
+        $this->log($user, $incident, $activityEvent, ['incident_update_id' => $incidentUpdate->id]);
     }
 
     /**

@@ -14,6 +14,7 @@ use App\Models\Package;
 use App\Models\StatusPage;
 use App\Models\StatusPageSubscription;
 use App\Models\User;
+use App\Services\StatusPageIncidentUpdatePublisher;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Mail;
 use Tests\TestCase;
@@ -42,6 +43,9 @@ class AutomaticStatusPageIncidentUpdatesTest extends TestCase
             'incident_id' => $incident->id,
             'mobile_idempotency_key' => 'webguard-auto-status-open',
         ]);
+        resolve(StatusPageIncidentUpdatePublisher::class)->publishInvestigating($incident);
+        $this->assertDatabaseCount('incident_updates', 1);
+        $this->assertDatabaseCount('incident_timeline_events', 1);
 
         $incident->update(['up_at' => now()]);
         $incidentUpdate->refresh();
@@ -86,9 +90,48 @@ class AutomaticStatusPageIncidentUpdatesTest extends TestCase
         $incidentUpdate = IncidentUpdate::query()->where('incident_id', $incident->id)->firstOrFail();
 
         (new SendStatusPageIncidentUpdateNotifications($statusPage->id, $incidentUpdate->id, 'investigating'))->handle();
+        (new SendStatusPageIncidentUpdateNotifications($statusPage->id, $incidentUpdate->id, 'investigating'))->handle();
 
         Mail::assertSent(PublicStatusPageIncidentUpdateMail::class, fn (PublicStatusPageIncidentUpdateMail $publicStatusPageIncidentUpdateMail): bool => $publicStatusPageIncidentUpdateMail->hasTo($statusPageSubscription->email));
         Mail::assertNotSent(PublicStatusPageIncidentUpdateMail::class, fn (PublicStatusPageIncidentUpdateMail $publicStatusPageIncidentUpdateMail): bool => $publicStatusPageIncidentUpdateMail->hasTo('pending@example.test'));
+        Mail::assertSentCount(1);
+    }
+
+    public function test_owner_can_edit_and_suppress_an_automatic_public_update(): void
+    {
+        Mail::fake();
+        $user = $this->user();
+        $monitoring = Monitoring::factory()->for($user)->create();
+        $statusPage = $this->statusPageFor($user, $monitoring, true);
+        $incident = Incident::query()->create(['monitoring_id' => $monitoring->id, 'down_at' => now()]);
+        $incidentUpdate = IncidentUpdate::query()->where('incident_id', $incident->id)->firstOrFail();
+        $base = '/api/status-pages/' . $statusPage->id . '/incidents/' . $incident->id . '/updates/' . $incidentUpdate->id;
+
+        $this->actingAs($user)
+            ->patchJson($base, [
+                'status' => IncidentUpdateStatus::IDENTIFIED->value,
+                'message' => 'We identified the affected dependency.',
+            ])
+            ->assertOk()
+            ->assertJsonPath('data.updates.0.message', 'We identified the affected dependency.');
+
+        $this->getJson(route('public.status.show', $statusPage))
+            ->assertOk()
+            ->assertJsonPath('data.incidents.0.updates.0.message', 'We identified the affected dependency.');
+
+        $this->actingAs($user)->deleteJson($base)->assertNoContent();
+        $this->getJson(route('public.status.show', $statusPage))
+            ->assertOk()
+            ->assertJsonPath('data.incidents.0.updates', []);
+
+        $this->assertNotNull($incidentUpdate->refresh()->suppressed_at);
+        $this->assertDatabaseHas('incident_timeline_events', [
+            'incident_id' => $incident->id,
+            'title' => 'Public incident update suppressed',
+            'source_type' => 'status_page',
+        ]);
+        (new SendStatusPageIncidentUpdateNotifications($statusPage->id, $incidentUpdate->id, 'investigating'))->handle();
+        Mail::assertNotSent(PublicStatusPageIncidentUpdateMail::class);
     }
 
     private function statusPageFor(User $user, Monitoring $monitoring, bool $isPublic, bool $autoPublish = true): StatusPage

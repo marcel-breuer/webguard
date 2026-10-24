@@ -47,5 +47,5 @@ export interface StatusPageIncident {
     monitoring: StatusPageMonitoring;
     lifecycle: { state: "open" | "resolved"; opened_at: string | null; resolved_at: string | null };
     readiness: { can_publish_update: boolean; requires_public_update: boolean; update_count: number };
-    updates: Array<{ id: string; status: string; message: string; published_at: string | null }>;
+    updates: Array<{ id: string; status: string; message: string; is_automatic: boolean; suppressed_at: string | null; published_at: string | null }>;
 }

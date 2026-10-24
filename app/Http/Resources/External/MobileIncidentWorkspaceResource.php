@@ -53,14 +53,16 @@ final class MobileIncidentWorkspaceResource extends JsonResource
             ],
             'readiness' => [
                 'can_publish_update' => true,
-                'requires_public_update' => $incident->up_at === null && $incident->updates->isEmpty(),
-                'update_count' => $incident->updates->count(),
+                'requires_public_update' => $incident->up_at === null && $incident->updates->whereNull('suppressed_at')->isEmpty(),
+                'update_count' => $incident->updates->whereNull('suppressed_at')->count(),
             ],
             'updates' => $incident->updates
                 ->map(fn (IncidentUpdate $incidentUpdate): array => [
                     'id' => $incidentUpdate->id,
                     'status' => $incidentUpdate->status->value,
                     'message' => $incidentUpdate->message,
+                    'is_automatic' => str_starts_with((string) $incidentUpdate->mobile_idempotency_key, 'webguard-auto-status-'),
+                    'suppressed_at' => $incidentUpdate->suppressed_at?->toIso8601String(),
                     'published_at' => $incidentUpdate->created_at?->toIso8601String(),
                 ])
                 ->values()
