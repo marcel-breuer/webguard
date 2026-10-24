@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Enums\MonitoringStatus;
+use App\Enums\MonitoringType;
 use App\Enums\RegionalConsensusStatus;
 use App\Models\Monitoring;
 use Illuminate\Support\Facades\Date;
@@ -86,6 +87,8 @@ class MonitoringStatusService
 
         $cronjobInterval ??= $this->monitoringCheckIntervalService->secondsFor($monitoring);
         $latest = $monitoring->latestResponseResult;
+        $initialWebsiteCheck = $latest === null
+            && in_array($monitoring->type, [MonitoringType::HTTP, MonitoringType::KEYWORD], true);
 
         if (count($monitoring->preferredLocationCodes()) > 1) {
             $snapshot = $this->regionalConsensusService->snapshot($monitoring);
@@ -93,7 +96,9 @@ class MonitoringStatusService
             return [
                 'status' => $this->monitoringStatus($snapshot['status']),
                 'checked_at' => $latest?->updated_at->toIso8601String(),
-                'next' => $latest ? $latest->updated_at->addSeconds($cronjobInterval)->toIso8601String() : Date::now()->addSeconds($cronjobInterval)->toIso8601String(),
+                'next' => $latest
+                    ? $latest->updated_at->addSeconds($cronjobInterval)->toIso8601String()
+                    : Date::now()->addSeconds($initialWebsiteCheck ? MonitoringCheckIntervalService::INSTANCE_POLL_INTERVAL_SECONDS : $cronjobInterval)->toIso8601String(),
                 'interval' => $cronjobInterval,
             ];
         }
@@ -101,7 +106,9 @@ class MonitoringStatusService
         return [
             'status' => $latest ? $this->monitoringHealthEvaluator->availabilityFor($monitoring, $latest) : MonitoringStatus::UNKNOWN->value,
             'checked_at' => $latest ? $latest->updated_at->toIso8601String() : null,
-            'next' => $latest ? $latest->updated_at->addSeconds($cronjobInterval)->toIso8601String() : Date::now()->addSeconds($cronjobInterval)->toIso8601String(),
+            'next' => $latest
+                ? $latest->updated_at->addSeconds($cronjobInterval)->toIso8601String()
+                : Date::now()->addSeconds($initialWebsiteCheck ? MonitoringCheckIntervalService::INSTANCE_POLL_INTERVAL_SECONDS : $cronjobInterval)->toIso8601String(),
             'interval' => $cronjobInterval,
         ];
     }

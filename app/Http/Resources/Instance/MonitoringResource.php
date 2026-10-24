@@ -7,6 +7,7 @@ namespace App\Http\Resources\Instance;
 use App\Enums\MonitoringType;
 use App\Models\Monitoring;
 use App\Services\MonitoringCheckIntervalService;
+use Illuminate\Support\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -34,6 +35,9 @@ class MonitoringResource extends JsonResource
             'status' => $this->status,
             'timeout' => $this->timeout,
             'check_interval_seconds' => resolve(MonitoringCheckIntervalService::class)->secondsFor($monitoring),
+            'last_response_at' => $this->latest_response_at_for_location === null
+                ? null
+                : Carbon::parse($this->latest_response_at_for_location)->toIso8601String(),
             'http_method' => $this->http_method,
             'expected_http_statuses' => $this->expected_http_statuses,
             'http_headers' => $this->http_headers,

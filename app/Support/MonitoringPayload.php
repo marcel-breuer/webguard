@@ -6,6 +6,7 @@ namespace App\Support;
 
 use App\Enums\MonitoringType;
 use App\Models\Monitoring;
+use App\Services\MonitoringCheckIntervalService;
 use Illuminate\Support\Str;
 
 final class MonitoringPayload
@@ -27,6 +28,7 @@ final class MonitoringPayload
         }
 
         if (in_array($type, [MonitoringType::HTTP, MonitoringType::KEYWORD], true)) {
+            $validated['check_interval_minutes'] ??= MonitoringCheckIntervalService::DEFAULT_WEBSITE_INTERVAL_MINUTES;
             $validated['expected_http_statuses'] = HttpStatusCodeRanges::normalize($validated['expected_http_statuses'] ?? null);
 
             return $validated;
@@ -62,6 +64,13 @@ final class MonitoringPayload
     public static function prepareUpdate(array $validated, Monitoring $monitoring): array
     {
         $validated['target'] ??= $monitoring->target;
+        $requestedType = MonitoringType::tryFrom((string) ($validated['type'] ?? $monitoring->type->value));
+
+        if (in_array($requestedType, [MonitoringType::HTTP, MonitoringType::KEYWORD], true)) {
+            $validated['check_interval_minutes'] ??= $monitoring->check_interval_minutes ?? MonitoringCheckIntervalService::DEFAULT_WEBSITE_INTERVAL_MINUTES;
+        } else {
+            unset($validated['check_interval_minutes']);
+        }
 
         if ($monitoring->type === MonitoringType::DOMAIN_EXPIRATION) {
             return self::applyDomainDefaults($validated);

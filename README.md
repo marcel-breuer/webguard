@@ -9,7 +9,7 @@ WebGuard is an open-source monitoring core built with Laravel 13 and SvelteKit. 
 - Tracks uptime, response times, expected HTTP status ranges, expected DNS records, SSL expiry, and domain expiry.
 - Monitors heartbeats and cron jobs through private ping URLs.
 - Classifies multi-location incidents as localized, regional, or global based on selected monitoring locations.
-- Paces HTTP and keyword checks at least 15 minutes apart per monitoring location; scanner execution and its compatibility contract live in the [WebGuard Instance Repository](https://github.com/marcel-breuer/webguard-instance).
+- Lets each HTTP and keyword monitoring select a 1, 5, 10, 15, 30, or 60-minute interval per location, defaulting new and existing monitorings to 15 minutes; scanner execution and its compatibility contract live in the [WebGuard Instance Repository](https://github.com/marcel-breuer/webguard-instance).
 - Supports team-owned monitorings with group assignment and admin-controlled ownership changes.
 - Sends in-app, configurable, expiry, status-change, and weekly digest notifications.
 - Provides dashboards, public status pages, SLA badges, and a REST API.

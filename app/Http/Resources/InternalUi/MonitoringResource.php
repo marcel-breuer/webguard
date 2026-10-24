@@ -26,6 +26,8 @@ class MonitoringResource extends JsonResource
             'name' => $this->name,
             'target' => $this->target,
             'type' => $this->type?->value ?? $this->type,
+            'keyword' => $this->keyword,
+            'check_interval_minutes' => $this->check_interval_minutes,
             'lifecycle_status' => $this->status?->value ?? $this->status,
             'groups' => $this->whenLoaded('groups', fn (): array => $this->groups->map(
                 fn ($group): array => ['id' => $group->id, 'name' => $group->name]

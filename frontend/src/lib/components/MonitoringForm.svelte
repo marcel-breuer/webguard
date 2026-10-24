@@ -34,6 +34,7 @@
     const generatedTarget = $derived(type === "heartbeat" || type === "server_health");
     const locationOptions = $derived<SelectOption[]>(options.location_options.map((location) => ({ value: location.code, label: location.name })));
     const groupOptions = $derived<SelectOption[]>(options.groups.map((group) => ({ value: group.id, label: group.name })));
+    const websiteIntervalOptions = [1, 5, 10, 15, 30, 60];
 
     function initialState(): { monitoring: MonitoringFormOptions["monitoring"]; type: MonitoringType; locations: string[]; groups: string[] } {
         const configuredMonitoring = options.monitoring;
@@ -152,6 +153,11 @@
         <div class="grid gap-4 sm:grid-cols-2"><Field label="CPU threshold (%)" error={errorFor("server_health_cpu_threshold_percent")} required><Input name="server_health_cpu_threshold_percent" type="number" min="1" max="100" value={monitoring?.server_health_cpu_threshold_percent ?? 90} required /></Field><Field label="RAM threshold (%)" error={errorFor("server_health_ram_threshold_percent")} required><Input name="server_health_ram_threshold_percent" type="number" min="1" max="100" value={monitoring?.server_health_ram_threshold_percent ?? 90} required /></Field><Field label="Storage threshold (%)" error={errorFor("server_health_storage_threshold_percent")} required><Input name="server_health_storage_threshold_percent" type="number" min="1" max="100" value={monitoring?.server_health_storage_threshold_percent ?? 90} required /></Field><Field label="Report interval (minutes)" error={errorFor("server_health_report_interval_minutes")} required><Input name="server_health_report_interval_minutes" type="number" min="1" value={monitoring?.server_health_report_interval_minutes ?? 1} required /></Field><Field label="Grace period (minutes)" error={errorFor("server_health_grace_minutes")} required><Input name="server_health_grace_minutes" type="number" min="0" value={monitoring?.server_health_grace_minutes ?? 5} required /></Field></div>
     {/if}
     {#if httpTypes}
+        <Field label="Check interval (minutes)" error={errorFor("check_interval_minutes")} required>
+            <Select name="check_interval_minutes" value={String(monitoring?.check_interval_minutes ?? 15)}>
+                {#each websiteIntervalOptions as interval}<option value={interval}>{interval} {interval === 1 ? "minute" : "minutes"}</option>{/each}
+            </Select>
+        </Field>
         <div class="grid gap-4 sm:grid-cols-2">
             <Field label="HTTP method" error={errorFor("http_method")}><Select name="http_method" value={monitoring?.http_method ?? "get"}>{#each ["get", "post", "put", "patch", "delete"] as httpMethod}<option value={httpMethod}>{httpMethod.toUpperCase()}</option>{/each}</Select></Field>
             <Field label="Timeout (seconds)" error={errorFor("timeout")} required><Input name="timeout" type="number" min="1" max="60" value={monitoring?.timeout ?? 5} required /></Field>

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Feature\Api\Internal;
 
 use App\Enums\MonitoringStatus;
+use App\Enums\MonitoringType;
 use App\Models\Monitoring;
 use App\Models\Package;
 use App\Models\ServerInstance;
@@ -30,6 +31,8 @@ class MonitoringResponseHttpStatusCodeTest extends TestCase
         ]);
 
         $monitoring = Monitoring::factory()->for($user)->create([
+            'type' => MonitoringType::HTTP,
+            'check_interval_minutes' => 15,
             'preferred_location' => $serverInstance->code,
         ]);
 
@@ -48,7 +51,40 @@ class MonitoringResponseHttpStatusCodeTest extends TestCase
             'monitoring_id' => $monitoring->id,
             'status' => MonitoringStatus::DOWN->value,
             'http_status_code' => 503,
-            'check_interval_seconds' => 300,
+            'check_interval_seconds' => 900,
+        ]);
+    }
+
+    public function test_internal_response_without_interval_uses_the_monitoring_selection(): void
+    {
+        Package::factory()->create();
+        $user = User::factory()->create();
+        $serverInstance = ServerInstance::query()->create([
+            'code' => 'cadence-de-1',
+            'ip_address' => '192.0.2.10',
+            'api_key_hash' => 'test-token-1234567890',
+            'is_active' => true,
+        ]);
+        $monitoring = Monitoring::factory()->for($user)->create([
+            'type' => MonitoringType::KEYWORD,
+            'check_interval_minutes' => 1,
+            'preferred_location' => $serverInstance->code,
+            'preferred_locations' => [$serverInstance->code],
+        ]);
+
+        $this->withHeaders([
+            'X-INSTANCE-CODE' => $serverInstance->code,
+            'X-API-KEY' => 'test-token-1234567890',
+        ])->postJson(route('instances.monitoring-responses.store'), [
+            'monitoring_id' => $monitoring->id,
+            'status' => MonitoringStatus::UP->value,
+            'http_status_code' => 200,
+            'response_time' => 100.0,
+        ])->assertOk();
+
+        $this->assertDatabaseHas('monitoring_response_results', [
+            'monitoring_id' => $monitoring->id,
+            'check_interval_seconds' => 60,
         ]);
     }
 

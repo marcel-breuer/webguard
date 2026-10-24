@@ -6,6 +6,7 @@ namespace Tests\Feature\Api;
 
 use App\Enums\MonitoringType;
 use App\Models\Monitoring;
+use App\Models\MonitoringResponse;
 use App\Models\Package;
 use App\Models\ServerInstance;
 use App\Models\User;
@@ -56,6 +57,7 @@ class InternalInstanceRouteCompatibilityTest extends TestCase
             ->assertOk()
             ->assertJsonPath('0.id', $assignedMonitoring->id)
             ->assertJsonPath('0.check_interval_seconds', 900)
+            ->assertJsonPath('0.last_response_at', null)
             ->assertJsonCount(1);
     }
 
@@ -78,10 +80,56 @@ class InternalInstanceRouteCompatibilityTest extends TestCase
             ->assertUnauthorized()
             ->assertJsonPath('message', 'Unauthorized');
 
-        $this->withHeaders($this->instanceHeaders($serverInstance))
+        $this->withHeaders($this->instanceHeaders($serverInstance, 'test-token-1234567890'))
             ->getJson(route('instances.monitorings.list', ['location' => 'different-instance']))
             ->assertForbidden()
             ->assertJsonPath('message', 'Unauthorized location');
+    }
+
+    public function test_instance_monitoring_list_returns_the_latest_response_for_its_own_location(): void
+    {
+        Package::factory()->create();
+        $user = User::factory()->create();
+        $firstLocation = ServerInstance::query()->create([
+            'code' => 'last-response-de-1',
+            'ip_address' => '192.0.2.61',
+            'api_key_hash' => 'test-token-1234567890',
+            'is_active' => true,
+        ]);
+        $secondLocation = ServerInstance::query()->create([
+            'code' => 'last-response-us-1',
+            'ip_address' => '192.0.2.62',
+            'api_key_hash' => 'test-token-abcdefghij',
+            'is_active' => true,
+        ]);
+        $monitoring = Monitoring::factory()->for($user)->create([
+            'type' => MonitoringType::HTTP,
+            'check_interval_minutes' => 5,
+            'preferred_location' => $firstLocation->code,
+            'preferred_locations' => [$firstLocation->code, $secondLocation->code],
+        ]);
+        $firstResponseAt = now()->subMinutes(4)->startOfSecond();
+        $secondResponseAt = now()->subMinute()->startOfSecond();
+
+        foreach ([[$firstLocation, $firstResponseAt], [$secondLocation, $secondResponseAt]] as [$location, $responseAt]) {
+            $response = MonitoringResponse::query()->create([
+                'monitoring_id' => $monitoring->id,
+                'location_code' => $location->code,
+                'status' => 'up',
+            ]);
+            $response->forceFill(['created_at' => $responseAt, 'updated_at' => $responseAt])->save();
+        }
+
+        $this->withHeaders($this->instanceHeaders($firstLocation, 'test-token-1234567890'))
+            ->getJson(route('instances.monitorings.list', ['location' => $firstLocation->code]))
+            ->assertOk()
+            ->assertJsonPath('0.last_response_at', $firstResponseAt->toIso8601String())
+            ->assertJsonPath('0.check_interval_seconds', 300);
+
+        $this->withHeaders($this->instanceHeaders($secondLocation, 'test-token-abcdefghij'))
+            ->getJson(route('instances.monitorings.list', ['location' => $secondLocation->code]))
+            ->assertOk()
+            ->assertJsonPath('0.last_response_at', $secondResponseAt->toIso8601String());
     }
 
     /**
@@ -96,6 +144,17 @@ class InternalInstanceRouteCompatibilityTest extends TestCase
             'instances.incidents.update',
             'instances.ssl-results.store',
             'instances.domain-results.store',
+        ];
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    private function instanceHeaders(ServerInstance $serverInstance, string $apiKey): array
+    {
+        return [
+            'X-INSTANCE-CODE' => $serverInstance->code,
+            'X-API-KEY' => $apiKey,
         ];
     }
 }

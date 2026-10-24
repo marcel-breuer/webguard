@@ -90,6 +90,7 @@ class MonitoringFormOptionsController extends Controller
             'dns_record_type' => $monitoring->dns_record_type,
             'dns_expected_values' => $monitoring->dns_expected_values,
             'timeout' => $monitoring->timeout,
+            'check_interval_minutes' => $monitoring->check_interval_minutes,
             'http_method' => $monitoring->http_method?->value,
             'expected_http_statuses' => $monitoring->expected_http_statuses,
             'preferred_locations' => $monitoring->preferredLocationCodes(),

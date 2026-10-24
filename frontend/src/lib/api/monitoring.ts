@@ -127,6 +127,7 @@ export interface MonitoringFormConfiguration {
     dns_record_type: string | null;
     dns_expected_values: string[] | null;
     timeout: number | null;
+    check_interval_minutes: number | null;
     http_method: "get" | "post" | "put" | "patch" | "delete" | null;
     expected_http_statuses: string | null;
     preferred_locations: string[];
@@ -167,6 +168,7 @@ export interface MonitoringMutationResult {
     name: string;
     type: MonitoringType;
     lifecycle_status: "active" | "paused";
+    check_interval_minutes?: number | null;
 }
 
 export interface MonitoringDetailData {
@@ -176,6 +178,7 @@ export interface MonitoringDetailData {
         target: string;
         type: string;
         lifecycle_status: "active" | "paused";
+        check_interval_minutes?: number | null;
         public_status_enabled: boolean;
         ownership: { type: "private" | "team"; can_manage: boolean; name: string | null };
         groups: Array<{ id: string; name: string }>;

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Api\Internal\Ui;
 
+use App\Enums\MonitoringType;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\InternalUi\MonitoringResource;
 use App\Models\ServerInstance;
@@ -48,7 +49,9 @@ class MonitoringShowController extends Controller
             && $monitoring->latestResponseResult === null
             && ! $monitoring->isHeartbeat()
             && ! $monitoring->isServerHealth()
-            ? (int) ceil($monitoringCheckIntervalService->secondsFor($monitoring) / 60)
+            ? (in_array($monitoring->type, [MonitoringType::HTTP, MonitoringType::KEYWORD], true)
+                ? 1
+                : (int) ceil($monitoringCheckIntervalService->secondsFor($monitoring) / 60))
             : null;
 
         return response()->json(['data' => $payload]);
