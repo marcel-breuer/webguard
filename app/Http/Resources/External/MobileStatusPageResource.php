@@ -33,6 +33,7 @@ final class MobileStatusPageResource extends JsonResource
                 'is_public' => $statusPage->is_public,
                 'can_change' => true,
             ],
+            'auto_publish_incident_updates' => $statusPage->auto_publish_incident_updates,
             'component_count' => (int) ($statusPage->components_count ?? 0),
             'verified_subscriber_count' => (int) ($statusPage->verified_subscriber_count ?? 0),
             'open_incident_count' => (int) ($statusPage->open_incident_count ?? 0),

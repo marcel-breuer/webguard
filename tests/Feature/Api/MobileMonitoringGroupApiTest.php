@@ -119,6 +119,35 @@ class MobileMonitoringGroupApiTest extends TestCase
             ->assertNotFound();
     }
 
+    public function test_owner_can_configure_an_sla_target_and_monthly_reports_for_a_group(): void
+    {
+        Package::factory()->create();
+        $user = User::factory()->create();
+        Sanctum::actingAs($user);
+
+        $testResponse = $this->postJson('/api/mobile/monitoring-groups', [
+            'name' => 'Production SLA',
+            'sla_target_percentage' => '99.95',
+            'sla_report_enabled' => true,
+        ])
+            ->assertCreated()
+            ->assertJsonPath('data.sla.target_percentage', 99.95)
+            ->assertJsonPath('data.sla.monthly_reports_enabled', true);
+
+        $groupId = $testResponse->json('data.id');
+        $this->patchJson('/api/mobile/monitoring-groups/' . $groupId, [
+            'sla_target_percentage' => '101',
+        ])->assertUnprocessable()->assertJsonValidationErrors('sla_target_percentage');
+
+        $this->patchJson('/api/mobile/monitoring-groups/' . $groupId, [
+            'sla_target_percentage' => null,
+            'sla_report_enabled' => false,
+        ])
+            ->assertOk()
+            ->assertJsonPath('data.sla.target_percentage', null)
+            ->assertJsonPath('data.sla.monthly_reports_enabled', false);
+    }
+
     public function test_assignment_options_search_all_owned_private_monitorings_by_name_or_target(): void
     {
         Package::factory()->create();

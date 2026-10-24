@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
     'incident_id',
     'status',
     'message',
+    'notified_at',
     'mobile_idempotency_key',
 ])]
 #[WithoutIncrementing]
@@ -41,6 +42,7 @@ class IncidentUpdate extends Model
             'status' => IncidentUpdateStatus::class,
             'created_at' => 'datetime',
             'updated_at' => 'datetime',
+            'notified_at' => 'datetime',
         ];
     }
 }

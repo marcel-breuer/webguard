@@ -22,6 +22,9 @@ Schedule::command('notifications:remind-unread-weekly')->dailyAt('08:00')->witho
 // Send customers their configured monitoring performance digest.
 Schedule::command('notifications:send-weekly-monitoring-digest')->dailyAt('08:30')->withoutOverlapping();
 
+// Send the previous calendar month's SLA evidence to monitoring group owners.
+Schedule::command('monitoring:send-sla-reports')->monthlyOn(1, '09:00')->withoutOverlapping();
+
 // Alert admins when scanner instances stop reporting or recover.
 Schedule::command('notifications:send-server-instance-health-alerts')->everyFiveMinutes()->withoutOverlapping();
 

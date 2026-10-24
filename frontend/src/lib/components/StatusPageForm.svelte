@@ -97,6 +97,8 @@
     </div>
     <Field label="Description" error={errorFor("description")}><Textarea name="description" value={statusPage?.description ?? ""} /></Field>
 
+    <Field label="Incident communication" hint="Publish neutral investigating and resolved updates when an incident affects a component on this public page."><input name="auto_publish_incident_updates" type="hidden" value="0" /><label class="flex min-h-11 items-center gap-3 rounded-md border border-wg-border px-3 text-sm font-bold"><Checkbox name="auto_publish_incident_updates" value="1" checked={statusPage?.auto_publish_incident_updates ?? false} /> Automatically publish incident updates</label></Field>
+
     <fieldset class="grid gap-4 border-t border-wg-border pt-6">
         <div class="flex flex-wrap items-end justify-between gap-3"><div><legend class="text-xl font-bold">Components</legend><p class="mt-1 text-sm leading-5 text-wg-text-muted">Each component can show selected monitorings or keep its monitoring-group source.</p></div><Button type="button" variant="secondary" onclick={() => components.push(emptyComponent())}>Add component</Button></div>
         {#each components as component, index (component.id ?? index)}

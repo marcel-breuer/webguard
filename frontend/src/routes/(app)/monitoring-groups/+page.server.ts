@@ -22,6 +22,7 @@ export interface MonitoringGroup {
     id: string;
     name: string;
     description: string | null;
+    sla: { target_percentage: number | null; monthly_reports_enabled: boolean };
     assignable_monitoring_count: number;
     assignments: MonitoringAssignment[];
 }

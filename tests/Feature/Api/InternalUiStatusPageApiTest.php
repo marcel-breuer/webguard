@@ -48,6 +48,7 @@ class InternalUiStatusPageApiTest extends TestCase
                 'name' => 'Acme Status',
                 'description' => 'Current service availability.',
                 'is_public' => true,
+                'auto_publish_incident_updates' => true,
                 'components' => [[
                     'name' => 'Checkout',
                     'description' => 'Payments and checkout.',
@@ -57,6 +58,7 @@ class InternalUiStatusPageApiTest extends TestCase
             ])
             ->assertCreated()
             ->assertJsonPath('data.name', 'Acme Status')
+            ->assertJsonPath('data.auto_publish_incident_updates', true)
             ->assertJsonPath('data.components.0.monitorings.0.id', $monitoring->id);
 
         $statusPageId = $testResponse->json('data.id');
@@ -67,6 +69,7 @@ class InternalUiStatusPageApiTest extends TestCase
                 'name' => 'Acme Service Status',
                 'description' => null,
                 'is_public' => false,
+                'auto_publish_incident_updates' => false,
                 'components' => [[
                     'name' => 'Checkout',
                     'source_type' => 'manual',
@@ -75,7 +78,8 @@ class InternalUiStatusPageApiTest extends TestCase
             ])
             ->assertOk()
             ->assertJsonPath('data.name', 'Acme Service Status')
-            ->assertJsonPath('data.publication.is_public', false);
+            ->assertJsonPath('data.publication.is_public', false)
+            ->assertJsonPath('data.auto_publish_incident_updates', false);
 
         $this->actingAs($user)
             ->postJson(route('app.status-pages.store'), [

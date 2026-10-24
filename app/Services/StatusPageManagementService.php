@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\DB;
 class StatusPageManagementService
 {
     /**
-     * @param  array{name: string, description?: string|null, is_public: bool, components: list<array{name: string, description?: string|null, source_type: string, monitoring_group_id?: string|null, monitoring_ids?: list<string>}>}  $attributes
+     * @param  array{name: string, description?: string|null, is_public: bool, auto_publish_incident_updates?: bool, components: list<array{name: string, description?: string|null, source_type: string, monitoring_group_id?: string|null, monitoring_ids?: list<string>}>}  $attributes
      */
     public function create(User $user, array $attributes): StatusPage
     {
@@ -25,7 +25,7 @@ class StatusPageManagementService
     }
 
     /**
-     * @param  array{name: string, description?: string|null, is_public: bool, components: list<array{name: string, description?: string|null, source_type: string, monitoring_group_id?: string|null, monitoring_ids?: list<string>}>}  $attributes
+     * @param  array{name: string, description?: string|null, is_public: bool, auto_publish_incident_updates?: bool, components: list<array{name: string, description?: string|null, source_type: string, monitoring_group_id?: string|null, monitoring_ids?: list<string>}>}  $attributes
      */
     public function update(StatusPage $statusPage, array $attributes): StatusPage
     {
@@ -38,8 +38,8 @@ class StatusPageManagementService
     }
 
     /**
-     * @param  array{name: string, description?: string|null, is_public: bool, components: list<array{name: string, description?: string|null, source_type: string, monitoring_group_id?: string|null, monitoring_ids?: list<string>}>}  $attributes
-     * @return array{name: string, description: string|null, is_public: bool}
+     * @param  array{name: string, description?: string|null, is_public: bool, auto_publish_incident_updates?: bool, components: list<array{name: string, description?: string|null, source_type: string, monitoring_group_id?: string|null, monitoring_ids?: list<string>}>}  $attributes
+     * @return array{name: string, description: string|null, is_public: bool, auto_publish_incident_updates: bool}
      */
     private function statusPageAttributes(array $attributes): array
     {
@@ -47,6 +47,7 @@ class StatusPageManagementService
             'name' => $attributes['name'],
             'description' => $attributes['description'] ?? null,
             'is_public' => $attributes['is_public'],
+            'auto_publish_incident_updates' => $attributes['auto_publish_incident_updates'] ?? false,
         ];
     }
 
