@@ -1,7 +1,7 @@
 <script lang="ts">
     import { onMount, tick } from "svelte";
     import { FirstPartyApiError, requestFirstPartyApi } from "$lib/api/client";
-    import { formatDateTime, formatMonthYear } from "$lib/i18n/format";
+    import { formatDateTime, formatMonthYear, formatNumber, formatPercentage } from "$lib/i18n/format";
     import type { MonitoringDetailData, MonitoringDetailMeta } from "$lib/api/monitoring";
     import Button from "$lib/components/Button.svelte";
     import Select from "$lib/components/Select.svelte";
@@ -70,7 +70,7 @@
     function duration(incident: { down_at: string; up_at: string | null }): string {
         const end = incident.up_at ? new Date(incident.up_at) : new Date();
         const minutes = Math.max(0, Math.round((end.getTime() - new Date(incident.down_at).getTime()) / 60_000));
-        return minutes >= 60 ? `${Math.floor(minutes / 60)}h ${minutes % 60}m` : `${minutes}m`;
+        return minutes >= 60 ? `${formatNumber(Math.floor(minutes / 60))}h ${formatNumber(minutes % 60)}m` : `${formatNumber(minutes)}m`;
     }
 
     function statusTone(status: RecentCheck["status"]): string {
@@ -112,7 +112,7 @@
     }
 
     function uptimePercentage(uptime: number | null): string {
-        return uptime === null ? "No data" : `${uptime.toFixed(2)}%`;
+        return uptime === null ? "No data" : formatPercentage(uptime);
     }
 
     function previousMonthRange(month: string): { startDate: string; endDate: string } {
@@ -129,15 +129,9 @@
     }
 
     function responseTimeAxisLabel(value: string): string {
-        const date = new Date(value);
-
-        if (Number.isNaN(date.getTime())) return "—";
-
-        if (responseTimeDays === 1) {
-            return `${String(date.getHours()).padStart(2, "0")}:${String(date.getMinutes()).padStart(2, "0")}`;
-        }
-
-        return `${String(date.getDate()).padStart(2, "0")}.${String(date.getMonth() + 1).padStart(2, "0")}`;
+        return formatDateTime(value, "—", responseTimeDays === 1
+            ? { hour: "2-digit", minute: "2-digit" }
+            : { day: "2-digit", month: "2-digit" });
     }
 
     async function loadPreviousCalendarMonth(): Promise<void> {
@@ -216,13 +210,13 @@
                         displayColors: true,
                         callbacks: {
                             title: (contexts) => timestamp(points[contexts[0]?.dataIndex]?.date ?? null),
-                            label: (context) => `${context.dataset.label}: ${Math.round(Number(context.parsed.y))} ms`,
+                            label: (context) => `${context.dataset.label}: ${formatNumber(Math.round(Number(context.parsed.y)))} ms`,
                         },
                     },
                 },
                 scales: {
                     x: { grid: { display: false }, border: { display: false }, ticks: { color: muted, maxTicksLimit: 6, font: { family: fontFamily, size: 11, weight: 600 } } },
-                    y: { title: { display: true, text: "ms", color: muted, font: { family: fontFamily, size: 11, weight: 600 } }, grid: { color: border }, border: { display: false }, ticks: { color: muted, font: { family: fontFamily, size: 11, weight: 600 } } },
+                    y: { title: { display: true, text: "ms", color: muted, font: { family: fontFamily, size: 11, weight: 600 } }, grid: { color: border }, border: { display: false }, ticks: { color: muted, font: { family: fontFamily, size: 11, weight: 600 }, callback: (value) => formatNumber(Number(value)) } },
                 },
             },
         });
@@ -332,7 +326,7 @@
         <div class="mt-3 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
             {#each calendarMonths as [month, value]}
                 <article class="w-full rounded-[1.125rem] border border-wg-border bg-wg-surface p-6 shadow-sm">
-                    <div class="flex items-baseline gap-2"><h3 class="text-lg font-extrabold">{formatMonthYear(new Date(`${month}-01T00:00:00`))}</h3><span class="text-xs font-bold text-wg-text-muted">({value.monthly_average_uptime?.toFixed(2) ?? "—"}%)</span></div>
+                    <div class="flex items-baseline gap-2"><h3 class="text-lg font-extrabold">{formatMonthYear(new Date(`${month}-01T00:00:00`))}</h3><span class="text-xs font-bold text-wg-text-muted">({value.monthly_average_uptime === null ? "—" : formatPercentage(value.monthly_average_uptime)})</span></div>
                     <div class="mt-4 grid grid-cols-7 gap-1.5 text-center text-[0.625rem] text-wg-text-muted" aria-hidden="true"><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span></div>
                     <div class="mt-2 grid grid-cols-7 gap-1.5" aria-label={`Availability for ${month}`}>
                         {#each calendarOffset(value.days[0]?.date ?? "") as _}
@@ -370,13 +364,13 @@
         {:else}<p class="text-sm leading-6 text-wg-text-muted">{loadingResponseTimes ? "Loading response-time data…" : "Response-time data will appear after the monitoring collects results."}</p>{/if}
     </article>
     {#if responseTimesError}<p class="mt-3 text-sm font-bold text-wg-danger" role="alert">{responseTimesError}</p>{/if}
-    {#if points.length > 0}<dl class="mt-4 grid gap-4 text-center sm:grid-cols-3"><div class="rounded-[0.8rem] border border-wg-border bg-wg-surface p-5 shadow-sm"><dt class="text-sm text-wg-text-muted">Minimum</dt><dd class="mt-1 text-lg font-extrabold">{Math.round(responseTimes.aggregated.min ?? 0)} ms</dd></div><div class="rounded-[0.8rem] border border-wg-border bg-wg-surface p-5 shadow-sm"><dt class="text-sm text-wg-text-muted">Average</dt><dd class="mt-1 text-lg font-extrabold">{Math.round(responseTimes.aggregated.avg ?? 0)} ms</dd></div><div class="rounded-[0.8rem] border border-wg-border bg-wg-surface p-5 shadow-sm"><dt class="text-sm text-wg-text-muted">Maximum</dt><dd class="mt-1 text-lg font-extrabold">{Math.round(responseTimes.aggregated.max ?? 0)} ms</dd></div></dl>{/if}
+    {#if points.length > 0}<dl class="mt-4 grid gap-4 text-center sm:grid-cols-3"><div class="rounded-[0.8rem] border border-wg-border bg-wg-surface p-5 shadow-sm"><dt class="text-sm text-wg-text-muted">Minimum</dt><dd class="mt-1 text-lg font-extrabold">{formatNumber(Math.round(responseTimes.aggregated.min ?? 0))} ms</dd></div><div class="rounded-[0.8rem] border border-wg-border bg-wg-surface p-5 shadow-sm"><dt class="text-sm text-wg-text-muted">Average</dt><dd class="mt-1 text-lg font-extrabold">{formatNumber(Math.round(responseTimes.aggregated.avg ?? 0))} ms</dd></div><div class="rounded-[0.8rem] border border-wg-border bg-wg-surface p-5 shadow-sm"><dt class="text-sm text-wg-text-muted">Maximum</dt><dd class="mt-1 text-lg font-extrabold">{formatNumber(Math.round(responseTimes.aggregated.max ?? 0))} ms</dd></div></dl>{/if}
 </section>
 
 <section class="mt-7" aria-labelledby="incidents-heading"><h2 id="incidents-heading" class="text-2xl font-extrabold">Incidents</h2>{#if incidents.length > 0}<ul class="mt-3 grid gap-3 p-0">{#each incidents as incident}<li class="list-none rounded-[0.8rem] border border-wg-border bg-wg-surface p-4 shadow-sm"><p class="font-bold">{incident.up_at ? "Resolved incident" : "Open incident"}</p><p class="mt-1 text-sm text-wg-text-muted">{timestamp(incident.down_at)} · {duration(incident)}</p></li>{/each}</ul>{:else}<p class="mt-3 text-sm text-wg-text-muted">No incidents recorded in this period.</p>{/if}{#if incidentsError}<p class="mt-3 text-sm font-bold text-wg-danger" role="alert">{incidentsError}</p>{/if}{#if currentIncidentsMeta.has_more}<div class="mt-5 flex justify-center"><Button variant="secondary" loading={loadingIncidents} onclick={loadMoreIncidents}>Load more</Button></div>{/if}</section>
 
 <section class="mt-7" aria-labelledby="recent-checks-heading">
-    <div><h2 id="recent-checks-heading" class="text-2xl font-extrabold">Recent Checks</h2><p class="mt-1 text-sm text-wg-text-muted">{checks.length} loaded checks · Live and archived data</p></div>
+    <div><h2 id="recent-checks-heading" class="text-2xl font-extrabold">Recent Checks</h2><p class="mt-1 text-sm text-wg-text-muted">{formatNumber(checks.length)} loaded checks · Live and archived data</p></div>
     {#if checks.length > 0}
         <div class="relative mt-3 overflow-hidden rounded-[0.8rem] border border-wg-border bg-wg-surface shadow-sm">
             {#each checks as check, index (check.id)}
@@ -384,7 +378,7 @@
                     {#if index < checks.length - 1}<span class={`pointer-events-none absolute top-[1.625rem] bottom-[-1.625rem] left-[1.625rem] z-[-1] w-px sm:left-8 ${timelineConnectorTone(check.status)}`} aria-hidden="true"></span>{/if}
                     <div class="row-span-3 flex justify-center pt-0.5 sm:row-span-1 sm:pt-0"><span class={`grid size-5 shrink-0 place-items-center rounded-full border ${timelineDotTone(check.status)}`} aria-label={check.status}>{#if check.status === "unknown"}<span class="text-xs font-extrabold" aria-hidden="true">!</span>{:else}<svg class="size-3" viewBox="0 0 16 16" aria-hidden="true"><path fill="currentColor" d={check.status === "up" ? "M6.35 11.15 2.9 7.7l1.05-1.05 2.4 2.4 5.7-5.7L13.1 4.4z" : "m4.05 3 3.95 3.95L11.95 3 13 4.05 9.05 8 13 11.95 11.95 13 8 9.05 4.05 13 3 11.95 6.95 8 3 4.05z"} /></svg>{/if}</span></div>
                     <div class="min-w-0"><p class="text-sm font-extrabold">{timestamp(check.checked_at)}</p><p class="mt-1 text-xs text-wg-text-muted">{check.source === "live" ? "Live" : "Archived"}</p></div>
-                    <dl class="col-start-2 mt-0 grid min-w-0 grid-cols-2 gap-x-4 gap-y-3 text-sm sm:col-start-auto sm:grid-cols-3 sm:gap-x-5"><div><dt class="text-[0.625rem] font-extrabold tracking-[0.1em] text-wg-text-muted uppercase">Status code</dt><dd class="mt-1 font-extrabold">{check.http_status_code ?? "—"}</dd></div><div><dt class="text-[0.625rem] font-extrabold tracking-[0.1em] text-wg-text-muted uppercase">Response time</dt><dd class="mt-1 font-extrabold text-sky-700 dark:text-sky-300">{check.response_time === null ? "—" : `${Math.round(check.response_time)} ms`}</dd></div><div><dt class="text-[0.625rem] font-extrabold tracking-[0.1em] text-wg-text-muted uppercase">Raw status</dt><dd class="mt-1 font-extrabold uppercase">{check.status}</dd></div></dl>
+                    <dl class="col-start-2 mt-0 grid min-w-0 grid-cols-2 gap-x-4 gap-y-3 text-sm sm:col-start-auto sm:grid-cols-3 sm:gap-x-5"><div><dt class="text-[0.625rem] font-extrabold tracking-[0.1em] text-wg-text-muted uppercase">Status code</dt><dd class="mt-1 font-extrabold">{check.http_status_code ?? "—"}</dd></div><div><dt class="text-[0.625rem] font-extrabold tracking-[0.1em] text-wg-text-muted uppercase">Response time</dt><dd class="mt-1 font-extrabold text-sky-700 dark:text-sky-300">{check.response_time === null ? "—" : `${formatNumber(Math.round(check.response_time))} ms`}</dd></div><div><dt class="text-[0.625rem] font-extrabold tracking-[0.1em] text-wg-text-muted uppercase">Raw status</dt><dd class="mt-1 font-extrabold uppercase">{check.status}</dd></div></dl>
                     <span class={`col-start-2 mt-0 inline-flex w-fit max-w-full items-center justify-self-start whitespace-nowrap rounded-full px-2.5 py-0.5 text-[0.5625rem] leading-none font-extrabold tracking-[0.08em] uppercase sm:col-start-auto sm:justify-self-end ${statusTone(check.status)}`}>{check.status === "up" ? "Successful" : check.status}</span>
                 </article>
             {/each}

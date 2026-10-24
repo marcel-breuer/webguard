@@ -1,7 +1,10 @@
 import { loadFirstPartySession } from "$lib/server/session";
 
 export async function load({ fetch }) {
+    const session = await loadFirstPartySession(fetch);
+
     return {
-        session: await loadFirstPartySession(fetch),
+        session,
+        formatLocale: session.user.format_locale,
     };
 }

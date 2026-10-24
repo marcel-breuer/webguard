@@ -1,6 +1,6 @@
 <script lang="ts">
     import { appRoutes } from "$lib/routes";
-    import { formatDateTime } from "$lib/i18n/format";
+    import { formatDateTime, formatNumber } from "$lib/i18n/format";
     import Button from "$lib/components/Button.svelte";
     import DataTable from "$lib/components/DataTable.svelte";
     import Input from "$lib/components/Input.svelte";
@@ -89,6 +89,6 @@
             <thead><tr><th><a class="font-bold text-wg-text-muted no-underline hover:text-wg-accent" href={sortHref("created_at")}>Time{sortLabel("created_at")}</a></th><th><a class="font-bold text-wg-text-muted no-underline hover:text-wg-accent" href={sortHref("user_email")}>User{sortLabel("user_email")}</a></th><th><a class="font-bold text-wg-text-muted no-underline hover:text-wg-accent" href={sortHref("route")}>Endpoint{sortLabel("route")}</a></th></tr></thead>
             <tbody>{#each logs.items as log (log.id)}<tr><td class="whitespace-nowrap">{date(log.created_at)}</td><td>{log.user_email ?? "Deleted user"}</td><td class="max-w-150 truncate" title={log.route ?? ""}>{log.route ?? "—"}</td></tr>{/each}</tbody>
         </DataTable>
-        <div class="mt-4 flex flex-col gap-3 text-sm text-wg-text-muted sm:flex-row sm:items-center sm:justify-between"><p>Showing {logs.items.length} of {logs.pagination.total} entries</p><Pagination page={logs.pagination.current_page} pages={logs.pagination.last_page} href={paginationHref} /></div>
+        <div class="mt-4 flex flex-col gap-3 text-sm text-wg-text-muted sm:flex-row sm:items-center sm:justify-between"><p>Showing {formatNumber(logs.items.length)} of {formatNumber(logs.pagination.total)} entries</p><Pagination page={logs.pagination.current_page} pages={logs.pagination.last_page} href={paginationHref} /></div>
     {/if}
 </main>

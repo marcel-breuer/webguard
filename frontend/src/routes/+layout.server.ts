@@ -26,5 +26,5 @@ export const load: LayoutServerLoad = async ({ cookies, fetch, request }) => {
         // Keep the English source text as the safe fallback if Laravel is unavailable.
     }
 
-    return { locale, messages };
+    return { locale, messages, formatLocale: null };
 };

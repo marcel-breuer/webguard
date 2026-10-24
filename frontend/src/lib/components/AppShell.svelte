@@ -2,6 +2,7 @@
     import { onMount } from "svelte";
     import { appRoutes } from "$lib/routes";
     import { requestFirstPartyApi } from "$lib/api/client";
+    import { formatNumber } from "$lib/i18n/format";
     import AppearanceSelector from "$lib/components/AppearanceSelector.svelte";
     import LocaleSelector from "$lib/components/LocaleSelector.svelte";
     import NavIcon, { type NavIconName } from "$lib/components/NavIcon.svelte";
@@ -140,8 +141,8 @@
             <a class={`mt-1 flex min-h-11 items-center rounded-[0.65rem] border text-sm font-semibold no-underline ${collapsed ? "justify-center px-0" : "gap-3 px-3"} ${isActive(appRoutes.dashboard) ? "border-purple-400 bg-purple-800 text-white" : "border-transparent text-purple-200 hover:border-purple-700 hover:bg-purple-900 hover:text-white"}`} href={appRoutes.dashboard} aria-current={isActive(appRoutes.dashboard) ? "page" : undefined} aria-label="Dashboard" title="Dashboard" onclick={closeMobileNavigation}>
                 <NavIcon name="home" /> <span class={collapsed ? "sr-only" : ""}>Dashboard</span>
             </a>
-            <a class={`mt-1 flex min-h-11 items-center rounded-[0.65rem] border text-sm font-semibold no-underline ${collapsed ? "justify-center px-0" : "gap-3 px-3"} ${isActive(appRoutes.notifications) ? "border-purple-400 bg-purple-800 text-white" : "border-transparent text-purple-200 hover:border-purple-700 hover:bg-purple-900 hover:text-white"}`} href={appRoutes.notifications} aria-current={isActive(appRoutes.notifications) ? "page" : undefined} aria-label={unreadNotificationCount > 0 ? `Notifications, ${unreadNotificationCount} unread` : "Notifications"} title={unreadNotificationCount > 0 ? `Notifications (${unreadNotificationCount} unread)` : "Notifications"} onclick={closeMobileNavigation}>
-                <span class="relative grid size-5 shrink-0 place-items-center"><NavIcon name="bell" />{#if unreadNotificationCount > 0}<span class="absolute -top-2 left-1/2 min-w-4 -translate-x-1/2 rounded-full bg-red-500 px-1 text-center text-[0.625rem] leading-4 font-extrabold text-white ring-2 ring-purple-950" aria-hidden="true">{unreadNotificationCount > 99 ? "99+" : unreadNotificationCount}</span>{/if}</span> <span class={collapsed ? "sr-only" : ""}>Notifications</span>
+            <a class={`mt-1 flex min-h-11 items-center rounded-[0.65rem] border text-sm font-semibold no-underline ${collapsed ? "justify-center px-0" : "gap-3 px-3"} ${isActive(appRoutes.notifications) ? "border-purple-400 bg-purple-800 text-white" : "border-transparent text-purple-200 hover:border-purple-700 hover:bg-purple-900 hover:text-white"}`} href={appRoutes.notifications} aria-current={isActive(appRoutes.notifications) ? "page" : undefined} aria-label={unreadNotificationCount > 0 ? `Notifications, ${formatNumber(unreadNotificationCount)} unread` : "Notifications"} title={unreadNotificationCount > 0 ? `Notifications (${formatNumber(unreadNotificationCount)} unread)` : "Notifications"} onclick={closeMobileNavigation}>
+                <span class="relative grid size-5 shrink-0 place-items-center"><NavIcon name="bell" />{#if unreadNotificationCount > 0}<span class="absolute -top-2 left-1/2 min-w-4 -translate-x-1/2 rounded-full bg-red-500 px-1 text-center text-[0.625rem] leading-4 font-extrabold text-white ring-2 ring-purple-950" aria-hidden="true">{unreadNotificationCount > 99 ? `${formatNumber(99)}+` : formatNumber(unreadNotificationCount)}</span>{/if}</span> <span class={collapsed ? "sr-only" : ""}>Notifications</span>
             </a>
 
             {@render NavSection("Operations", operations)}

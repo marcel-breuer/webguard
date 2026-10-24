@@ -24,6 +24,7 @@ class InternalUiSessionApiTest extends TestCase
         $this->postJson(route('app.session.destroy'))->assertUnauthorized();
         $this->patchJson(route('app.appearance.update'), ['theme' => 'dark'])->assertUnauthorized();
         $this->patchJson(route('app.locale.update'), ['locale' => 'de'])->assertUnauthorized();
+        $this->patchJson(route('app.profile.preferences.update'), ['locale' => 'de', 'format_locale' => null])->assertUnauthorized();
     }
 
     public function test_authenticated_user_can_bootstrap_their_own_session_context(): void
@@ -47,6 +48,7 @@ class InternalUiSessionApiTest extends TestCase
             ->assertJsonPath('data.user.email', $user->email)
             ->assertJsonPath('data.user.role', UserRole::ADMIN->value)
             ->assertJsonPath('data.user.locale', 'de')
+            ->assertJsonPath('data.user.format_locale', null)
             ->assertJsonPath('data.user.theme', 'dark')
             ->assertJsonPath('data.user.is_verified', true)
             ->assertJsonPath('data.teams.0.id', $team->id)

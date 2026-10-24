@@ -44,6 +44,9 @@ Route::middleware(MeasureInternalUiRequest::class)->group(function (): void {
     Route::patch('/profile', [ProfileController::class, 'update'])
         ->middleware('role:member,admin')
         ->name('profile.update');
+    Route::patch('/profile/preferences', [ProfileController::class, 'updatePreferences'])
+        ->middleware('role:member,admin')
+        ->name('profile.preferences.update');
     Route::put('/profile/password', [PasswordController::class, 'update'])
         ->middleware('role:member,admin')
         ->name('profile.password.update');

@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { formatNumber } from "$lib/i18n/format";
     import Card from "$lib/components/Card.svelte";
     import EmptyState from "$lib/components/EmptyState.svelte";
     import StatusBadge from "$lib/components/StatusBadge.svelte";
@@ -38,11 +39,11 @@
                     <dl class="m-0 grid grid-cols-2 gap-4">
                         <div>
                             <dt class="text-[0.8125rem] text-wg-text-muted">Members</dt>
-                            <dd class="mt-1 text-xl font-extrabold">{team.member_count}</dd>
+                            <dd class="mt-1 text-xl font-extrabold">{formatNumber(team.member_count)}</dd>
                         </div>
                         <div>
                             <dt class="text-[0.8125rem] text-wg-text-muted">Monitorings</dt>
-                            <dd class="mt-1 text-xl font-extrabold">{team.monitoring_count}</dd>
+                            <dd class="mt-1 text-xl font-extrabold">{formatNumber(team.monitoring_count)}</dd>
                         </div>
                     </dl>
                     <a class="mt-5 inline-flex text-sm font-bold text-wg-accent no-underline hover:underline" href={`/teams/${team.id}`}>Open workspace →</a>

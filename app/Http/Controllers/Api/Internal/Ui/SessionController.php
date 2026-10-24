@@ -36,6 +36,7 @@ final class SessionController extends Controller
                     'email' => $user->email,
                     'role' => $user->role->value,
                     'locale' => $user->locale,
+                    'format_locale' => $user->format_locale,
                     'theme' => $user->theme,
                     'email_verified_at' => $user->email_verified_at?->toIso8601String(),
                     'is_verified' => $user->hasVerifiedEmail(),

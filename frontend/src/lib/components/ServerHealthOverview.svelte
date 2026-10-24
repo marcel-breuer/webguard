@@ -1,7 +1,7 @@
 <script lang="ts">
     import { onMount } from "svelte";
     import { FirstPartyApiError } from "$lib/api/client";
-    import { formatDateTime } from "$lib/i18n/format";
+    import { formatDateTime, formatNumber, formatPercentage as formatLocalizedPercentage } from "$lib/i18n/format";
     import type { MonitoringDetailData } from "$lib/api/monitoring";
     import Select from "$lib/components/Select.svelte";
 
@@ -47,11 +47,11 @@
     });
 
     function formatPercentage(value: number | null): string {
-        return value === null ? "—" : `${value.toFixed(1)}%`;
+        return value === null ? "—" : formatLocalizedPercentage(value, 1);
     }
 
     function formatLoad(value: number | null): string {
-        return value === null ? "—" : `${value.toFixed(2)}×`;
+        return value === null ? "—" : `${formatNumber(value, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}×`;
     }
 
     function timestamp(value: string | null): string {
@@ -61,13 +61,9 @@
     }
 
     function axisLabel(value: string): string {
-        const date = new Date(value);
-
-        if (Number.isNaN(date.getTime())) return "—";
-
-        return historyPeriod === 1
-            ? `${String(date.getHours()).padStart(2, "0")}:00`
-            : `${String(date.getDate()).padStart(2, "0")}.${String(date.getMonth() + 1).padStart(2, "0")}`;
+        return formatDateTime(value, "—", historyPeriod === 1
+            ? { hour: "2-digit" }
+            : { day: "2-digit", month: "2-digit" });
     }
 
     function metricState(value: number | null, threshold: number | null): MetricState {
@@ -156,8 +152,8 @@
                 },
                 scales: {
                     x: { grid: { display: false }, border: { display: false }, ticks: { color: muted, maxTicksLimit: 6, font: { family: fontFamily, size: 11, weight: 600 } } },
-                    y: { min: 0, max: 100, title: { display: true, text: "Utilization (%)", color: muted, font: { family: fontFamily, size: 11, weight: 600 } }, grid: { color: border }, border: { display: false }, ticks: { color: muted, font: { family: fontFamily, size: 11, weight: 600 } } },
-                    load: { min: 0, position: "right", title: { display: true, text: "Load per CPU", color: muted, font: { family: fontFamily, size: 11, weight: 600 } }, grid: { drawOnChartArea: false }, border: { display: false }, ticks: { color: muted, font: { family: fontFamily, size: 11, weight: 600 } } },
+                    y: { min: 0, max: 100, title: { display: true, text: "Utilization (%)", color: muted, font: { family: fontFamily, size: 11, weight: 600 } }, grid: { color: border }, border: { display: false }, ticks: { color: muted, font: { family: fontFamily, size: 11, weight: 600 }, callback: (value) => formatLocalizedPercentage(Number(value), 0) } },
+                    load: { min: 0, position: "right", title: { display: true, text: "Load per CPU", color: muted, font: { family: fontFamily, size: 11, weight: 600 } }, grid: { drawOnChartArea: false }, border: { display: false }, ticks: { color: muted, font: { family: fontFamily, size: 11, weight: 600 }, callback: (value) => formatNumber(Number(value), { maximumFractionDigits: 2 }) } },
                 },
             },
         });

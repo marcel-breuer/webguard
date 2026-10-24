@@ -1,15 +1,16 @@
 <script lang="ts">
     import type { MonitoringDetailData } from "$lib/api/monitoring";
     import Card from "$lib/components/Card.svelte";
+    import { formatNumber, formatPercentage as formatLocalizedPercentage } from "$lib/i18n/format";
 
     interface Props { detail: MonitoringDetailData; }
     let { detail }: Props = $props();
     function percentage(value: number | null): string {
-        return value === null ? "—" : `${value.toFixed(1)}%`;
+        return value === null ? "—" : formatLocalizedPercentage(value, 1);
     }
 
     function load(value: number | null): string {
-        return value === null ? "No limit configured" : `Limit ${value.toFixed(2)}×`;
+        return value === null ? "No limit configured" : `Limit ${formatNumber(value, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}×`;
     }
 </script>
 

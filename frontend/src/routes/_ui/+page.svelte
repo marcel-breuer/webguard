@@ -26,6 +26,7 @@
             email: "marcel@example.test",
             role: "admin",
             locale: "en",
+            format_locale: null,
             theme: "system",
             email_verified_at: "2026-01-01T00:00:00+00:00",
             is_verified: true,

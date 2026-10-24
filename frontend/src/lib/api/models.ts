@@ -23,6 +23,7 @@ export interface FirstPartySession {
         email: string;
         role: "admin" | "regular" | "demo";
         locale: string;
+        format_locale: string | null;
         theme: AppearanceTheme;
         email_verified_at: string | null;
         is_verified: boolean;
