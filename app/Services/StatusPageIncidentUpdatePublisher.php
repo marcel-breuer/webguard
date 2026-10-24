@@ -52,7 +52,7 @@ final class StatusPageIncidentUpdatePublisher
             ->where('mobile_idempotency_key', 'webguard-auto-status-open')
             ->first();
 
-        if (! $incidentUpdate instanceof IncidentUpdate) {
+        if (! $incidentUpdate instanceof IncidentUpdate || $incidentUpdate->suppressed_at !== null) {
             return;
         }
 
@@ -65,6 +65,7 @@ final class StatusPageIncidentUpdatePublisher
         $incidentUpdate->update([
             'status' => IncidentUpdateStatus::RESOLVED,
             'message' => "The incident affecting {$monitoring->name} has been resolved.",
+            'notified_at' => null,
         ]);
 
         $incident->timelineEvents()->firstOrCreate(

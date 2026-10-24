@@ -19,8 +19,10 @@
     let publishOpen = $state(false);
     let announcementOpen = $state(false);
     let selectedIncident = $state<StatusPageIncident | null>(null);
+    let editingUpdate = $state<StatusPageIncident["updates"][number] | null>(null);
     let updatingPublication = $state(false);
     let publishingUpdate = $state(false);
+    let suppressingUpdateId = $state<string | null>(null);
     let publishingAnnouncement = $state(false);
     let dismissingAnnouncement = $state(false);
     let error = $state("");
@@ -61,18 +63,37 @@
         }
 
         publishingUpdate = true;
+        const wasEditingUpdate = editingUpdate !== null;
         error = "";
         try {
-            await requestFirstPartyApi(`/api/status-pages/${statusPage.id}/incidents/${selectedIncident.id}/updates`, {
+            const action = editingUpdate
+                ? `/api/status-pages/${statusPage.id}/incidents/${selectedIncident.id}/updates/${editingUpdate.id}`
+                : `/api/status-pages/${statusPage.id}/incidents/${selectedIncident.id}/updates`;
+            await requestFirstPartyApi(action, {
                 body: new FormData(event.currentTarget as HTMLFormElement),
-                headers: { "Idempotency-Key": crypto.randomUUID() },
-                method: "POST",
+                headers: editingUpdate ? {} : { "Idempotency-Key": crypto.randomUUID() },
+                method: editingUpdate ? "PATCH" : "POST",
             });
             publishOpen = false;
             selectedIncident = null;
-            message = "Incident update published.";
+            editingUpdate = null;
+            message = wasEditingUpdate ? "Incident update edited." : "Incident update published.";
             await invalidateAll();
-        } catch (exception) { error = exception instanceof FirstPartyApiError ? exception.message : "The incident update could not be published."; } finally { publishingUpdate = false; }
+        } catch (exception) { error = exception instanceof FirstPartyApiError ? exception.message : "The incident update could not be saved."; } finally { publishingUpdate = false; }
+    }
+
+    async function suppressIncidentUpdate(incident: StatusPageIncident, update: StatusPageIncident["updates"][number]): Promise<void> {
+        if (suppressingUpdateId || publishingUpdate || !globalThis.confirm("Suppress this automatic public incident update?")) {
+            return;
+        }
+
+        suppressingUpdateId = update.id;
+        error = "";
+        try {
+            await requestFirstPartyApi(`/api/status-pages/${statusPage.id}/incidents/${incident.id}/updates/${update.id}`, { method: "DELETE" });
+            message = "Automatic incident update suppressed.";
+            await invalidateAll();
+        } catch (exception) { error = exception instanceof FirstPartyApiError ? exception.message : "The incident update could not be suppressed."; } finally { suppressingUpdateId = null; }
     }
 
     async function saveAnnouncement(event: SubmitEvent): Promise<void> {
@@ -118,9 +139,9 @@
     {#if message}<p class="mb-6 text-sm font-bold text-green-700 dark:text-green-300" role="status">{message}</p>{/if}{#if error}<p class="mb-6 text-sm font-bold text-wg-danger" role="alert">{error}</p>{/if}
     <section class="mb-6"><Card title="Announcement" description={statusPage.publication.is_public ? "Share a proactive update without opening an incident." : "Publish this status page before sharing an announcement."}>{#if announcement}<div class="rounded-xl border border-sky-200 bg-sky-50 p-4 text-sky-950 dark:border-sky-900 dark:bg-sky-950/40 dark:text-sky-100"><div class="flex flex-wrap items-start justify-between gap-3"><div><h2 class="font-bold">{announcement.title}</h2><p class="mt-2 whitespace-pre-line text-sm leading-6">{announcement.message}</p>{#if announcement.notify_subscribers}<p class="mt-3 text-xs font-bold text-sky-800 dark:text-sky-200">{announcement.notified_at ? `Sent to verified subscribers ${dateTime(announcement.notified_at)}.` : "Queued for verified subscribers."}</p>{/if}</div><div class="flex gap-2"><Button class="min-h-10 px-3 py-1.5" variant="secondary" type="button" disabled={publishingAnnouncement || dismissingAnnouncement} onclick={() => (announcementOpen = true)}>Edit</Button><Button class="min-h-10 px-3 py-1.5" variant="danger" type="button" loading={dismissingAnnouncement} disabled={publishingAnnouncement} onclick={dismissAnnouncement}>Dismiss</Button></div></div></div>{:else}<Button type="button" disabled={!statusPage.publication.is_public} onclick={() => (announcementOpen = true)}>Publish announcement</Button>{/if}</Card></section>
     <section class="grid gap-6 xl:grid-cols-[0.9fr_1.1fr]"><Card title="Components" description={`${formatNumber(statusPage.verified_subscriber_count)} verified subscribers`}><div class="grid gap-4">{#each statusPage.components as component (component.id)}<article class="border-b border-wg-border pb-4 last:border-b-0"><div class="flex flex-wrap items-center justify-between gap-3"><h2 class="font-bold">{component.name}</h2><span class="text-sm font-bold text-wg-text-muted">{formatNumber(component.monitorings.length)} monitorings</span></div>{#if component.description}<p class="mt-1 text-sm leading-5 text-wg-text-muted">{component.description}</p>{/if}{#if component.monitoring_group}<p class="mt-3 text-sm text-wg-text-muted">Monitoring group: <span class="font-bold text-wg-text">{component.monitoring_group.name}</span></p>{/if}<ul class="mt-3 grid gap-2 p-0">{#each component.monitorings as monitoring (monitoring.id)}<li class="list-none rounded-xl bg-wg-surface-muted px-3 py-2 text-sm"><span class="font-bold">{monitoring.name}</span><span class="ml-2 text-wg-text-muted">{monitoring.target}</span></li>{/each}</ul></article>{/each}</div></Card>
-        <Card title="Incidents" description="Publish clear updates as incidents are investigated and resolved.">{#if data.incidents.data.length > 0}<div class="grid gap-4">{#each data.incidents.data as incident (incident.id)}<article class="rounded-xl border border-wg-border p-4"><div class="flex flex-wrap items-start justify-between gap-3"><div><div class="flex items-center gap-2"><h2 class="font-bold">{incident.monitoring.name}</h2><StatusBadge tone={incident.lifecycle.state === "open" ? "danger" : "healthy"} label={incidentStatusLabel(incident.lifecycle.state)} /></div><p class="mt-1 text-sm text-wg-text-muted">Opened {dateTime(incident.lifecycle.opened_at)}</p></div><Button class="min-h-10 px-3 py-1.5" variant="secondary" type="button" onclick={() => { selectedIncident = incident; publishOpen = true; }}>Publish update</Button></div>{#if incident.readiness.requires_public_update}<p class="mt-3 text-sm font-bold text-amber-700 dark:text-amber-300">This open incident has no public update yet.</p>{/if}{#if incident.updates.length > 0}<ol class="mt-4 grid gap-3 p-0">{#each incident.updates as update (update.id)}<li class="list-none border-l-2 border-wg-accent pl-3"><p class="text-sm font-bold">{updateStatusLabel(update.status)}</p><p class="mt-1 text-sm leading-5 text-wg-text-muted">{update.message}</p><p class="mt-1 text-xs text-wg-text-muted">{dateTime(update.published_at)}</p></li>{/each}</ol>{/if}</article>{/each}</div>{:else}<p class="text-sm leading-6 text-wg-text-muted">No incidents are associated with these components.</p>{/if}</Card></section>
+        <Card title="Incidents" description="Publish clear updates as incidents are investigated and resolved.">{#if data.incidents.data.length > 0}<div class="grid gap-4">{#each data.incidents.data as incident (incident.id)}<article class="rounded-xl border border-wg-border p-4"><div class="flex flex-wrap items-start justify-between gap-3"><div><div class="flex items-center gap-2"><h2 class="font-bold">{incident.monitoring.name}</h2><StatusBadge tone={incident.lifecycle.state === "open" ? "danger" : "healthy"} label={incidentStatusLabel(incident.lifecycle.state)} /></div><p class="mt-1 text-sm text-wg-text-muted">Opened {dateTime(incident.lifecycle.opened_at)}</p></div><Button class="min-h-10 px-3 py-1.5" variant="secondary" type="button" onclick={() => { selectedIncident = incident; editingUpdate = null; publishOpen = true; }}>Publish update</Button></div>{#if incident.readiness.requires_public_update}<p class="mt-3 text-sm font-bold text-amber-700 dark:text-amber-300">This open incident has no public update yet.</p>{/if}{#if incident.updates.length > 0}<ol class="mt-4 grid gap-3 p-0">{#each incident.updates as update (update.id)}<li class="list-none border-l-2 border-wg-accent pl-3"><div class="flex flex-wrap items-center justify-between gap-2"><p class="text-sm font-bold">{updateStatusLabel(update.status)}{#if update.is_automatic}<span class="ml-2 rounded-full bg-wg-surface-muted px-2 py-0.5 text-xs text-wg-text-muted">Automatic</span>{/if}{#if update.suppressed_at}<span class="ml-2 rounded-full bg-wg-surface-muted px-2 py-0.5 text-xs text-wg-text-muted">Suppressed</span>{/if}</p>{#if update.is_automatic && !update.suppressed_at}<div class="flex gap-2"><Button class="min-h-8 px-2 py-1 text-xs" variant="secondary" type="button" disabled={Boolean(suppressingUpdateId)} onclick={() => { selectedIncident = incident; editingUpdate = update; publishOpen = true; }}>Edit</Button><Button class="min-h-8 px-2 py-1 text-xs" variant="danger" type="button" loading={suppressingUpdateId === update.id} disabled={publishingUpdate} onclick={() => suppressIncidentUpdate(incident, update)}>Suppress</Button></div>{/if}</div><p class="mt-1 text-sm leading-5 text-wg-text-muted">{update.message}</p><p class="mt-1 text-xs text-wg-text-muted">{dateTime(update.published_at)}</p></li>{/each}</ol>{/if}</article>{/each}</div>{:else}<p class="text-sm leading-6 text-wg-text-muted">No incidents are associated with these components.</p>{/if}</Card></section>
 </main>
 
 <Dialog bind:open={announcementOpen} title={announcement ? "Edit announcement" : "Publish announcement"} description={announcement ? "Update the visible announcement without sending another email." : "Publish a visible update without opening an incident."}>{#if statusPage.publication.is_public}<form class="grid gap-5" onsubmit={saveAnnouncement} novalidate><Field label="Title" required><Input name="title" maxlength={120} required value={announcement?.title ?? ""} /></Field><Field label="Message" required><Textarea class="min-h-32" name="message" maxlength={2000} required value={announcement?.message ?? ""} /></Field>{#if !announcement}<input name="notify_subscribers" type="hidden" value="0" /><label class="flex items-start gap-3 rounded-xl border border-wg-border p-3 text-sm"><input class="mt-1 size-4 accent-wg-accent" name="notify_subscribers" type="checkbox" value="1" /><span><span class="block font-bold">Notify verified subscribers</span><span class="mt-1 block leading-5 text-wg-text-muted">Send this announcement once to confirmed email subscribers.</span></span></label>{/if}<Button type="submit" loading={publishingAnnouncement}>{announcement ? "Save announcement" : "Publish announcement"}</Button></form>{/if}</Dialog>
 
-<Dialog bind:open={publishOpen} title="Publish incident update" description={selectedIncident ? `Share an update for ${selectedIncident.monitoring.name}.` : ""}>{#if selectedIncident}<form class="grid gap-5" onsubmit={publishIncidentUpdate} novalidate><Field label="Status" required><Select name="status" required><option value="investigating">Investigating</option><option value="identified">Identified</option><option value="monitoring">Monitoring</option><option value="resolved">Resolved</option></Select></Field><Field label="Message" required><Textarea class="min-h-32" name="message" required /></Field><Button type="submit" loading={publishingUpdate}>Publish update</Button></form>{/if}</Dialog>
+<Dialog bind:open={publishOpen} title={editingUpdate ? "Edit incident update" : "Publish incident update"} description={selectedIncident ? `${editingUpdate ? "Edit the customer-facing message for" : "Share an update for"} ${selectedIncident.monitoring.name}.` : ""}>{#if selectedIncident}<form class="grid gap-5" onsubmit={publishIncidentUpdate} novalidate><Field label="Status" required><Select name="status" required><option value="investigating" selected={editingUpdate?.status === "investigating"}>Investigating</option><option value="identified" selected={editingUpdate?.status === "identified"}>Identified</option><option value="monitoring" selected={editingUpdate?.status === "monitoring"}>Monitoring</option><option value="resolved" selected={editingUpdate?.status === "resolved"}>Resolved</option></Select></Field><Field label="Message" required><Textarea class="min-h-32" name="message" required value={editingUpdate?.message ?? ""} /></Field><Button type="submit" loading={publishingUpdate}>{editingUpdate ? "Save update" : "Publish update"}</Button></form>{/if}</Dialog>

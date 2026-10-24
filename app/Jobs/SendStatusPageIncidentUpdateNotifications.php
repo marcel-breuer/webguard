@@ -39,12 +39,17 @@ class SendStatusPageIncidentUpdateNotifications implements ShouldBeUnique, Shoul
             || ! $statusPage->is_public
             || ! $statusPage->auto_publish_incident_updates
             || ! $incidentUpdate instanceof IncidentUpdate
+            || $incidentUpdate->suppressed_at !== null
             || $incidentUpdate->incident === null
             || $incidentUpdate->incident->monitoring === null) {
             return;
         }
 
         if ($incidentUpdate->status->value !== $this->status) {
+            return;
+        }
+
+        if ($incidentUpdate->notified_at !== null) {
             return;
         }
 

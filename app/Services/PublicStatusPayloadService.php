@@ -212,7 +212,7 @@ class PublicStatusPayloadService
         return Incident::query()
             ->with([
                 'monitoring' => fn ($query) => $query->withoutGlobalScope('user'),
-                'updates',
+                'updates' => fn ($query) => $query->whereNull('suppressed_at')->oldest(),
             ])
             ->whereIn('monitoring_id', $monitoringIds)
             ->whereBetween('down_at', [Date::now()->subDays(90)->startOfDay(), Date::now()->endOfDay()])

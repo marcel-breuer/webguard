@@ -53,6 +53,8 @@ Route::group(['prefix' => 'status-pages', 'as' => 'status-pages.'], function ():
     Route::get('/{statusPage}/incidents', [MobileStatusPageWorkspaceController::class, 'incidents'])->name('incidents.index');
     Route::get('/{statusPage}/incidents/{incident}', [MobileStatusPageWorkspaceController::class, 'showIncident'])->name('incidents.show');
     Route::post('/{statusPage}/incidents/{incident}/updates', [MobileStatusPageWorkspaceController::class, 'storeIncidentUpdate'])->name('incidents.updates.store');
+    Route::patch('/{statusPage}/incidents/{incident}/updates/{incidentUpdate}', [MobileStatusPageWorkspaceController::class, 'updateIncidentUpdate'])->name('incidents.updates.update');
+    Route::delete('/{statusPage}/incidents/{incident}/updates/{incidentUpdate}', [MobileStatusPageWorkspaceController::class, 'suppressIncidentUpdate'])->name('incidents.updates.suppress');
     Route::patch('/{statusPage}/incidents/{incident}/metadata', [MobileStatusPageWorkspaceController::class, 'updateMetadata'])->name('incidents.metadata.update');
     Route::patch('/{statusPage}/incidents/{incident}/review', [MobileStatusPageWorkspaceController::class, 'updateReview'])->name('incidents.review.update');
     Route::post('/{statusPage}/incidents/{incident}/follow-ups', [MobileStatusPageWorkspaceController::class, 'storeFollowUp'])->name('incidents.follow-ups.store');
