@@ -1,9 +1,30 @@
 import { page } from "$app/state";
+import type { DateTimeFormatOptions } from "$lib/i18n/formatters";
+import {
+    formatCurrencyForLocale,
+    formatDateTimeForLocale,
+    formatMonthYearForLocale,
+    formatNumberForLocale,
+    formatPercentageForLocale,
+    resolveFormatLocale,
+} from "$lib/i18n/formatters";
 
-export type DateTimeFormatOptions = Intl.DateTimeFormatOptions;
+export type { DateTimeFormatOptions } from "$lib/i18n/formatters";
 
-function interfaceLocale(): string {
-    return page.data.locale === "de" ? "de-DE" : "en-US";
+export function formatLocale(): string {
+    return resolveFormatLocale(page.data.formatLocale, page.data.locale);
+}
+
+export function formatNumber(value: number, options: Intl.NumberFormatOptions = {}): string {
+    return formatNumberForLocale(formatLocale(), value, options);
+}
+
+export function formatPercentage(value: number, fractionDigits = 2): string {
+    return formatPercentageForLocale(formatLocale(), value, fractionDigits);
+}
+
+export function formatCurrency(value: number, currency: string, options: Intl.NumberFormatOptions = {}): string {
+    return formatCurrencyForLocale(formatLocale(), value, currency, options);
 }
 
 export function formatDateTime(
@@ -11,15 +32,9 @@ export function formatDateTime(
     fallback: string,
     options: DateTimeFormatOptions = { dateStyle: "medium", timeStyle: "short" },
 ): string {
-    if (!value) {
-        return fallback;
-    }
-
-    const date = new Date(value);
-
-    return Number.isNaN(date.getTime()) ? fallback : new Intl.DateTimeFormat(interfaceLocale(), options).format(date);
+    return formatDateTimeForLocale(formatLocale(), value, fallback, options);
 }
 
 export function formatMonthYear(value: Date): string {
-    return new Intl.DateTimeFormat(interfaceLocale(), { month: "long", year: "numeric" }).format(value);
+    return formatMonthYearForLocale(formatLocale(), value);
 }

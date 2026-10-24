@@ -6,6 +6,7 @@
     import Field from "$lib/components/Field.svelte";
     import Input from "$lib/components/Input.svelte";
     import Select, { type SelectOption } from "$lib/components/Select.svelte";
+    import { formatNumber } from "$lib/i18n/format";
     import Textarea from "$lib/components/Textarea.svelte";
 
     interface FormComponent {
@@ -37,7 +38,7 @@
     })));
     const monitoringGroupOptions = $derived<SelectOption[]>(monitoringGroups.map((group) => ({
         value: group.id,
-        label: `${group.name} · ${group.monitorings_count} monitorings`,
+        label: `${group.name} · ${formatNumber(group.monitorings_count)} monitorings`,
     })));
 
     $effect(() => {

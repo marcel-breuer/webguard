@@ -1,6 +1,6 @@
 <script lang="ts">
     import { FirstPartyApiError, requestFirstPartyApi } from "$lib/api/client";
-    import { formatDateTime } from "$lib/i18n/format";
+    import { formatDateTime, formatNumber } from "$lib/i18n/format";
     import Button from "$lib/components/Button.svelte";
     import Card from "$lib/components/Card.svelte";
     import EmptyState from "$lib/components/EmptyState.svelte";
@@ -148,7 +148,7 @@
 
 <main class="mx-auto w-[min(70rem,calc(100%_-_2rem))] py-6 sm:py-12">
     <header class="mb-8 flex flex-col items-start justify-between gap-4 lg:flex-row lg:items-end">
-        <div><p class="m-0 text-[0.8125rem] font-extrabold tracking-[0.1em] text-wg-accent uppercase">Inbox</p><h1 class="mt-2 text-[clamp(2rem,6vw,3rem)] leading-[1.1] font-bold">Notifications</h1><p class="mt-3 max-w-2xl leading-6 text-wg-text-muted">{meta.unread_count} unread {meta.unread_count === 1 ? "notification" : "notifications"} across your accessible monitorings.</p></div>
+        <div><p class="m-0 text-[0.8125rem] font-extrabold tracking-[0.1em] text-wg-accent uppercase">Inbox</p><h1 class="mt-2 text-[clamp(2rem,6vw,3rem)] leading-[1.1] font-bold">Notifications</h1><p class="mt-3 max-w-2xl leading-6 text-wg-text-muted">{formatNumber(meta.unread_count)} unread {meta.unread_count === 1 ? "notification" : "notifications"} across your accessible monitorings.</p></div>
         <Button variant="secondary" loading={markingAllRead} disabled={meta.unread_count === 0} onclick={markAllRead}>Mark all as read</Button>
     </header>
 

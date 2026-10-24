@@ -11,6 +11,7 @@
     import Input from "$lib/components/Input.svelte";
     import PaginationControls from "$lib/components/Pagination.svelte";
     import Select from "$lib/components/Select.svelte";
+    import { formatNumber } from "$lib/i18n/format";
 
     type Item = Record<string, unknown>;
     type QueryValue = string | number;
@@ -44,7 +45,14 @@
     function openCreate(): void { editing = null; error = ""; dialogOpen = true; }
     function openEdit(item: Item): void { editing = item; error = ""; dialogOpen = true; }
     function value(item: Item | null, field: CrudField): string { const raw = item?.[field.name] ?? createDefaults[field.name] ?? ""; return String(raw); }
-    function format(column: Column, item: Item): string { return column.format ? column.format(item[column.key], item) : String(item[column.key] ?? "—"); }
+    function format(column: Column, item: Item): string {
+        const value = item[column.key];
+
+        if (column.format) return column.format(value, item);
+        if (typeof value === "number") return formatNumber(value);
+
+        return String(value ?? "—");
+    }
 
     function href(overrides: Record<string, QueryValue> = {}): string {
         const values: Record<string, QueryValue> = { ...query, ...overrides };
@@ -106,7 +114,7 @@
 
     {#if items.length === 0}<EmptyState title={`No ${title.toLowerCase()} match the selected filters`} description="Try a broader search or reset the table controls." />{:else}<DataTable caption={title}><thead><tr>{#each columns as column}<th>{#if column.sortKey}<a class="font-bold text-wg-text-muted no-underline hover:text-wg-accent" href={sortHref(column.sortKey)}>{column.label}{sortLabel(column.sortKey)}</a>{:else}{column.label}{/if}</th>{/each}<th>Actions</th></tr></thead><tbody>{#each items as item (String(item.id))}<tr>{#each columns as column}<td>{format(column, item)}</td>{/each}<td><div class="flex flex-wrap gap-2 md:flex-nowrap"><Button class="min-h-9 px-3 py-1.5 text-xs" variant="secondary" type="button" onclick={() => openEdit(item)}>Edit</Button>{#each extraActions(item) as mutation}<Button class="min-h-9 px-3 py-1.5 text-xs" variant="secondary" type="button" onclick={() => action(item, mutation)}>{mutation.label}</Button>{/each}<Button class="min-h-9 px-3 py-1.5 text-xs" variant="danger" type="button" onclick={() => remove(item)}>Delete</Button></div></td></tr>{/each}</tbody></DataTable>{/if}
 
-    <div class="mt-4 flex flex-col gap-3 text-sm text-wg-text-muted sm:flex-row sm:items-center sm:justify-between"><p>Showing {items.length} of {pagination.total} entries</p><PaginationControls page={pagination.current_page} pages={pagination.last_page} href={(page) => href({ page })} /></div>
+    <div class="mt-4 flex flex-col gap-3 text-sm text-wg-text-muted sm:flex-row sm:items-center sm:justify-between"><p>Showing {formatNumber(items.length)} of {formatNumber(pagination.total)} entries</p><PaginationControls page={pagination.current_page} pages={pagination.last_page} href={(page) => href({ page })} /></div>
 </section>
 
 <Dialog bind:open={dialogOpen} title={editing ? `Edit ${singular}` : `Create ${singular}`}><form class="grid gap-4" onsubmit={submit} novalidate>{#each fields as field}<Field label={field.label} required={field.required}>{#if field.type === "select"}<Select name={field.name} value={value(editing, field)} required={field.required && !editing}>{#each field.options ?? [] as option}<option value={option.value}>{option.label}</option>{/each}</Select>{:else if field.type === "checkbox"}<Checkbox name={field.name} checked={value(editing, field) === "true" || value(editing, field) === "1"} />{:else}<Input name={field.name} type={field.type ?? "text"} value={value(editing, field)} required={field.required && (!editing || field.type !== "password")} />{/if}</Field>{/each}{#if error}<p class="text-sm font-bold text-wg-danger" role="alert">{error}</p>{/if}<Button type="submit" loading={saving}>{editing ? "Save changes" : `Create ${singular}`}</Button></form></Dialog>

@@ -39,6 +39,7 @@ use Spatie\Activitylog\Support\LogOptions;
  * @property Carbon|null $terms_accepted_at
  * @property Carbon|null $privacy_accepted_at
  * @property string|null $package_id
+ * @property string|null $format_locale
  * @property array<string, mixed>|null $notification_channels
  * @property Carbon|null $notification_channels_hint_seen_at
  * @property bool $monitoring_digest_enabled
@@ -72,6 +73,7 @@ use Spatie\Activitylog\Support\LogOptions;
     'privacy_accepted_at',
     'package_id',
     'locale',
+    'format_locale',
     'theme',
     'avatar',
     'notification_channels',

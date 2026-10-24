@@ -172,13 +172,19 @@ class SvelteKitQualityGateTest extends TestCase
     {
         $localize = file_get_contents(base_path('frontend/src/lib/i18n/localize.ts'));
         $format = file_get_contents(base_path('frontend/src/lib/i18n/format.ts'));
+        $formatters = file_get_contents(base_path('frontend/src/lib/i18n/formatters.ts'));
         $germanTranslations = file_get_contents(base_path('resources/lang/de/sveltekit.php'));
         $layout = file_get_contents(base_path('frontend/src/routes/+layout.server.ts'));
+        $appLayout = file_get_contents(base_path('frontend/src/routes/(app)/+layout.server.ts'));
+        $profile = file_get_contents(base_path('frontend/src/routes/(app)/profile/+page.svelte'));
 
         $this->assertIsString($localize);
         $this->assertIsString($format);
+        $this->assertIsString($formatters);
         $this->assertIsString($germanTranslations);
         $this->assertIsString($layout);
+        $this->assertIsString($appLayout);
+        $this->assertIsString($profile);
 
         foreach ([
             "'Application navigation' => 'Anwendungsnavigation'",
@@ -199,6 +205,9 @@ class SvelteKitQualityGateTest extends TestCase
             "'By customer impact' => 'Nach Kundenauswirkung'",
             "'Services with more than one incident in this period.' => 'Dienste mit mehr als einem Vorfall in diesem Zeitraum.'",
             "'Try a broader period or remove one of the filters.' => 'Versuchen Sie es mit einem längeren Zeitraum oder entfernen Sie einen der Filter.'",
+            "'Language and regional formats' => 'Sprache und regionale Formate'",
+            "'Number, date and time format' => 'Zahlen-, Datums- und Zeitformat'",
+            "'Use language default' => 'Standard der Sprache verwenden'",
         ] as $translation) {
             $this->assertStringContainsString($translation, $germanTranslations);
         }
@@ -212,9 +221,15 @@ class SvelteKitQualityGateTest extends TestCase
         $this->assertStringNotContainsString('title="Seven-day uptime"', $dashboard);
         $this->assertStringNotContainsString('Availability across all visible monitorings.', $dashboard);
 
-        $this->assertStringContainsString('page.data.locale === "de" ? "de-DE" : "en-US"', $format);
-        $this->assertStringContainsString('new Intl.DateTimeFormat(interfaceLocale(), options)', $format);
-        $this->assertStringContainsString('Number.isNaN(date.getTime()) ? fallback', $format);
+        $this->assertStringContainsString('supportedFormatLocales.has(preference)', $formatters);
+        $this->assertStringContainsString('new Intl.NumberFormat(locale, options)', $formatters);
+        $this->assertStringContainsString('new Intl.DateTimeFormat(locale, options)', $formatters);
+        $this->assertStringContainsString('Number.isNaN(date.getTime()) ? fallback', $formatters);
+        $this->assertStringContainsString('resolveFormatLocale(page.data.formatLocale, page.data.locale)', $format);
+        $this->assertStringContainsString('formatLocale: session.user.format_locale', $appLayout);
+        $this->assertStringContainsString('action="/api/profile/preferences"', $profile);
+        $this->assertStringContainsString('name="locale"', $profile);
+        $this->assertStringContainsString('name="format_locale"', $profile);
 
         foreach ([
             'frontend/src/lib/components/MonitoringAnalytics.svelte',
@@ -320,11 +335,11 @@ class SvelteKitQualityGateTest extends TestCase
         $this->assertStringContainsString('(event.currentTarget as HTMLDetailsElement).open', $appearanceSelector);
         $this->assertStringContainsString('(event.currentTarget as HTMLDetailsElement).open', $localeSelector);
         $this->assertStringContainsString('function translateDynamic(value: string, messages: TranslationMessages): string | undefined', $localize);
-        $this->assertStringContainsString('Checked every (\\d+) (minutes|seconds)', $localize);
-        $this->assertStringContainsString('The first monitoring results can take up to (\\d+) minutes', $localize);
-        $this->assertStringContainsString('(\\d+) monitorings · (\\d+) healthy(?: · (\\d+) down)?', $localize);
-        $this->assertStringContainsString('(\\d+) components · (\\d+) monitorings', $localize);
-        $this->assertStringContainsString('(\\d+)–(\\d+) of (\\d+) incidents', $localize);
+        $this->assertStringContainsString('Checked every ([\\d.,\\u00a0\\u202f]+) (minutes|seconds)', $localize);
+        $this->assertStringContainsString('The first monitoring results can take up to ([\\d.,\\u00a0\\u202f]+) minutes', $localize);
+        $this->assertStringContainsString('([\\d.,\\u00a0\\u202f]+) monitorings · ([\\d.,\\u00a0\\u202f]+) healthy(?: · ([\\d.,\\u00a0\\u202f]+) down)?', $localize);
+        $this->assertStringContainsString('([\\d.,\\u00a0\\u202f]+) components · ([\\d.,\\u00a0\\u202f]+) monitorings', $localize);
+        $this->assertStringContainsString('([\\d.,\\u00a0\\u202f]+)–([\\d.,\\u00a0\\u202f]+) of ([\\d.,\\u00a0\\u202f]+) incidents', $localize);
         $this->assertStringContainsString('function intervalLabel', $monitoringDetail);
         $this->assertStringContainsString('function periodDescription', $monitoringDetail);
     }

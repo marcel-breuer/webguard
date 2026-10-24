@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { untrack } from "svelte";
     import Button from "$lib/components/Button.svelte";
     import Card from "$lib/components/Card.svelte";
     import Checkbox from "$lib/components/Checkbox.svelte";
@@ -6,6 +7,7 @@
     import Field from "$lib/components/Field.svelte";
     import Input from "$lib/components/Input.svelte";
     import MutationForm from "$lib/components/MutationForm.svelte";
+    import Select from "$lib/components/Select.svelte";
     import { appRoutes } from "$lib/routes";
     import { formatDateTime } from "$lib/i18n/format";
     import type { FirstPartySession } from "$lib/api/models";
@@ -15,6 +17,8 @@
     interface Props { data: { session: FirstPartySession; apiKeys: ApiKeySummary[] }; }
 
     let { data }: Props = $props();
+    let preferredLocale = $state(untrack(() => data.session.user.locale));
+    let preferredFormatLocale = $state(untrack(() => data.session.user.format_locale ?? ""));
     let apiKeys = $state<ApiKeySummary[]>([]);
     let createOpen = $state(false);
     let revokeTarget = $state<ApiKeySummary | null>(null);
@@ -42,6 +46,25 @@
             <MutationForm action="/api/profile" method="PATCH" submitLabel="Save changes" successMessage="Profile saved. Refreshing your session…" onSuccess={refreshProfile}>
                 <Field label="Name" required><Input name="name" autocomplete="name" value={data.session.user.name} /></Field>
                 <Field label="Email" required><Input name="email" type="email" autocomplete="email" value={data.session.user.email} /></Field>
+            </MutationForm>
+        </Card>
+
+        <Card title="Language and regional formats" description="Choose the language and regional formats used throughout WebGuard.">
+            <MutationForm action="/api/profile/preferences" method="PATCH" submitLabel="Save preferences" successMessage="Preferences saved. Refreshing your session…" onSuccess={refreshProfile}>
+                <Field label="Language" hint="Choose the language used throughout the interface.">
+                    <Select name="locale" bind:value={preferredLocale} required>
+                        <option value="en">English</option>
+                        <option value="de">Deutsch</option>
+                    </Select>
+                </Field>
+                <Field label="Number, date and time format" hint="Choose how numbers, currencies, dates and times are displayed. This can differ from the interface language.">
+                    <Select name="format_locale" bind:value={preferredFormatLocale}>
+                        <option value="">Use language default</option>
+                        <option value="de-DE">German (Germany) · 1.234,56</option>
+                        <option value="en-GB">English (United Kingdom) · 1,234.56</option>
+                        <option value="en-US">English (United States) · 1,234.56</option>
+                    </Select>
+                </Field>
             </MutationForm>
         </Card>
 

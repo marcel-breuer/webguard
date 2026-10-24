@@ -19,7 +19,19 @@ function dynamicMessage(
 }
 
 function translateDynamic(value: string, messages: TranslationMessages): string | undefined {
-    const checkedEvery = value.match(/^Checked every (\d+) (minutes|seconds)$/);
+    const unread = value.match(/^Notifications, ([\d.,\u00a0\u202f]+) unread$/);
+
+    if (unread) {
+        return dynamicMessage(messages, "Notifications, :count unread", { count: unread[1] }, value);
+    }
+
+    const unreadTitle = value.match(/^Notifications \(([\d.,\u00a0\u202f]+) unread\)$/);
+
+    if (unreadTitle) {
+        return dynamicMessage(messages, "Notifications (:count unread)", { count: unreadTitle[1] }, value);
+    }
+
+    const checkedEvery = value.match(/^Checked every ([\d.,\u00a0\u202f]+) (minutes|seconds)$/);
 
     if (checkedEvery) {
         const unit = checkedEvery[2] === "minutes" ? "minutes" : "seconds";
@@ -27,7 +39,7 @@ function translateDynamic(value: string, messages: TranslationMessages): string 
         return dynamicMessage(messages, `Checked every :value ${unit}`, { value: checkedEvery[1] }, `Checked every :value ${unit}`);
     }
 
-    const downtime = value.match(/^(\d+) (incident|incidents), ([\d.,]+)% downtime$/);
+    const downtime = value.match(/^([\d.,\u00a0\u202f]+) (incident|incidents), ([\d.,\u00a0\u202f]+)% downtime$/);
 
     if (downtime) {
         const key = `:count ${downtime[2]}, :percent downtime`;
@@ -35,13 +47,13 @@ function translateDynamic(value: string, messages: TranslationMessages): string 
         return dynamicMessage(messages, key, { count: downtime[1], percent: downtime[3] }, value);
     }
 
-    const loadedChecks = value.match(/^(\d+) loaded checks · Live and archived data$/);
+    const loadedChecks = value.match(/^([\d.,\u00a0\u202f]+) loaded checks · Live and archived data$/);
 
     if (loadedChecks) {
         return dynamicMessage(messages, ":count loaded checks · Live and archived data", { count: loadedChecks[1] }, value);
     }
 
-    const duration = value.match(/^(.* · )(\d+)(h|m)(?: (\d+)m)?$/);
+    const duration = value.match(/^(.* · )([\d.,\u00a0\u202f]+)(h|m)(?: ([\d.,\u00a0\u202f]+)m)?$/);
 
     if (duration) {
         if (duration[3] === "h" && duration[4]) {
@@ -55,7 +67,7 @@ function translateDynamic(value: string, messages: TranslationMessages): string 
         return `${duration[1]}${dynamicMessage(messages, ":minutes min", { minutes: duration[2] }, ":minutes min")}`;
     }
 
-    const firstResults = value.match(/^The first monitoring results can take up to (\d+) minutes, based on the configured check interval\.$/);
+    const firstResults = value.match(/^The first monitoring results can take up to ([\d.,\u00a0\u202f]+) minutes, based on the configured check interval\.$/);
 
     if (firstResults) {
         return dynamicMessage(
@@ -96,21 +108,22 @@ function translateDynamic(value: string, messages: TranslationMessages): string 
         return dynamicMessage(messages, "Last checked :value", { value: lastChecked[1] }, value);
     }
 
-    const lastDays = value.match(/^Last (\d+) days$/);
+    const lastDays = value.match(/^Last ([\d.,\u00a0\u202f]+) days$/);
 
     if (lastDays) {
         return dynamicMessage(messages, "Last :value days", { value: lastDays[1] }, value);
     }
 
-    const incidentCount = value.match(/^(\d+) incidents?$/);
+    const incidentCount = value.match(/^([\d.,\u00a0\u202f]+) incidents?$/);
 
     if (incidentCount) {
-        const key = incidentCount[1] === "1" ? ":count incident" : ":count incidents";
+        const count = Number(incidentCount[1].replace(/[.,\u00a0\u202f]/g, ""));
+        const key = count === 1 ? ":count incident" : ":count incidents";
 
         return dynamicMessage(messages, key, { count: incidentCount[1] }, value);
     }
 
-    const groupSummary = value.match(/^(\d+) monitorings · (\d+) healthy(?: · (\d+) down)?$/);
+    const groupSummary = value.match(/^([\d.,\u00a0\u202f]+) monitorings · ([\d.,\u00a0\u202f]+) healthy(?: · ([\d.,\u00a0\u202f]+) down)?$/);
 
     if (groupSummary) {
         const key = groupSummary[3]
@@ -124,7 +137,7 @@ function translateDynamic(value: string, messages: TranslationMessages): string 
         }, value);
     }
 
-    const statusPageSummary = value.match(/^(\d+) components · (\d+) monitorings$/);
+    const statusPageSummary = value.match(/^([\d.,\u00a0\u202f]+) components · ([\d.,\u00a0\u202f]+) monitorings$/);
 
     if (statusPageSummary) {
         return dynamicMessage(messages, ":components components · :monitorings monitorings", {
@@ -133,7 +146,13 @@ function translateDynamic(value: string, messages: TranslationMessages): string 
         }, value);
     }
 
-    const pagination = value.match(/^(\d+)–(\d+) of (\d+) incidents$/);
+    const namedMonitorings = value.match(/^(.* · )([\d.,\u00a0\u202f]+) monitorings$/);
+
+    if (namedMonitorings) {
+        return `${namedMonitorings[1]}${dynamicMessage(messages, ":count monitorings", { count: namedMonitorings[2] }, namedMonitorings[0])}`;
+    }
+
+    const pagination = value.match(/^([\d.,\u00a0\u202f]+)–([\d.,\u00a0\u202f]+) of ([\d.,\u00a0\u202f]+) incidents$/);
 
     if (pagination) {
         return dynamicMessage(messages, ":from–:to of :total incidents", {
@@ -143,13 +162,37 @@ function translateDynamic(value: string, messages: TranslationMessages): string 
         }, value);
     }
 
-    const minutes = value.match(/^(\d+) min$/);
+    const showing = value.match(/^Showing ([\d.,\u00a0\u202f]+) of ([\d.,\u00a0\u202f]+) entries$/);
+
+    if (showing) {
+        return dynamicMessage(messages, "Showing :count of :total entries", { count: showing[1], total: showing[2] }, value);
+    }
+
+    const totalMonitorings = value.match(/^Total monitorings: ([\d.,\u00a0\u202f]+)$/);
+
+    if (totalMonitorings) {
+        return dynamicMessage(messages, "Total monitorings: :count", { count: totalMonitorings[1] }, value);
+    }
+
+    const websites = value.match(/^([\d.,\u00a0\u202f]+) websites$/);
+
+    if (websites) {
+        return dynamicMessage(messages, ":count websites", { count: websites[1] }, value);
+    }
+
+    const monitorings = value.match(/^([\d.,\u00a0\u202f]+) monitorings$/);
+
+    if (monitorings) {
+        return dynamicMessage(messages, ":count monitorings", { count: monitorings[1] }, value);
+    }
+
+    const minutes = value.match(/^([\d.,\u00a0\u202f]+) min$/);
 
     if (minutes) {
         return dynamicMessage(messages, ":minutes min", { minutes: minutes[1] }, value);
     }
 
-    const compactDuration = value.match(/^(\d+) h(?: (\d+) min)?$/);
+    const compactDuration = value.match(/^([\d.,\u00a0\u202f]+) h(?: ([\d.,\u00a0\u202f]+) min)?$/);
 
     if (compactDuration) {
         return compactDuration[2]

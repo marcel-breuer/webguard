@@ -2,7 +2,7 @@
     import { goto, invalidateAll } from "$app/navigation";
     import { FirstPartyApiError, requestFirstPartyApi } from "$lib/api/client";
     import { appRoutes } from "$lib/routes";
-    import { formatDateTime } from "$lib/i18n/format";
+    import { formatDateTime, formatNumber } from "$lib/i18n/format";
     import Button from "$lib/components/Button.svelte";
     import Card from "$lib/components/Card.svelte";
     import Dialog from "$lib/components/Dialog.svelte";
@@ -176,12 +176,12 @@
     {:else}
         <Card title="Website health" titleId="health-heading" description={healthMessage()}>
             {#snippet actions()}<StatusBadge tone={healthTone()} label={healthBadgeLabel()} />{/snippet}
-            <p class="mb-4 mt-0 text-sm font-bold text-wg-text-muted">{dashboard.summary.total} <span>websites</span></p>
+            <p class="mb-4 mt-0 text-sm font-bold text-wg-text-muted">{formatNumber(dashboard.summary.total)} <span>websites</span></p>
             <dl class="grid grid-cols-2 gap-3 sm:grid-cols-5">
                 {#each [["healthy", "Working"], ["down", "Down"], ["unknown", "Needs a check"], ["paused", "Paused"], ["maintenance", "Maintenance"]] as [key, label]}
                     <div class="rounded-xl bg-wg-surface-muted p-3">
                         <dt class="text-xs font-bold text-wg-text-muted">{label}</dt>
-                        <dd class="mt-1 text-xl font-extrabold">{dashboard.summary[key as keyof typeof dashboard.summary]}</dd>
+                        <dd class="mt-1 text-xl font-extrabold">{formatNumber(dashboard.summary[key as keyof typeof dashboard.summary])}</dd>
                     </div>
                 {/each}
             </dl>
@@ -206,7 +206,7 @@
                                     </a>
                                 {:else}
                                     <div class="flex flex-wrap items-center justify-between gap-3">
-                                        <p class="m-0 font-bold">{item.count ?? 0} <span>notification deliveries</span></p>
+                                        <p class="m-0 font-bold">{formatNumber(item.count ?? 0)} <span>notification deliveries</span></p>
                                         <StatusBadge tone={attentionTone(item.type)} label={attentionStatusLabel(item.type)} />
                                     </div>
                                     <p class="mb-0 mt-1 text-sm text-wg-text-muted">Review failed delivery configuration.</p>
@@ -246,7 +246,7 @@
                                     <p class="mt-1 truncate text-sm text-wg-text-muted">{service.target} · {service.group}</p>
                                 </div>
                                 <div class="shrink-0 text-sm text-wg-text-muted sm:text-right">
-                                    <p>{service.response_time_ms === null ? "—" : `${Math.round(service.response_time_ms)} ms`}</p>
+                                    <p>{service.response_time_ms === null ? "—" : `${formatNumber(Math.round(service.response_time_ms))} ms`}</p>
                                     <p class="mt-1 text-xs">{dateTime(service.last_checked_at)}</p>
                                 </div>
                             </a>

@@ -2,7 +2,7 @@
     import { invalidateAll } from "$app/navigation";
     import { FirstPartyApiError, requestFirstPartyApi } from "$lib/api/client";
     import { appRoutes } from "$lib/routes";
-    import { formatDateTime } from "$lib/i18n/format";
+    import { formatDateTime, formatNumber } from "$lib/i18n/format";
     import Button from "$lib/components/Button.svelte";
     import DataTable from "$lib/components/DataTable.svelte";
     import Dialog from "$lib/components/Dialog.svelte";
@@ -134,7 +134,7 @@
 
     {#if createError}<p class="mb-5 text-sm font-bold text-wg-danger" role="alert">{createError}</p>{/if}
 
-    <section class="mb-4 rounded-xl border border-wg-border bg-wg-surface px-5 py-5 shadow-wg-surface sm:px-7" aria-label="Monitoring total"><p class="text-base font-bold">Total monitorings: {data.monitorings.meta.total}</p></section>
+    <section class="mb-4 rounded-xl border border-wg-border bg-wg-surface px-5 py-5 shadow-wg-surface sm:px-7" aria-label="Monitoring total"><p class="text-base font-bold">Total monitorings: {formatNumber(data.monitorings.meta.total)}</p></section>
 
     <section class="mb-5 rounded-xl border border-wg-border bg-wg-surface p-5 shadow-wg-surface sm:p-7" aria-labelledby="filters-heading">
         <p id="filters-heading" class="text-sm font-bold">Quick views</p>
@@ -168,7 +168,7 @@
     {:else}
         <div class="grid gap-5 xl:grid-cols-[minmax(0,1fr)_18rem] xl:items-start">
             <section class="overflow-hidden rounded-2xl border border-wg-border bg-wg-surface shadow-wg-surface" aria-labelledby="active-monitorings-heading">
-                <header class="flex flex-col gap-3 border-b border-wg-border px-5 py-5 sm:flex-row sm:items-end sm:justify-between sm:px-6"><div><h2 id="active-monitorings-heading" class="text-xl font-bold">Active monitorings</h2><p class="mt-1 text-sm text-wg-text-muted">System health and details in one focused workspace.</p></div><p class="text-sm font-semibold text-wg-text-muted">Total monitorings: {data.monitorings.meta.total}</p></header>
+                <header class="flex flex-col gap-3 border-b border-wg-border px-5 py-5 sm:flex-row sm:items-end sm:justify-between sm:px-6"><div><h2 id="active-monitorings-heading" class="text-xl font-bold">Active monitorings</h2><p class="mt-1 text-sm text-wg-text-muted">System health and details in one focused workspace.</p></div><p class="text-sm font-semibold text-wg-text-muted">Total monitorings: {formatNumber(data.monitorings.meta.total)}</p></header>
                 {#if visibleMonitorings.length === 0}
                     <p class="p-6 text-sm text-wg-text-muted">No monitorings match the selected quick view and filters.</p>
                 {:else}
@@ -185,8 +185,8 @@
                 <div class="border-t border-wg-border px-5 py-4 sm:px-6"><Pagination page={data.monitorings.meta.current_page} pages={data.monitorings.meta.last_page} href={paginationHref} /></div>
             </section>
             <aside class="grid gap-4" aria-label="Operational summary">
-                <section class="rounded-2xl border border-violet-200 bg-violet-50 p-5 shadow-wg-surface dark:border-violet-800 dark:bg-violet-950/40"><p class="text-xs font-extrabold tracking-[0.12em] text-wg-accent uppercase">All systems</p><h2 class="mt-3 text-lg font-bold">{allSystemsOperational ? "All systems operational" : "Service attention required"}</h2><dl class="mt-5 grid grid-cols-2 gap-3 border-t border-violet-200 pt-4 dark:border-violet-800"><div><dt class="text-2xl font-extrabold text-emerald-600">{dashboard.summary.healthy}</dt><dd class="mt-1 text-xs text-wg-text-muted">Healthy</dd></div><div><dt class="text-2xl font-extrabold text-red-600">{dashboard.summary.down + dashboard.summary.unknown}</dt><dd class="mt-1 text-xs text-wg-text-muted">Needs attention</dd></div></dl></section>
-                <section class="rounded-2xl border border-wg-border bg-wg-surface p-5 shadow-wg-surface"><div class="flex items-start justify-between gap-3"><h2 class="text-base font-bold">Open incidents</h2><span class="rounded-full bg-red-50 px-2 py-1 text-xs font-bold text-red-600 dark:bg-red-950 dark:text-red-200">{openIncidents.length}</span></div><p class="mt-3 text-sm leading-5 text-wg-text-muted">Review current service disruptions and recent incident activity.</p><a class="mt-4 inline-flex text-sm font-bold text-wg-accent no-underline hover:text-wg-accent-strong" href={appRoutes.incidents}>Open incidents →</a></section>
+                <section class="rounded-2xl border border-violet-200 bg-violet-50 p-5 shadow-wg-surface dark:border-violet-800 dark:bg-violet-950/40"><p class="text-xs font-extrabold tracking-[0.12em] text-wg-accent uppercase">All systems</p><h2 class="mt-3 text-lg font-bold">{allSystemsOperational ? "All systems operational" : "Service attention required"}</h2><dl class="mt-5 grid grid-cols-2 gap-3 border-t border-violet-200 pt-4 dark:border-violet-800"><div><dt class="text-2xl font-extrabold text-emerald-600">{formatNumber(dashboard.summary.healthy)}</dt><dd class="mt-1 text-xs text-wg-text-muted">Healthy</dd></div><div><dt class="text-2xl font-extrabold text-red-600">{formatNumber(dashboard.summary.down + dashboard.summary.unknown)}</dt><dd class="mt-1 text-xs text-wg-text-muted">Needs attention</dd></div></dl></section>
+                <section class="rounded-2xl border border-wg-border bg-wg-surface p-5 shadow-wg-surface"><div class="flex items-start justify-between gap-3"><h2 class="text-base font-bold">Open incidents</h2><span class="rounded-full bg-red-50 px-2 py-1 text-xs font-bold text-red-600 dark:bg-red-950 dark:text-red-200">{formatNumber(openIncidents.length)}</span></div><p class="mt-3 text-sm leading-5 text-wg-text-muted">Review current service disruptions and recent incident activity.</p><a class="mt-4 inline-flex text-sm font-bold text-wg-accent no-underline hover:text-wg-accent-strong" href={appRoutes.incidents}>Open incidents →</a></section>
                 <section class="rounded-2xl border border-wg-border bg-wg-surface p-5 shadow-wg-surface"><h2 class="text-base font-bold">Status pages</h2><p class="mt-3 text-sm leading-5 text-wg-text-muted">Publish service availability for your customers and teams.</p><a class="mt-4 inline-flex text-sm font-bold text-wg-accent no-underline hover:text-wg-accent-strong" href={appRoutes.statusPages}>Manage →</a></section>
             </aside>
         </div>

@@ -2,7 +2,7 @@
     import { goto, invalidateAll } from "$app/navigation";
     import { FirstPartyApiError, requestFirstPartyApi } from "$lib/api/client";
     import { appRoutes } from "$lib/routes";
-    import { formatDateTime } from "$lib/i18n/format";
+    import { formatDateTime, formatNumber, formatPercentage } from "$lib/i18n/format";
     import { translate, type TranslationMessages } from "$lib/i18n/localize";
     import Button from "$lib/components/Button.svelte";
     import Dialog from "$lib/components/Dialog.svelte";
@@ -73,14 +73,14 @@
 
     function availability(days: "7" | "30" | "90"): string {
         const percentage = availabilityPeriods[days]?.uptime.percentage;
-        return percentage === null || percentage === undefined ? "—" : `${percentage.toFixed(2)}%`;
+        return percentage === null || percentage === undefined ? "—" : formatPercentage(percentage);
     }
 
     function periodDescription(days: "7" | "30" | "90"): string {
         const period = availabilityPeriods[days];
         if (!period?.has_data) return "No availability data yet";
         const incidents = period.downtime.incidents_count;
-        return `${incidents} ${incidents === 1 ? "incident" : "incidents"}, ${period.downtime.percentage?.toFixed(2) ?? "0.00"}% downtime`;
+        return `${formatNumber(incidents)} ${incidents === 1 ? "incident" : "incidents"}, ${formatPercentage(period.downtime.percentage ?? 0)} downtime`;
     }
 
     function heatmapClass(point: MonitoringHeatmapPoint): string {
