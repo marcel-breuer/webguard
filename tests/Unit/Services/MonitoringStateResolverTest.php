@@ -33,6 +33,33 @@ class MonitoringStateResolverTest extends TestCase
         $this->assertSame(MonitoringStatus::UNKNOWN->value, resolve(MonitoringStateResolver::class)->status($monitoring->fresh()));
     }
 
+    public function test_website_stale_threshold_tracks_every_supported_interval(): void
+    {
+        Date::setTestNow('2026-04-12 12:00:00');
+        $resolver = resolve(MonitoringStateResolver::class);
+
+        foreach ([1, 5, 10, 15, 30, 60] as $intervalMinutes) {
+            $staleAfterSeconds = max(10, $intervalMinutes * 3) * 60;
+            $staleMonitoring = $this->createMonitoring(MonitoringType::HTTP, ['check_interval_minutes' => $intervalMinutes]);
+            $this->createResponse($staleMonitoring, Date::now()->copy()->subSeconds($staleAfterSeconds + 1));
+
+            $this->assertSame(
+                MonitoringStatus::UNKNOWN->value,
+                $resolver->status($staleMonitoring->fresh()),
+                "A {$intervalMinutes}-minute monitoring should be stale after its threshold."
+            );
+
+            $currentMonitoring = $this->createMonitoring(MonitoringType::HTTP, ['check_interval_minutes' => $intervalMinutes]);
+            $this->createResponse($currentMonitoring, Date::now()->copy()->subSeconds($staleAfterSeconds - 1));
+
+            $this->assertSame(
+                MonitoringStatus::UP->value,
+                $resolver->status($currentMonitoring->fresh()),
+                "A {$intervalMinutes}-minute monitoring should remain current before its threshold."
+            );
+        }
+    }
+
     public function test_non_website_monitorings_keep_the_existing_stale_threshold(): void
     {
         Date::setTestNow('2026-04-12 12:00:00');
@@ -43,15 +70,18 @@ class MonitoringStateResolverTest extends TestCase
         $this->assertSame(MonitoringStatus::UNKNOWN->value, resolve(MonitoringStateResolver::class)->status($monitoring->fresh()));
     }
 
-    private function createMonitoring(MonitoringType $monitoringType): Monitoring
+    /**
+     * @param  array<string, mixed>  $attributes
+     */
+    private function createMonitoring(MonitoringType $monitoringType, array $attributes = []): Monitoring
     {
         Package::factory()->create();
         $user = User::factory()->create();
 
-        return Monitoring::factory()->for($user)->create(['type' => $monitoringType]);
+        return Monitoring::factory()->for($user)->create(array_merge(['type' => $monitoringType], $attributes));
     }
 
-    private function createResponse(Monitoring $monitoring, string $createdAt): void
+    private function createResponse(Monitoring $monitoring, \Carbon\CarbonInterface|string $createdAt): void
     {
         MonitoringResponse::query()->forceCreate([
             'monitoring_id' => $monitoring->id,

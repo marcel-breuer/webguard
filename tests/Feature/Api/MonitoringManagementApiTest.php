@@ -101,7 +101,8 @@ class MonitoringManagementApiTest extends TestCase
             'check_interval_minutes' => 2,
             'preferred_locations' => [$serverInstance->code],
         ]))->assertUnprocessable()
-            ->assertJsonValidationErrors(['check_interval_minutes']);
+            ->assertJsonValidationErrors(['check_interval_minutes'])
+            ->assertJsonPath('errors.check_interval_minutes.0', __('monitoring.validation.check_interval_invalid_value'));
     }
 
     public function test_update_without_an_interval_preserves_the_existing_choice(): void

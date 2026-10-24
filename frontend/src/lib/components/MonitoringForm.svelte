@@ -192,6 +192,7 @@
             {/if}
             <p class="-mt-2 text-sm text-wg-text-muted">{type === "http" ? "WebGuard will use the standard HTTP availability check. Your first results appear on the website details page." : "WebGuard will use the selected monitoring type. Your first results appear on the monitoring details page."}</p>
             {@render websiteIntervalField()}
+            {#if httpTypes}<p class="-mt-2 text-sm text-wg-text-muted">Your first check runs on the next poll. Later checks follow this interval.</p>{/if}
         </section>
         <details class="group border-t border-wg-border" bind:open={advancedOpen}>
             <summary class="flex min-h-12 cursor-pointer list-none items-center justify-between gap-4 py-4 text-base font-bold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-wg-focus [&::-webkit-details-marker]:hidden"><span>Advanced options</span><span class="text-base text-wg-text-muted transition group-open:rotate-180" aria-hidden="true">⌄</span></summary>
