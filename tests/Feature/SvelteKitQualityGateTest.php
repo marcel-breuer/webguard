@@ -75,6 +75,7 @@ class SvelteKitQualityGateTest extends TestCase
         $this->assertStringContainsString('let checkIntervalMinutes = $state(String(monitoring?.check_interval_minutes ?? 15));', $monitoringForm);
         $this->assertStringContainsString('<Select name="check_interval_minutes" bind:value={checkIntervalMinutes}>', $monitoringForm);
         $this->assertStringContainsString('Your first check runs on the next poll. Later checks follow this interval.', $monitoringForm);
+        $this->assertStringContainsString('<option value={String(interval)}>', $monitoringForm);
         $this->assertSame(2, mb_substr_count($monitoringForm, '{@render websiteIntervalField()}'));
         $this->assertSame(2, mb_substr_count($monitoringForm, '{@render basicFields()}'));
 
