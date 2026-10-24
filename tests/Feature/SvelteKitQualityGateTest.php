@@ -451,13 +451,21 @@ class SvelteKitQualityGateTest extends TestCase
     public function test_topology_smoke_test_isolated_runtime_services_and_checks_all_health_boundaries(): void
     {
         $script = file_get_contents(base_path('.github/scripts/smoke-sveltekit-topology.sh'));
+        $compose = file_get_contents(base_path('docker-compose.yml'));
 
         $this->assertIsString($script);
+        $this->assertIsString($compose);
         $this->assertStringContainsString('--profile internal-services', $script);
         $this->assertStringContainsString('docker network create', $script);
         $this->assertStringContainsString('build php frontend gateway queue-default', $script);
         $this->assertStringContainsString('up --no-build --detach --wait', $script);
         $this->assertStringContainsString('php frontend gateway schedule queue-default mysql redis', $script);
+        $this->assertStringContainsString('assert_service_healthy gateway', $script);
+        $this->assertStringContainsString('assert_service_healthy frontend', $script);
+        $this->assertStringContainsString('assert_service_healthy schedule', $script);
+        $this->assertStringContainsString("healthcheck:\n      test: [\"CMD\", \"bun\"", $compose);
+        $this->assertStringContainsString("healthcheck:\n      test: [\"CMD-SHELL\", \"wget -q -T 1 -t 1", $compose);
+        $this->assertStringContainsString('test: ["CMD", "php", "artisan", "schedule:list"', $compose);
         $this->assertStringContainsString('/_health/gateway', $script);
         $this->assertStringContainsString('/_health/frontend', $script);
         $this->assertStringContainsString('/_health/laravel', $script);
