@@ -109,7 +109,7 @@
     {#if httpTypes}
         <Field label="Check interval (minutes)" error={errorFor("check_interval_minutes")} required>
             <Select name="check_interval_minutes" bind:value={checkIntervalMinutes}>
-                {#each websiteIntervalOptions as interval}<option value={interval}>{interval} {interval === 1 ? "minute" : "minutes"}</option>{/each}
+                {#each websiteIntervalOptions as interval}<option value={String(interval)}>{interval} {interval === 1 ? "minute" : "minutes"}</option>{/each}
             </Select>
         </Field>
     {/if}

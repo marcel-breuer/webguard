@@ -455,6 +455,11 @@ class InternalUiMonitoringApiTest extends TestCase
             ->assertJsonPath('data.0.check_interval_minutes', 30);
 
         $this->actingAs($user)
+            ->getJson(route('app.monitorings.form-options.edit', $monitoring))
+            ->assertOk()
+            ->assertJsonPath('data.monitoring.check_interval_minutes', 30);
+
+        $this->actingAs($user)
             ->getJson(route('app.monitorings.index', ['per_page' => 101]))
             ->assertUnprocessable()
             ->assertJsonValidationErrors('per_page');
