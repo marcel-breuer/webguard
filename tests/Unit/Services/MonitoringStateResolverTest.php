@@ -11,6 +11,7 @@ use App\Models\MonitoringResponse;
 use App\Models\Package;
 use App\Models\User;
 use App\Services\MonitoringStateResolver;
+use Carbon\CarbonInterface;
 use Illuminate\Support\Facades\Date;
 use Tests\TestCase;
 
@@ -36,7 +37,7 @@ class MonitoringStateResolverTest extends TestCase
     public function test_website_stale_threshold_tracks_every_supported_interval(): void
     {
         Date::setTestNow('2026-04-12 12:00:00');
-        $resolver = resolve(MonitoringStateResolver::class);
+        $monitoringStateResolver = resolve(MonitoringStateResolver::class);
 
         foreach ([1, 5, 10, 15, 30, 60] as $intervalMinutes) {
             $staleAfterSeconds = max(10, $intervalMinutes * 3) * 60;
@@ -45,7 +46,7 @@ class MonitoringStateResolverTest extends TestCase
 
             $this->assertSame(
                 MonitoringStatus::UNKNOWN->value,
-                $resolver->status($staleMonitoring->fresh()),
+                $monitoringStateResolver->status($staleMonitoring->fresh()),
                 "A {$intervalMinutes}-minute monitoring should be stale after its threshold."
             );
 
@@ -54,7 +55,7 @@ class MonitoringStateResolverTest extends TestCase
 
             $this->assertSame(
                 MonitoringStatus::UP->value,
-                $resolver->status($currentMonitoring->fresh()),
+                $monitoringStateResolver->status($currentMonitoring->fresh()),
                 "A {$intervalMinutes}-minute monitoring should remain current before its threshold."
             );
         }
@@ -81,7 +82,7 @@ class MonitoringStateResolverTest extends TestCase
         return Monitoring::factory()->for($user)->create(array_merge(['type' => $monitoringType], $attributes));
     }
 
-    private function createResponse(Monitoring $monitoring, \Carbon\CarbonInterface|string $createdAt): void
+    private function createResponse(Monitoring $monitoring, CarbonInterface|string $createdAt): void
     {
         MonitoringResponse::query()->forceCreate([
             'monitoring_id' => $monitoring->id,
