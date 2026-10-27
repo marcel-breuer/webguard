@@ -31,7 +31,7 @@ return new class() extends Migration
             $table->timestamp('degraded_at')->nullable();
             $table->timestamp('recovered_at')->nullable();
             $table->timestamps();
-            $table->unique(['monitoring_id', 'location_code']);
+            $table->unique(['monitoring_id', 'location_code'], 'monitoring_perf_location_unique');
         });
     }
 
