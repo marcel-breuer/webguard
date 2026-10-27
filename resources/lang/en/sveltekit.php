@@ -317,6 +317,8 @@ return [
         'Create monitoring' => 'Create monitoring',
         'Create monitoring group' => 'Create monitoring group',
         'Expected HTTP statuses' => 'Expected HTTP statuses',
+        'Response-time increase tolerance (%)' => 'Response-time increase tolerance (%)',
+        'Choose how far response time may rise above its recent baseline before an alert is sent. The baseline uses successful checks from the previous 7 days and needs at least 20 historical checks; alerts trigger after two consecutive slow checks.' => 'Choose how far response time may rise above its recent baseline before an alert is sent. The baseline uses successful checks from the previous 7 days and needs at least 20 historical checks; alerts trigger after two consecutive slow checks.',
         'Monitoring ownership could not be updated.' => 'Monitoring ownership could not be updated.',
         'Save monitoring' => 'Save monitoring',
         'Search monitoring locations' => 'Search monitoring locations',

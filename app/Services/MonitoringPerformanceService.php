@@ -10,13 +10,18 @@ use App\Enums\MonitoringType;
 use App\Enums\NotificationType;
 use App\Models\Monitoring;
 use App\Models\MonitoringNotification;
+use App\Models\MonitoringPerformanceLocationState;
 use App\Models\MonitoringPerformanceState;
 use App\Models\MonitoringResponse;
 
 final class MonitoringPerformanceService
 {
+    public function __construct(private readonly MonitoringResponseTimeBaselineService $monitoringResponseTimeBaselineService) {}
+
     public function reconcile(Monitoring $monitoring, MonitoringResponse $monitoringResponse, MonitoringStatus $monitoringStatus): void
     {
+        $historicalTransition = $this->reconcileHistoricalResponseTime($monitoring, $monitoringResponse, $monitoringStatus);
+
         $responseTimeThreshold = $this->responseTimeThresholdFor($monitoring);
 
         if ($responseTimeThreshold === null) {
@@ -47,7 +52,9 @@ final class MonitoringPerformanceService
                     'degraded_at' => now(),
                     'recovered_at' => null,
                 ]);
-                $this->recordNotification($monitoring, 'DEGRADED');
+                if ($historicalTransition !== 'DEGRADED') {
+                    $this->recordNotification($monitoring, 'DEGRADED');
+                }
             }
 
             return;
@@ -61,19 +68,112 @@ final class MonitoringPerformanceService
         ]);
 
         if ($wasDegraded) {
-            $this->recordNotification($monitoring, 'RECOVERED');
+            if ($historicalTransition !== 'RECOVERED') {
+                $this->recordNotification($monitoring, 'RECOVERED');
+            }
         }
     }
 
-    private function recordNotification(Monitoring $monitoring, string $message): void
+    /**
+     * @param  array<string, int|float|string>|null  $metadata
+     */
+    private function recordNotification(Monitoring $monitoring, string $message, ?array $metadata = null): void
     {
         MonitoringNotification::query()->create([
             'monitoring_id' => $monitoring->id,
             'type' => NotificationType::PERFORMANCE,
             'message' => $message,
+            'metadata' => $metadata,
             'read' => false,
             'sent' => false,
         ]);
+    }
+
+    private function reconcileHistoricalResponseTime(
+        Monitoring $monitoring,
+        MonitoringResponse $monitoringResponse,
+        MonitoringStatus $monitoringStatus
+    ): ?string {
+        $thresholdPercent = $monitoring->response_time_degradation_percent;
+
+        if ($thresholdPercent === null || ! in_array($monitoring->type, [MonitoringType::HTTP, MonitoringType::KEYWORD], true)) {
+            return null;
+        }
+
+        $locationCode = $monitoringResponse->location_code ?? 'default';
+        $monitoringPerformanceLocationState = MonitoringPerformanceLocationState::query()->firstOrCreate(
+            ['monitoring_id' => $monitoring->id, 'location_code' => $locationCode],
+            ['status' => MonitoringPerformanceStatus::NORMAL->value, 'consecutive_breaches' => 0],
+        );
+
+        $responseTime = $monitoringResponse->response_time;
+
+        if ($monitoringStatus !== MonitoringStatus::UP || $responseTime === null) {
+            if ($monitoringPerformanceLocationState->status !== MonitoringPerformanceStatus::DEGRADED->value && $monitoringPerformanceLocationState->consecutive_breaches !== 0) {
+                $monitoringPerformanceLocationState->update(['consecutive_breaches' => 0]);
+            }
+
+            return null;
+        }
+
+        $baseline = $this->monitoringResponseTimeBaselineService->for($monitoring, $monitoringResponse);
+
+        if ($baseline === null || $baseline['median_ms'] <= 0) {
+            if ($monitoringPerformanceLocationState->status !== MonitoringPerformanceStatus::DEGRADED->value && $monitoringPerformanceLocationState->consecutive_breaches !== 0) {
+                $monitoringPerformanceLocationState->update(['consecutive_breaches' => 0]);
+            }
+
+            return null;
+        }
+
+        $isSlow = $responseTime >= $baseline['median_ms'] * (1 + ((int) $thresholdPercent / 100));
+        $requiredBreaches = max(1, (int) ($monitoring->response_time_confirmation_threshold ?? 2));
+        $metadata = [
+            'alert_kind' => 'historical_response_time',
+            'location_code' => $locationCode,
+            'response_time_ms' => (int) round($responseTime),
+            'baseline_median_ms' => (int) round($baseline['median_ms']),
+            'increase_percent' => (int) round((($responseTime / $baseline['median_ms']) - 1) * 100),
+            'threshold_percent' => (int) $thresholdPercent,
+            'sample_count' => $baseline['sample_count'],
+        ];
+
+        if ($isSlow) {
+            if ($monitoringPerformanceLocationState->status === MonitoringPerformanceStatus::DEGRADED->value) {
+                return null;
+            }
+
+            $breaches = $monitoringPerformanceLocationState->consecutive_breaches + 1;
+            $monitoringPerformanceLocationState->update(['consecutive_breaches' => $breaches]);
+
+            if ($breaches >= $requiredBreaches) {
+                $monitoringPerformanceLocationState->update([
+                    'status' => MonitoringPerformanceStatus::DEGRADED->value,
+                    'degraded_at' => now(),
+                    'recovered_at' => null,
+                ]);
+                $this->recordNotification($monitoring, 'DEGRADED', $metadata);
+
+                return 'DEGRADED';
+            }
+
+            return null;
+        }
+
+        $wasDegraded = $monitoringPerformanceLocationState->status === MonitoringPerformanceStatus::DEGRADED->value;
+        $monitoringPerformanceLocationState->update([
+            'status' => MonitoringPerformanceStatus::NORMAL->value,
+            'consecutive_breaches' => 0,
+            'recovered_at' => $wasDegraded ? now() : $monitoringPerformanceLocationState->recovered_at,
+        ]);
+
+        if ($wasDegraded) {
+            $this->recordNotification($monitoring, 'RECOVERED', $metadata);
+
+            return 'RECOVERED';
+        }
+
+        return null;
     }
 
     private function responseTimeThresholdFor(Monitoring $monitoring): ?int

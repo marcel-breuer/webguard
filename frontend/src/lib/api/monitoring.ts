@@ -130,6 +130,7 @@ export interface MonitoringFormConfiguration {
     check_interval_minutes: number | null;
     http_method: "get" | "post" | "put" | "patch" | "delete" | null;
     expected_http_statuses: string | null;
+    response_time_degradation_percent: number | null;
     preferred_locations: string[];
     group_ids: string[];
     can_assign_groups: boolean;
@@ -169,6 +170,7 @@ export interface MonitoringMutationResult {
     type: MonitoringType;
     lifecycle_status: "active" | "paused";
     check_interval_minutes?: number | null;
+    response_time_degradation_percent?: number | null;
 }
 
 export interface MonitoringDetailData {

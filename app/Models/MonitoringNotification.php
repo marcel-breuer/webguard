@@ -24,6 +24,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
     'monitoring_id',
     'type',
     'message',
+    'metadata',
     'expiry_notification_key',
     'read',
     'sent',
@@ -232,6 +233,18 @@ class MonitoringNotification extends Model
                 };
             }
 
+            if ($this->type === NotificationType::PERFORMANCE && ($this->metadata['alert_kind'] ?? null) === 'historical_response_time') {
+                $messageType = $this->message === 'DEGRADED' ? 'degraded' : 'recovered';
+
+                return __('notifications.performance_messages.' . $messageType, [
+                    'name' => $this->monitoring?->name ?? '',
+                    'location' => $this->metadata['location_code'] ?? 'default',
+                    'current_ms' => $this->metadata['response_time_ms'] ?? 0,
+                    'baseline_ms' => $this->metadata['baseline_median_ms'] ?? 0,
+                    'increase_percent' => $this->metadata['increase_percent'] ?? 0,
+                ]);
+            }
+
             // For other types, return the original message
             return $this->message;
         });
@@ -246,6 +259,7 @@ class MonitoringNotification extends Model
     {
         return [
             'type' => NotificationType::class,
+            'metadata' => 'array',
             'read' => 'boolean',
             'sent' => 'boolean',
         ];

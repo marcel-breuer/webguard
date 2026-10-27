@@ -70,6 +70,7 @@ final class MonitoringPayload
             $validated['check_interval_minutes'] ??= $monitoring->check_interval_minutes ?? MonitoringCheckIntervalService::DEFAULT_WEBSITE_INTERVAL_MINUTES;
         } else {
             unset($validated['check_interval_minutes']);
+            $validated['response_time_degradation_percent'] = null;
         }
 
         if ($monitoring->type === MonitoringType::DOMAIN_EXPIRATION) {
@@ -145,6 +146,7 @@ final class MonitoringPayload
         $validated['auth_password'] = null;
         $validated['port'] = null;
         $validated['keyword'] = null;
+        $validated['response_time_degradation_percent'] = null;
 
         if ($clearDnsFields) {
             $validated['dns_record_type'] = null;
