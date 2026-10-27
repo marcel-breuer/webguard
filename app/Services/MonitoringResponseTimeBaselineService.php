@@ -18,18 +18,18 @@ final class MonitoringResponseTimeBaselineService
     /**
      * @return array{median_ms: float, sample_count: int}|null
      */
-    public function for(Monitoring $monitoring, MonitoringResponse $currentResponse): ?array
+    public function for(Monitoring $monitoring, MonitoringResponse $monitoringResponse): ?array
     {
-        $locationCode = $currentResponse->location_code;
-        $start = $currentResponse->created_at->copy()->subDays(self::WINDOW_DAYS);
-        $end = $currentResponse->created_at;
+        $locationCode = $monitoringResponse->location_code;
+        $start = $monitoringResponse->created_at->copy()->subDays(self::WINDOW_DAYS);
+        $end = $monitoringResponse->created_at;
 
-        $live = DB::table('monitoring_response_results')
+        $builder = DB::table('monitoring_response_results')
             ->select('response_time')
             ->where('monitoring_id', $monitoring->id)
             ->where('status', MonitoringStatus::UP->value)
             ->whereNotNull('response_time')
-            ->where('id', '!=', $currentResponse->id)
+            ->where('id', '!=', $monitoringResponse->id)
             ->where('created_at', '>=', $start)
             ->where('created_at', '<', $end)
             ->where(function ($query) use ($locationCode): void {
@@ -51,7 +51,7 @@ final class MonitoringResponseTimeBaselineService
                     : $query->where('location_code', $locationCode);
             });
 
-        $responseTimes = $live->unionAll($archived)
+        $responseTimes = $builder->unionAll($archived)
             ->pluck('response_time')
             ->map(static fn (mixed $responseTime): float => (float) $responseTime)
             ->sort()
