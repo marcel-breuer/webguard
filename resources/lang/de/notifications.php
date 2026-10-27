@@ -110,6 +110,10 @@ return [
         'expiring' => 'Die Domain :name läuft bald ab.',
         'expired' => 'Die Domain :name ist abgelaufen.',
     ],
+    'performance_messages' => [
+        'degraded' => 'Die Antwortzeit von :name am Standort :location beträgt :current_ms ms und liegt damit :increase_percent% über dem historischen Median von :baseline_ms ms.',
+        'recovered' => 'Die Antwortzeit von :name am Standort :location hat sich auf :current_ms ms erholt; der historische Median liegt bei :baseline_ms ms.',
+    ],
     'channels' => [
         'slack' => 'Slack',
         'telegram' => 'Telegram',

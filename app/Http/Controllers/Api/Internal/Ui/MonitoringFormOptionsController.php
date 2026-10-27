@@ -93,6 +93,7 @@ class MonitoringFormOptionsController extends Controller
             'check_interval_minutes' => $monitoring->check_interval_minutes,
             'http_method' => $monitoring->http_method?->value,
             'expected_http_statuses' => $monitoring->expected_http_statuses,
+            'response_time_degradation_percent' => $monitoring->response_time_degradation_percent,
             'preferred_locations' => $monitoring->preferredLocationCodes(),
             'group_ids' => $monitoring->groups->pluck('id')->values()->all(),
             'can_assign_groups' => $monitoring->isPrivateOwned(),

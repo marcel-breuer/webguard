@@ -317,6 +317,8 @@ return [
         'Create monitoring' => 'Überwachung erstellen',
         'Create monitoring group' => 'Überwachungsgruppe erstellen',
         'Expected HTTP statuses' => 'Erwartete HTTP-Statuscodes',
+        'Response-time increase tolerance (%)' => 'Toleranz für Antwortzeit-Anstieg (%)',
+        'Choose how far response time may rise above its recent baseline before an alert is sent. The baseline uses successful checks from the previous 7 days and needs at least 20 historical checks; alerts trigger after two consecutive slow checks.' => 'Legen Sie fest, um wie viel Prozent die Antwortzeit über den jüngsten Verlauf steigen darf, bevor eine Benachrichtigung ausgelöst wird. Verglichen wird mit erfolgreichen Prüfungen der letzten 7 Tage; nötig sind mindestens 20 historische Prüfungen und zwei langsame Prüfungen in Folge.',
         'Monitoring ownership could not be updated.' => 'Die Eigentümerschaft der Überwachung konnte nicht aktualisiert werden.',
         'Save monitoring' => 'Überwachung speichern',
         'Search monitoring locations' => 'Überwachungsstandorte suchen',

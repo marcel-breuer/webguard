@@ -62,6 +62,9 @@ class DispatchStatusChangeNotificationsCommand extends Command
                 'degraded' => NotificationEventType::PERFORMANCE_DEGRADED,
                 default => NotificationEventType::PERFORMANCE_RECOVERED,
             };
+            $performanceMetadata = $notification->metadata ?? [];
+            $hasHistoricalResponseTimeDetails = $isPerformanceNotification
+                && ($performanceMetadata['alert_kind'] ?? null) === 'historical_response_time';
 
             if (! $isPerformanceNotification) {
                 $this->dispatchStatusPageSubscriberEmails($monitoring, $notification, $identifier);
@@ -76,14 +79,16 @@ class DispatchStatusChangeNotificationsCommand extends Command
                     NotificationEventType::PERFORMANCE_RECOVERED => 'Monitoring performance recovered',
                     default => 'Monitoring update',
                 },
-                message: sprintf(
-                    $isPerformanceNotification
-                        ? '%s (%s) performance changed to %s.'
-                        : '%s (%s) changed status to %s.',
-                    $monitoring->name,
-                    $monitoring->target,
-                    mb_strtoupper($identifier)
-                ),
+                message: $hasHistoricalResponseTimeDetails
+                    ? $notification->translated_message
+                    : sprintf(
+                        $isPerformanceNotification
+                            ? '%s (%s) performance changed to %s.'
+                            : '%s (%s) changed status to %s.',
+                        $monitoring->name,
+                        $monitoring->target,
+                        mb_strtoupper($identifier)
+                    ),
                 severity: match ($eventType) {
                     NotificationEventType::INCIDENT => 'critical',
                     NotificationEventType::PERFORMANCE_DEGRADED => 'warning',
@@ -93,9 +98,9 @@ class DispatchStatusChangeNotificationsCommand extends Command
                 monitoringName: $monitoring->name,
                 monitoringTarget: $monitoring->target,
                 occurredAt: $notification->created_at,
-                meta: [
+                meta: array_merge($hasHistoricalResponseTimeDetails ? $performanceMetadata : [], [
                     'notification_id' => $notification->id,
-                ],
+                ]),
             );
 
             $this->monitoringNotificationPreferenceResolver

@@ -110,6 +110,10 @@ return [
         'expiring' => 'Domain :name is expiring soon.',
         'expired' => 'Domain :name has expired.',
     ],
+    'performance_messages' => [
+        'degraded' => ':name response time at :location is :current_ms ms, :increase_percent% above its :baseline_ms ms historical median.',
+        'recovered' => ':name response time at :location recovered to :current_ms ms against its :baseline_ms ms historical median.',
+    ],
     'channels' => [
         'slack' => 'Slack',
         'telegram' => 'Telegram',

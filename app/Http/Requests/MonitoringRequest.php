@@ -263,7 +263,7 @@ class MonitoringRequest extends FormRequest
                 'integer',
                 'min:1',
                 'max:60000',
-                Rule::requiredIf(fn (): bool => $this->filled('response_time_confirmation_threshold')),
+                Rule::requiredIf(fn (): bool => $this->filled('response_time_confirmation_threshold') && ! $this->filled('response_time_degradation_percent')),
                 function ($attribute, $value, $fail): void {
                     if (! in_array(MonitoringType::tryFrom((string) $this->input('type')), [MonitoringType::HTTP, MonitoringType::KEYWORD], true) && $this->filled($attribute)) {
                         $fail(__('monitoring.validation.response_time_threshold_invalid_config'));
@@ -276,6 +276,17 @@ class MonitoringRequest extends FormRequest
                 'min:1',
                 'max:10',
                 Rule::requiredIf(fn (): bool => $this->filled('response_time_threshold_ms')),
+                function ($attribute, $value, $fail): void {
+                    if (! in_array(MonitoringType::tryFrom((string) $this->input('type')), [MonitoringType::HTTP, MonitoringType::KEYWORD], true) && $this->filled($attribute)) {
+                        $fail(__('monitoring.validation.response_time_threshold_invalid_config'));
+                    }
+                },
+            ],
+            'response_time_degradation_percent' => [
+                'nullable',
+                'integer',
+                'min:1',
+                'max:1000',
                 function ($attribute, $value, $fail): void {
                     if (! in_array(MonitoringType::tryFrom((string) $this->input('type')), [MonitoringType::HTTP, MonitoringType::KEYWORD], true) && $this->filled($attribute)) {
                         $fail(__('monitoring.validation.response_time_threshold_invalid_config'));
@@ -340,6 +351,10 @@ class MonitoringRequest extends FormRequest
             'ssl_expiry_warning_days' => $this->input('ssl_expiry_warning_days', 7),
             'heartbeat_grace_minutes' => $this->input('heartbeat_grace_minutes', 5),
         ];
+
+        if ($this->isMethod('post') || $this->has('response_time_degradation_percent')) {
+            $prepared['response_time_degradation_percent'] = $this->normalizeNullableInteger('response_time_degradation_percent');
+        }
 
         if ($hasGroupIds) {
             $prepared['group_ids'] = $this->normalizeGroupIds();

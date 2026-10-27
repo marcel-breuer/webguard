@@ -169,6 +169,10 @@
             <Field label="HTTP method" error={errorFor("http_method")}><Select name="http_method" value={monitoring?.http_method ?? "get"}>{#each ["get", "post", "put", "patch", "delete"] as httpMethod}<option value={httpMethod}>{httpMethod.toUpperCase()}</option>{/each}</Select></Field>
             <Field label="Timeout (seconds)" error={errorFor("timeout")} required><Input name="timeout" type="number" min="1" max="60" value={monitoring?.timeout ?? 5} required /></Field>
             <Field label="Expected HTTP statuses" error={errorFor("expected_http_statuses")}><Input name="expected_http_statuses" value={monitoring?.expected_http_statuses ?? "200-299"} /></Field>
+            <div>
+                <Field label="Response-time increase tolerance (%)" error={errorFor("response_time_degradation_percent")}><Input name="response_time_degradation_percent" type="number" min="1" max="1000" value={monitoring?.response_time_degradation_percent ?? ""} placeholder="e.g. 50" /></Field>
+                <p class="mt-1 text-sm text-wg-text-muted">Choose how far response time may rise above its recent baseline before an alert is sent. The baseline uses successful checks from the previous 7 days and needs at least 20 historical checks; alerts trigger after two consecutive slow checks.</p>
+            </div>
             {#if type === "keyword"}<Field label="Required keyword" error={errorFor("keyword")} required><Input name="keyword" value={monitoring?.keyword ?? ""} required /></Field>{/if}
         </div>
         {#if monitoring}<label class="flex items-center gap-2 text-sm text-wg-text-muted"><Checkbox name="clear_auth_password" /> Remove stored HTTP basic-auth password</label>{/if}
