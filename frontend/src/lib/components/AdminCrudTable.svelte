@@ -1,17 +1,17 @@
 <script lang="ts">
     import { invalidateAll } from "$app/navigation";
-    import { FirstPartyApiError, requestFirstPartyApi } from "$lib/api/client";
-    import type { Pagination } from "$lib/api/admin";
-    import Button from "$lib/components/Button.svelte";
-    import Checkbox from "$lib/components/Checkbox.svelte";
-    import DataTable from "$lib/components/DataTable.svelte";
-    import Dialog from "$lib/components/Dialog.svelte";
-    import EmptyState from "$lib/components/EmptyState.svelte";
-    import Field from "$lib/components/Field.svelte";
-    import Input from "$lib/components/Input.svelte";
-    import PaginationControls from "$lib/components/Pagination.svelte";
-    import Select from "$lib/components/Select.svelte";
-    import { formatNumber } from "$lib/i18n/format";
+    import { FirstPartyApiError, requestFirstPartyApi } from "#lib/api/client.ts";
+    import type { Pagination } from "#lib/api/admin.ts";
+    import Button from "#lib/components/Button.svelte";
+    import Checkbox from "#lib/components/Checkbox.svelte";
+    import DataTable from "#lib/components/DataTable.svelte";
+    import Dialog from "#lib/components/Dialog.svelte";
+    import EmptyState from "#lib/components/EmptyState.svelte";
+    import Field from "#lib/components/Field.svelte";
+    import Input from "#lib/components/Input.svelte";
+    import PaginationControls from "#lib/components/Pagination.svelte";
+    import Select from "#lib/components/Select.svelte";
+    import { formatNumber } from "#lib/i18n/format.ts";
 
     type Item = Record<string, unknown>;
     type QueryValue = string | number;

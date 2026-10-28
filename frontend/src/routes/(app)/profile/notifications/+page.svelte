@@ -1,13 +1,13 @@
 <script lang="ts">
-    import { requestFirstPartyApi, FirstPartyApiError } from "$lib/api/client";
-    import Button from "$lib/components/Button.svelte";
-    import Card from "$lib/components/Card.svelte";
-    import Checkbox from "$lib/components/Checkbox.svelte";
-    import Field from "$lib/components/Field.svelte";
-    import Input from "$lib/components/Input.svelte";
-    import MutationForm from "$lib/components/MutationForm.svelte";
-    import Select from "$lib/components/Select.svelte";
-    import { appRoutes } from "$lib/routes";
+    import { requestFirstPartyApi, FirstPartyApiError } from "#lib/api/client.ts";
+    import Button from "#lib/components/Button.svelte";
+    import Card from "#lib/components/Card.svelte";
+    import Checkbox from "#lib/components/Checkbox.svelte";
+    import Field from "#lib/components/Field.svelte";
+    import Input from "#lib/components/Input.svelte";
+    import MutationForm from "#lib/components/MutationForm.svelte";
+    import Select from "#lib/components/Select.svelte";
+    import { appRoutes } from "#lib/routes.ts";
     import type { NotificationSettings } from "./+page.server";
 
     interface Props { data: { settings: NotificationSettings }; }

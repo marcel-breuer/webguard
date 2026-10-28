@@ -1,6 +1,6 @@
 <script lang="ts">
-    import AuthWorkspace from "$lib/components/AuthWorkspace.svelte";
-    import type { AuthOptions } from "$lib/server/auth";
+    import AuthWorkspace from "#lib/components/AuthWorkspace.svelte";
+    import type { AuthOptions } from "#lib/server/auth.ts";
 
     interface Props { data: { options: AuthOptions; locale: string; initialEmail: string }; }
 

@@ -2,6 +2,9 @@
     "name": "@webguard/frontend",
     "private": true,
     "type": "module",
+    "imports": {
+        "#lib/*": "./src/lib/*"
+    },
     "scripts": {
         "build": "vite build",
         "budget": "node scripts/assert-production-budgets.mjs",
@@ -10,7 +13,7 @@
         "start": "node build"
     },
     "devDependencies": {
-        "@sveltejs/adapter-node": "^5.5.7",
+        "@sveltejs/adapter-node": "^6.0.0",
         "@sveltejs/kit": "^3.1.0",
         "@sveltejs/vite-plugin-svelte": "^7.3.1",
         "@tailwindcss/vite": "^4.3.3",
@@ -18,7 +21,7 @@
         "svelte": "^5.57.1",
         "svelte-check": "^4.7.6",
         "tailwindcss": "^4.3.3",
-        "vite": "^8.3.1"
+        "vite": "^8.3.5"
     },
     "dependencies": {
         "chart.js": "^4.5.1"

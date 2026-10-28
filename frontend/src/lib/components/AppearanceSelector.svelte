@@ -1,9 +1,9 @@
 <script lang="ts">
     import { onMount } from "svelte";
-    import { applyAppearanceTheme, storedAppearanceTheme } from "$lib/appearance";
-    import { FirstPartyApiError, requestFirstPartyApi } from "$lib/api/client";
-    import NavIcon, { type NavIconName } from "$lib/components/NavIcon.svelte";
-    import type { AppearanceTheme } from "$lib/api/models";
+    import { applyAppearanceTheme, storedAppearanceTheme } from "#lib/appearance.ts";
+    import { FirstPartyApiError, requestFirstPartyApi } from "#lib/api/client.ts";
+    import NavIcon, { type NavIconName } from "#lib/components/NavIcon.svelte";
+    import type { AppearanceTheme } from "#lib/api/models.ts";
 
     interface Props {
         initialTheme?: AppearanceTheme;

@@ -1,13 +1,13 @@
 <script lang="ts">
     import { invalidateAll } from "$app/navigation";
-    import { FirstPartyApiError, requestFirstPartyApi } from "$lib/api/client";
-    import { formatDateTime, formatNumber } from "$lib/i18n/format";
-    import Button from "$lib/components/Button.svelte";
-    import Card from "$lib/components/Card.svelte";
-    import Field from "$lib/components/Field.svelte";
-    import Input from "$lib/components/Input.svelte";
-    import Select from "$lib/components/Select.svelte";
-    import StatusBadge from "$lib/components/StatusBadge.svelte";
+    import { FirstPartyApiError, requestFirstPartyApi } from "#lib/api/client.ts";
+    import { formatDateTime, formatNumber } from "#lib/i18n/format.ts";
+    import Button from "#lib/components/Button.svelte";
+    import Card from "#lib/components/Card.svelte";
+    import Field from "#lib/components/Field.svelte";
+    import Input from "#lib/components/Input.svelte";
+    import Select from "#lib/components/Select.svelte";
+    import StatusBadge from "#lib/components/StatusBadge.svelte";
     import type { MaintenanceCapabilities, MaintenanceWindow } from "./+page.server";
 
     interface Props { data: { capabilities: MaintenanceCapabilities; oneOff: { data: MaintenanceWindow[] }; recurring: { data: MaintenanceWindow[] } }; }

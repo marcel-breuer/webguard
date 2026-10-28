@@ -1,9 +1,9 @@
 <script lang="ts">
-    import { requestFirstPartyApi } from "$lib/api/client";
-    import Button from "$lib/components/Button.svelte";
-    import GuestAuthLayout from "$lib/components/GuestAuthLayout.svelte";
-    import MutationForm from "$lib/components/MutationForm.svelte";
-    import type { FirstPartySession } from "$lib/api/models";
+    import { requestFirstPartyApi } from "#lib/api/client.ts";
+    import Button from "#lib/components/Button.svelte";
+    import GuestAuthLayout from "#lib/components/GuestAuthLayout.svelte";
+    import MutationForm from "#lib/components/MutationForm.svelte";
+    import type { FirstPartySession } from "#lib/api/models.ts";
 
     interface Props { data: { session: FirstPartySession }; }
     let { data }: Props = $props();

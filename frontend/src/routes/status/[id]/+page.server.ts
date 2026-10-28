@@ -1,6 +1,6 @@
 import { error, fail, redirect } from "@sveltejs/kit";
-import type { PublicStatusPayload } from "$lib/api/public-status";
-import type { TranslationMessages } from "$lib/i18n/localize";
+import type { PublicStatusPayload } from "#lib/api/public-status.ts";
+import type { TranslationMessages } from "#lib/i18n/localize.ts";
 import type { Actions } from "./$types";
 
 interface SubscriptionResponse {

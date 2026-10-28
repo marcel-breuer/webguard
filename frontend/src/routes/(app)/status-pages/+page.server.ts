@@ -1,5 +1,5 @@
 import { error } from "@sveltejs/kit";
-import type { StatusPage, StatusPageMonitoring, StatusPageMonitoringGroup } from "$lib/api/status-pages";
+import type { StatusPage, StatusPageMonitoring, StatusPageMonitoringGroup } from "#lib/api/status-pages.ts";
 
 export async function load({ fetch }) {
     const headers = { Accept: "application/json", "X-Requested-With": "XMLHttpRequest" };

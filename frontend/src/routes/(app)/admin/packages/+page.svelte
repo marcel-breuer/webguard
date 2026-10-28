@@ -1,7 +1,7 @@
 <script lang="ts">
-    import { appRoutes } from "$lib/routes";
-    import AdminCrudTable from "$lib/components/AdminCrudTable.svelte";
-    import { formatCurrency, formatNumber } from "$lib/i18n/format";
+    import { appRoutes } from "#lib/routes.ts";
+    import AdminCrudTable from "#lib/components/AdminCrudTable.svelte";
+    import { formatCurrency, formatNumber } from "#lib/i18n/format.ts";
 
     interface Props { data: { query: { direction: "asc" | "desc"; page: number; perPage: number; search: string; selectable: string; sort: string }; packages: { data: { items: Array<Record<string, unknown>>; pagination: { current_page: number; last_page: number; total: number } } } }; }
     let { data }: Props = $props();

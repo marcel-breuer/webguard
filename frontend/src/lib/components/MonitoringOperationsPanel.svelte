@@ -1,13 +1,13 @@
 <script lang="ts">
     import { invalidateAll } from "$app/navigation";
-    import { FirstPartyApiError, requestFirstPartyApi } from "$lib/api/client";
-    import type { MonitoringFormOptions } from "$lib/api/monitoring";
-    import Button from "$lib/components/Button.svelte";
-    import Card from "$lib/components/Card.svelte";
-    import Checkbox from "$lib/components/Checkbox.svelte";
-    import Field from "$lib/components/Field.svelte";
-    import Input from "$lib/components/Input.svelte";
-    import Select from "$lib/components/Select.svelte";
+    import { FirstPartyApiError, requestFirstPartyApi } from "#lib/api/client.ts";
+    import type { MonitoringFormOptions } from "#lib/api/monitoring.ts";
+    import Button from "#lib/components/Button.svelte";
+    import Card from "#lib/components/Card.svelte";
+    import Checkbox from "#lib/components/Checkbox.svelte";
+    import Field from "#lib/components/Field.svelte";
+    import Input from "#lib/components/Input.svelte";
+    import Select from "#lib/components/Select.svelte";
 
     interface Preferences {
         effective: { notification_on_failure: boolean; notification_channels: string[]; ssl_expiry_warning_days: number; };

@@ -1,14 +1,14 @@
 <script lang="ts">
-    import { formatNumber } from "$lib/i18n/format";
+    import { formatNumber } from "#lib/i18n/format.ts";
     import { goto, invalidateAll } from "$app/navigation";
-    import { FirstPartyApiError, requestFirstPartyApi } from "$lib/api/client";
-    import type { StatusPage, StatusPageMonitoring, StatusPageMonitoringGroup } from "$lib/api/status-pages";
-    import Button from "$lib/components/Button.svelte";
-    import Card from "$lib/components/Card.svelte";
-    import Dialog from "$lib/components/Dialog.svelte";
-    import EmptyState from "$lib/components/EmptyState.svelte";
-    import StatusBadge from "$lib/components/StatusBadge.svelte";
-    import StatusPageForm from "$lib/components/StatusPageForm.svelte";
+    import { FirstPartyApiError, requestFirstPartyApi } from "#lib/api/client.ts";
+    import type { StatusPage, StatusPageMonitoring, StatusPageMonitoringGroup } from "#lib/api/status-pages.ts";
+    import Button from "#lib/components/Button.svelte";
+    import Card from "#lib/components/Card.svelte";
+    import Dialog from "#lib/components/Dialog.svelte";
+    import EmptyState from "#lib/components/EmptyState.svelte";
+    import StatusBadge from "#lib/components/StatusBadge.svelte";
+    import StatusPageForm from "#lib/components/StatusPageForm.svelte";
 
     interface Props { data: { statusPages: { data: StatusPage[] }; options: { data: { monitorings: StatusPageMonitoring[]; monitoring_groups: StatusPageMonitoringGroup[] } } }; }
     let { data }: Props = $props();

@@ -1,11 +1,11 @@
 <script lang="ts">
-    import { FirstPartyApiError, requestFirstPartyApi } from "$lib/api/client";
-    import type { AuthOptions } from "$lib/server/auth";
-    import Button from "$lib/components/Button.svelte";
-    import Checkbox from "$lib/components/Checkbox.svelte";
-    import Field from "$lib/components/Field.svelte";
-    import GuestAuthLayout from "$lib/components/GuestAuthLayout.svelte";
-    import Input from "$lib/components/Input.svelte";
+    import { FirstPartyApiError, requestFirstPartyApi } from "#lib/api/client.ts";
+    import type { AuthOptions } from "#lib/server/auth.ts";
+    import Button from "#lib/components/Button.svelte";
+    import Checkbox from "#lib/components/Checkbox.svelte";
+    import Field from "#lib/components/Field.svelte";
+    import GuestAuthLayout from "#lib/components/GuestAuthLayout.svelte";
+    import Input from "#lib/components/Input.svelte";
 
     type AuthMode = "login" | "register" | "demo";
 

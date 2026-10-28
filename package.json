@@ -1,6 +1,8 @@
 {
     "overrides": {
-        "picomatch": "^4.0.4"
+        "picomatch": "^4.0.4",
+        "devalue": "^5.9.4",
+        "source-map-js": "^1.2.2"
     },
     "private": true,
     "scripts": {

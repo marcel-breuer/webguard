@@ -1,11 +1,11 @@
 <script lang="ts">
     import { onDestroy } from "svelte";
-    import { FirstPartyApiError, requestFirstPartyApi } from "$lib/api/client";
-    import Button from "$lib/components/Button.svelte";
-    import Checkbox from "$lib/components/Checkbox.svelte";
-    import Field from "$lib/components/Field.svelte";
-    import Input from "$lib/components/Input.svelte";
-    import Textarea from "$lib/components/Textarea.svelte";
+    import { FirstPartyApiError, requestFirstPartyApi } from "#lib/api/client.ts";
+    import Button from "#lib/components/Button.svelte";
+    import Checkbox from "#lib/components/Checkbox.svelte";
+    import Field from "#lib/components/Field.svelte";
+    import Input from "#lib/components/Input.svelte";
+    import Textarea from "#lib/components/Textarea.svelte";
 
     interface Assignment { id: string; name: string; target: string; }
     interface Group { id: string; name: string; description: string | null; sla: { target_percentage: number | null; monthly_reports_enabled: boolean }; assignments: Assignment[]; }

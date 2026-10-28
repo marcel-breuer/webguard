@@ -1,6 +1,6 @@
 <script lang="ts">
     import { page } from "$app/state";
-    import { appRoutes } from "$lib/routes";
+    import { appRoutes } from "#lib/routes.ts";
 </script>
 
 <svelte:head>

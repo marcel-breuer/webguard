@@ -1,7 +1,7 @@
 <script lang="ts">
     import "../app.css";
-    import { localize } from "$lib/i18n/localize";
-    import type { TranslationMessages } from "$lib/i18n/localize";
+    import { localize } from "#lib/i18n/localize.ts";
+    import type { TranslationMessages } from "#lib/i18n/localize.ts";
 
     interface Props {
         data: { locale: string; messages: TranslationMessages };

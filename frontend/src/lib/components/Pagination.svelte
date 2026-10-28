@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { formatNumber } from "$lib/i18n/format";
+    import { formatNumber } from "#lib/i18n/format.ts";
 
     interface Props { page: number; pages: number; href: (page: number) => string; }
     let { page, pages, href }: Props = $props();

@@ -1,18 +1,18 @@
 <script lang="ts">
     import { goto, invalidateAll } from "$app/navigation";
-    import { FirstPartyApiError, requestFirstPartyApi } from "$lib/api/client";
-    import { appRoutes } from "$lib/routes";
-    import { formatDateTime, formatNumber, formatPercentage } from "$lib/i18n/format";
-    import { translate, type TranslationMessages } from "$lib/i18n/localize";
-    import Button from "$lib/components/Button.svelte";
-    import Dialog from "$lib/components/Dialog.svelte";
-    import MonitoringAnalytics from "$lib/components/MonitoringAnalytics.svelte";
-    import MonitoringForm from "$lib/components/MonitoringForm.svelte";
-    import ServerHealthOverview from "$lib/components/ServerHealthOverview.svelte";
-    import MonitoringTypeDiagnostics from "$lib/components/MonitoringTypeDiagnostics.svelte";
-    import MonitoringLocationList from "$lib/components/MonitoringLocationList.svelte";
-    import NavIcon from "$lib/components/NavIcon.svelte";
-    import type { MonitoringDetailData, MonitoringFormOptions, MonitoringHeatmapPoint, MonitoringMutationResult, MonitoringSummary } from "$lib/api/monitoring";
+    import { FirstPartyApiError, requestFirstPartyApi } from "#lib/api/client.ts";
+    import { appRoutes } from "#lib/routes.ts";
+    import { formatDateTime, formatNumber, formatPercentage } from "#lib/i18n/format.ts";
+    import { translate, type TranslationMessages } from "#lib/i18n/localize.ts";
+    import Button from "#lib/components/Button.svelte";
+    import Dialog from "#lib/components/Dialog.svelte";
+    import MonitoringAnalytics from "#lib/components/MonitoringAnalytics.svelte";
+    import MonitoringForm from "#lib/components/MonitoringForm.svelte";
+    import ServerHealthOverview from "#lib/components/ServerHealthOverview.svelte";
+    import MonitoringTypeDiagnostics from "#lib/components/MonitoringTypeDiagnostics.svelte";
+    import MonitoringLocationList from "#lib/components/MonitoringLocationList.svelte";
+    import NavIcon from "#lib/components/NavIcon.svelte";
+    import type { MonitoringDetailData, MonitoringFormOptions, MonitoringHeatmapPoint, MonitoringMutationResult, MonitoringSummary } from "#lib/api/monitoring.ts";
 
     interface Props {
         data: {

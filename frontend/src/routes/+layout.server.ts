@@ -1,5 +1,5 @@
 import type { LayoutServerLoad } from "./$types";
-import type { TranslationMessages } from "$lib/i18n/localize";
+import type { TranslationMessages } from "#lib/i18n/localize.ts";
 
 interface TranslationResponse {
     data?: {

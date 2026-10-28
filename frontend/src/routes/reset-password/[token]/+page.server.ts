@@ -1,4 +1,4 @@
-import { loadGuestAuthContext, setAuthPageHeaders } from "$lib/server/auth";
+import { loadGuestAuthContext, setAuthPageHeaders } from "#lib/server/auth.ts";
 
 export async function load({ fetch, params, setHeaders, url }) {
     setAuthPageHeaders(setHeaders);

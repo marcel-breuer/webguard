@@ -1,5 +1,5 @@
 import { error } from "@sveltejs/kit";
-import type { ApiEnvelope } from "$lib/api/models";
+import type { ApiEnvelope } from "#lib/api/models.ts";
 
 export interface NotificationEntry {
     id: string;

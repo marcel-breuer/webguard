@@ -1,5 +1,5 @@
 import { error, redirect } from "@sveltejs/kit";
-import type { FirstPartySession } from "$lib/api/models";
+import type { FirstPartySession } from "#lib/api/models.ts";
 
 export async function loadFirstPartySession(fetcher: typeof fetch): Promise<FirstPartySession> {
     const response = await fetcher("/api/session", {

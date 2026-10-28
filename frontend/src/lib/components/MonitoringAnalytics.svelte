@@ -1,10 +1,10 @@
 <script lang="ts">
     import { onMount, tick } from "svelte";
-    import { FirstPartyApiError, requestFirstPartyApi } from "$lib/api/client";
-    import { formatDateTime, formatMonthYear, formatNumber, formatPercentage } from "$lib/i18n/format";
-    import type { MonitoringDetailData, MonitoringDetailMeta } from "$lib/api/monitoring";
-    import Button from "$lib/components/Button.svelte";
-    import Select from "$lib/components/Select.svelte";
+    import { FirstPartyApiError, requestFirstPartyApi } from "#lib/api/client.ts";
+    import { formatDateTime, formatMonthYear, formatNumber, formatPercentage } from "#lib/i18n/format.ts";
+    import type { MonitoringDetailData, MonitoringDetailMeta } from "#lib/api/monitoring.ts";
+    import Button from "#lib/components/Button.svelte";
+    import Select from "#lib/components/Select.svelte";
 
     type Incident = MonitoringDetailData["incidents"][number];
     type RecentCheck = MonitoringDetailData["recent_checks"][number];

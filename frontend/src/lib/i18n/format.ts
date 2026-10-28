@@ -1,5 +1,5 @@
 import { page } from "$app/state";
-import type { DateTimeFormatOptions } from "$lib/i18n/formatters";
+import type { DateTimeFormatOptions } from "#lib/i18n/formatters.ts";
 import {
     formatCurrencyForLocale,
     formatDateTimeForLocale,
@@ -7,9 +7,9 @@ import {
     formatNumberForLocale,
     formatPercentageForLocale,
     resolveFormatLocale,
-} from "$lib/i18n/formatters";
+} from "#lib/i18n/formatters.ts";
 
-export type { DateTimeFormatOptions } from "$lib/i18n/formatters";
+export type { DateTimeFormatOptions } from "#lib/i18n/formatters.ts";
 
 export function formatLocale(): string {
     return resolveFormatLocale(page.data.formatLocale, page.data.locale);

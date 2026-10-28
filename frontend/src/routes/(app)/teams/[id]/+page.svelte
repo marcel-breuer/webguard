@@ -1,13 +1,13 @@
 <script lang="ts">
-    import { formatNumber } from "$lib/i18n/format";
-    import Button from "$lib/components/Button.svelte";
-    import Card from "$lib/components/Card.svelte";
-    import Dialog from "$lib/components/Dialog.svelte";
-    import Field from "$lib/components/Field.svelte";
-    import Input from "$lib/components/Input.svelte";
-    import MutationForm from "$lib/components/MutationForm.svelte";
-    import Select from "$lib/components/Select.svelte";
-    import Textarea from "$lib/components/Textarea.svelte";
+    import { formatNumber } from "#lib/i18n/format.ts";
+    import Button from "#lib/components/Button.svelte";
+    import Card from "#lib/components/Card.svelte";
+    import Dialog from "#lib/components/Dialog.svelte";
+    import Field from "#lib/components/Field.svelte";
+    import Input from "#lib/components/Input.svelte";
+    import MutationForm from "#lib/components/MutationForm.svelte";
+    import Select from "#lib/components/Select.svelte";
+    import Textarea from "#lib/components/Textarea.svelte";
     import type { TeamWorkspace } from "./+page.server";
     interface Props { data: { data: TeamWorkspace }; }
     let { data }: Props = $props();

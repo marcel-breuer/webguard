@@ -1,7 +1,7 @@
 <script lang="ts">
-    import MonitoringForm from "$lib/components/MonitoringForm.svelte";
-    import MonitoringOperationsPanel from "$lib/components/MonitoringOperationsPanel.svelte";
-    import type { MonitoringFormOptions } from "$lib/api/monitoring";
+    import MonitoringForm from "#lib/components/MonitoringForm.svelte";
+    import MonitoringOperationsPanel from "#lib/components/MonitoringOperationsPanel.svelte";
+    import type { MonitoringFormOptions } from "#lib/api/monitoring.ts";
 
     interface Props { data: { form: MonitoringFormOptions; preferences: NotificationPreferences }; }
     let { data }: Props = $props();

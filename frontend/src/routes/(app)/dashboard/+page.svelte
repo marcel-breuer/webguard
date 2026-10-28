@@ -1,18 +1,18 @@
 <script lang="ts">
     import { goto, invalidateAll } from "$app/navigation";
-    import { FirstPartyApiError, requestFirstPartyApi } from "$lib/api/client";
-    import { appRoutes } from "$lib/routes";
-    import { formatDateTime, formatNumber } from "$lib/i18n/format";
-    import Button from "$lib/components/Button.svelte";
-    import Card from "$lib/components/Card.svelte";
-    import Dialog from "$lib/components/Dialog.svelte";
-    import EmptyState from "$lib/components/EmptyState.svelte";
-    import Input from "$lib/components/Input.svelte";
-    import MonitoringForm from "$lib/components/MonitoringForm.svelte";
-    import Pagination from "$lib/components/Pagination.svelte";
-    import StatusBadge from "$lib/components/StatusBadge.svelte";
-    import type { DashboardResponse, DashboardService, MonitoringFormOptions, MonitoringMutationResult } from "$lib/api/monitoring";
-    import type { FirstPartySession } from "$lib/api/models";
+    import { FirstPartyApiError, requestFirstPartyApi } from "#lib/api/client.ts";
+    import { appRoutes } from "#lib/routes.ts";
+    import { formatDateTime, formatNumber } from "#lib/i18n/format.ts";
+    import Button from "#lib/components/Button.svelte";
+    import Card from "#lib/components/Card.svelte";
+    import Dialog from "#lib/components/Dialog.svelte";
+    import EmptyState from "#lib/components/EmptyState.svelte";
+    import Input from "#lib/components/Input.svelte";
+    import MonitoringForm from "#lib/components/MonitoringForm.svelte";
+    import Pagination from "#lib/components/Pagination.svelte";
+    import StatusBadge from "#lib/components/StatusBadge.svelte";
+    import type { DashboardResponse, DashboardService, MonitoringFormOptions, MonitoringMutationResult } from "#lib/api/monitoring.ts";
+    import type { FirstPartySession } from "#lib/api/models.ts";
 
     interface Props {
         data: {

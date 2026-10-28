@@ -1,6 +1,6 @@
 <script lang="ts" generics="T">
-    import { FirstPartyApiError, requestFirstPartyApi } from "$lib/api/client";
-    import Button from "$lib/components/Button.svelte";
+    import { FirstPartyApiError, requestFirstPartyApi } from "#lib/api/client.ts";
+    import Button from "#lib/components/Button.svelte";
     import type { Snippet } from "svelte";
 
     interface Props {

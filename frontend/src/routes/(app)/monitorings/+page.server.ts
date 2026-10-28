@@ -1,5 +1,5 @@
 import { error } from "@sveltejs/kit";
-import type { DashboardResponse, MonitoringCardsResponse, MonitoringListResponse } from "$lib/api/monitoring";
+import type { DashboardResponse, MonitoringCardsResponse, MonitoringListResponse } from "#lib/api/monitoring.ts";
 
 const lifecycleStatuses = new Set(["active", "paused"]);
 
