@@ -120,7 +120,7 @@ MySQL profile is enabled. Leave it unset when using an external database;
 provide the database provider's credentials through `DB_PASSWORD` instead.
 Never reuse the local development values from `docker-compose.override.yml`.
 
-For a non-Coolify Docker deployment, set `APP_URL` to the canonical public URL. The Compose file passes the same value to Laravel and SvelteKit as `ORIGIN`. Set concrete values for SMTP as well, for example `SMTP_USERNAME=noreply@example.com` and `MAIL_FROM_NAME=WebGuard`. Do not use values such as `MAIL_USERNAME=${MAIL_FROM_ADDRESS}` because Docker Compose evaluates the env file during build and can warn or substitute empty strings before the container starts.
+For a non-Coolify Docker deployment, set `APP_URL` to the canonical public URL; Compose passes it to Laravel. SvelteKit derives the request origin from the gateway's forwarded host and protocol headers, with the gateway preserving an explicit host port. Set concrete values for SMTP as well, for example `SMTP_USERNAME=noreply@example.com` and `MAIL_FROM_NAME=WebGuard`. Do not use values such as `MAIL_USERNAME=${MAIL_FROM_ADDRESS}` because Docker Compose evaluates the env file during build and can warn or substitute empty strings before the container starts.
 
 For Docker deployments, use `SMTP_USERNAME` as the input variable. The Compose file passes it into the container as Laravel's `MAIL_USERNAME`. This avoids Docker Compose expanding old values such as `MAIL_USERNAME=${MAIL_FROM_ADDRESS}` during Coolify builds.
 
@@ -172,7 +172,7 @@ Coolify detects variables that are referenced in `docker-compose.yml` and expose
 
 For Coolify routing, set `APP_URL=https://app.webguard.dev` explicitly. In **Domains for gateway**, set `https://app.webguard.dev:8080`; the `:8080` identifies the gateway's internal container port, while visitors still use normal HTTPS on port 443. This is the only domain to configure: `php` and `frontend` do not declare public Compose ports and are reached only through the gateway's internal Docker-network forwarding.
 
-Do not add `SERVICE_URL_GATEWAY`, `SERVICE_URL_GATEWAY_8080`, `SERVICE_FQDN_GATEWAY`, or `SERVICE_FQDN_GATEWAY_8080` to this deployment. Those are Coolify-managed magic variables; referencing one makes Coolify generate and manage a service URL. The Compose stack deliberately uses the explicit `APP_URL` for both Laravel and SvelteKit so it remains the single canonical origin across deploys.
+Do not add `SERVICE_URL_GATEWAY`, `SERVICE_URL_GATEWAY_8080`, `SERVICE_FQDN_GATEWAY`, or `SERVICE_FQDN_GATEWAY_8080` to this deployment. Those are Coolify-managed magic variables; referencing one makes Coolify generate and manage a service URL. Laravel uses the explicit `APP_URL`; SvelteKit derives each request's origin from the forwarded host and protocol supplied by the gateway.
 
 Do not set a `SERVICE_FQDN_GATEWAY*` variable to `${APP_URL}`. `APP_URL` is a complete URL such as `https://app.webguard.dev`, whereas an FQDN contains only a hostname (and, for Coolify's internal routing selection, an optional container port). More importantly, the `SERVICE_FQDN_*` and `SERVICE_URL_*` names are Coolify magic-variable triggers: using either name causes Coolify to create a generated domain instead of reusing `APP_URL`.
 

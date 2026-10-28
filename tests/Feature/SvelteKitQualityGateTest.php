@@ -623,7 +623,8 @@ class SvelteKitQualityGateTest extends TestCase
         $this->assertStringContainsString('MAIL_MAILER: "${MAIL_MAILER:-smtp}"', $composeConfiguration);
         $this->assertStringContainsString('export APP_URL="${APP_URL:-http://gateway:8080}"', $smokeScript);
         $this->assertStringContainsString('APP_URL: "${APP_URL:?APP_URL must be set to the canonical application URL}"', $composeConfiguration);
-        $this->assertStringContainsString('ORIGIN: "${APP_URL:?APP_URL must be set to the canonical application URL}"', $composeConfiguration);
+        $this->assertStringContainsString('HOST_HEADER: "X-Forwarded-Host"', $composeConfiguration);
+        $this->assertStringContainsString('PROTOCOL_HEADER: "X-Forwarded-Proto"', $composeConfiguration);
         $this->assertStringNotContainsString('SERVICE_URL_GATEWAY', $composeConfiguration);
         $this->assertStringNotContainsString('SERVICE_FQDN_GATEWAY', $composeConfiguration);
         $this->assertStringNotContainsString('SERVICE_URL_PHP', $composeConfiguration);
