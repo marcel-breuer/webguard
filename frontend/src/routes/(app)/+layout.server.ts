@@ -1,4 +1,4 @@
-import { loadFirstPartySession } from "$lib/server/session";
+import { loadFirstPartySession } from "#lib/server/session.ts";
 
 export async function load({ fetch }) {
     const session = await loadFirstPartySession(fetch);

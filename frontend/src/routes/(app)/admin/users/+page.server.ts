@@ -1,5 +1,5 @@
 import { error } from "@sveltejs/kit";
-import type { AdminPackage, AdminUser, Paginated } from "$lib/api/admin";
+import type { AdminPackage, AdminUser, Paginated } from "#lib/api/admin.ts";
 
 const perPageOptions = new Set([10, 25, 50, 100]);
 const sortOptions = new Set(["name", "email", "role", "created_at"]);

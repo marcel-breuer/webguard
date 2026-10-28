@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { formatLocale } from "$lib/i18n/format";
+    import { formatLocale } from "#lib/i18n/format.ts";
     import type { HTMLInputAttributes } from "svelte/elements";
 
     interface Props extends Omit<HTMLInputAttributes, "value"> {

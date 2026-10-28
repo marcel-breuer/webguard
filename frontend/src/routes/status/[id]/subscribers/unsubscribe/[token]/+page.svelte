@@ -1,6 +1,6 @@
 <script lang="ts">
-    import Button from "$lib/components/Button.svelte";
-    import Input from "$lib/components/Input.svelte";
+    import Button from "#lib/components/Button.svelte";
+    import Input from "#lib/components/Input.svelte";
     interface FormState {
         email?: string;
         error?: string;

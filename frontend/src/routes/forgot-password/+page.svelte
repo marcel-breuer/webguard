@@ -1,8 +1,8 @@
 <script lang="ts">
-    import Field from "$lib/components/Field.svelte";
-    import GuestAuthLayout from "$lib/components/GuestAuthLayout.svelte";
-    import Input from "$lib/components/Input.svelte";
-    import MutationForm from "$lib/components/MutationForm.svelte";
+    import Field from "#lib/components/Field.svelte";
+    import GuestAuthLayout from "#lib/components/GuestAuthLayout.svelte";
+    import Input from "#lib/components/Input.svelte";
+    import MutationForm from "#lib/components/MutationForm.svelte";
 
 </script>
 

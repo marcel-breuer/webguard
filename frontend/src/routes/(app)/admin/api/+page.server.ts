@@ -1,5 +1,5 @@
 import { error } from "@sveltejs/kit";
-import type { AdminApiLog, AdminApiLogUser, Paginated } from "$lib/api/admin";
+import type { AdminApiLog, AdminApiLogUser, Paginated } from "#lib/api/admin.ts";
 
 const defaults = { direction: "desc", page: 1, perPage: 25, search: "", sort: "created_at", userId: "" } as const;
 

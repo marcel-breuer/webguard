@@ -1,14 +1,14 @@
 <script lang="ts">
-    import { formatNumber } from "$lib/i18n/format";
-    import Card from "$lib/components/Card.svelte";
-    import EmptyState from "$lib/components/EmptyState.svelte";
-    import StatusBadge from "$lib/components/StatusBadge.svelte";
-    import Button from "$lib/components/Button.svelte";
-    import Dialog from "$lib/components/Dialog.svelte";
-    import Field from "$lib/components/Field.svelte";
-    import Input from "$lib/components/Input.svelte";
-    import MutationForm from "$lib/components/MutationForm.svelte";
-    import Textarea from "$lib/components/Textarea.svelte";
+    import { formatNumber } from "#lib/i18n/format.ts";
+    import Card from "#lib/components/Card.svelte";
+    import EmptyState from "#lib/components/EmptyState.svelte";
+    import StatusBadge from "#lib/components/StatusBadge.svelte";
+    import Button from "#lib/components/Button.svelte";
+    import Dialog from "#lib/components/Dialog.svelte";
+    import Field from "#lib/components/Field.svelte";
+    import Input from "#lib/components/Input.svelte";
+    import MutationForm from "#lib/components/MutationForm.svelte";
+    import Textarea from "#lib/components/Textarea.svelte";
 
     interface TeamSummary { id: string; name: string; description: string | null; member_count: number; monitoring_count: number; role: "admin" | "member"; }
     interface Props { data: { data: { teams: TeamSummary[] } }; }

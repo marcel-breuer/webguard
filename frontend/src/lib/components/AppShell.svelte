@@ -1,12 +1,12 @@
 <script lang="ts">
     import { onMount } from "svelte";
-    import { appRoutes } from "$lib/routes";
-    import { requestFirstPartyApi } from "$lib/api/client";
-    import { formatNumber } from "$lib/i18n/format";
-    import AppearanceSelector from "$lib/components/AppearanceSelector.svelte";
-    import LocaleSelector from "$lib/components/LocaleSelector.svelte";
-    import NavIcon, { type NavIconName } from "$lib/components/NavIcon.svelte";
-    import type { FirstPartySession } from "$lib/api/models";
+    import { appRoutes } from "#lib/routes.ts";
+    import { requestFirstPartyApi } from "#lib/api/client.ts";
+    import { formatNumber } from "#lib/i18n/format.ts";
+    import AppearanceSelector from "#lib/components/AppearanceSelector.svelte";
+    import LocaleSelector from "#lib/components/LocaleSelector.svelte";
+    import NavIcon, { type NavIconName } from "#lib/components/NavIcon.svelte";
+    import type { FirstPartySession } from "#lib/api/models.ts";
     import type { Snippet } from "svelte";
 
     interface NavigationItem {

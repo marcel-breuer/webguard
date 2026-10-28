@@ -1,16 +1,16 @@
 <script lang="ts">
     import { untrack } from "svelte";
-    import Button from "$lib/components/Button.svelte";
-    import Card from "$lib/components/Card.svelte";
-    import Checkbox from "$lib/components/Checkbox.svelte";
-    import Dialog from "$lib/components/Dialog.svelte";
-    import Field from "$lib/components/Field.svelte";
-    import Input from "$lib/components/Input.svelte";
-    import MutationForm from "$lib/components/MutationForm.svelte";
-    import Select from "$lib/components/Select.svelte";
-    import { appRoutes } from "$lib/routes";
-    import { formatDateTime } from "$lib/i18n/format";
-    import type { FirstPartySession } from "$lib/api/models";
+    import Button from "#lib/components/Button.svelte";
+    import Card from "#lib/components/Card.svelte";
+    import Checkbox from "#lib/components/Checkbox.svelte";
+    import Dialog from "#lib/components/Dialog.svelte";
+    import Field from "#lib/components/Field.svelte";
+    import Input from "#lib/components/Input.svelte";
+    import MutationForm from "#lib/components/MutationForm.svelte";
+    import Select from "#lib/components/Select.svelte";
+    import { appRoutes } from "#lib/routes.ts";
+    import { formatDateTime } from "#lib/i18n/format.ts";
+    import type { FirstPartySession } from "#lib/api/models.ts";
 
     interface ApiKeySummary { id: number; name: string; abilities: string[]; last_used_at: string | null; revoked_at: string | null; }
     interface CreatedApiKey { api_key: ApiKeySummary; token: string; }

@@ -1,7 +1,7 @@
 <script lang="ts">
-    import type { MonitoringDetailData } from "$lib/api/monitoring";
-    import Card from "$lib/components/Card.svelte";
-    import { formatNumber, formatPercentage as formatLocalizedPercentage } from "$lib/i18n/format";
+    import type { MonitoringDetailData } from "#lib/api/monitoring.ts";
+    import Card from "#lib/components/Card.svelte";
+    import { formatNumber, formatPercentage as formatLocalizedPercentage } from "#lib/i18n/format.ts";
 
     interface Props { detail: MonitoringDetailData; }
     let { detail }: Props = $props();

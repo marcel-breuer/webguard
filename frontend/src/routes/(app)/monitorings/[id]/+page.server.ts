@@ -1,5 +1,5 @@
 import { error } from "@sveltejs/kit";
-import type { MonitoringDetailData, MonitoringDetailMeta, MonitoringSummary } from "$lib/api/monitoring";
+import type { MonitoringDetailData, MonitoringDetailMeta, MonitoringSummary } from "#lib/api/monitoring.ts";
 
 export async function load({ fetch, params }) {
     const monitoringId = encodeURIComponent(params.id);

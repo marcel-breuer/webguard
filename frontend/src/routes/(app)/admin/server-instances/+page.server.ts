@@ -1,5 +1,5 @@
 import { error } from "@sveltejs/kit";
-import type { AdminServerInstance, Paginated } from "$lib/api/admin";
+import type { AdminServerInstance, Paginated } from "#lib/api/admin.ts";
 
 const perPageOptions = new Set([10, 25, 50, 100]);
 const sortOptions = new Set(["display_name", "code", "country_code", "ip_address", "is_active", "created_at"]);

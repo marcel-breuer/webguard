@@ -1,6 +1,6 @@
 <script lang="ts">
-    import { FirstPartyApiError, requestFirstPartyApi } from "$lib/api/client";
-    import NavIcon from "$lib/components/NavIcon.svelte";
+    import { FirstPartyApiError, requestFirstPartyApi } from "#lib/api/client.ts";
+    import NavIcon from "#lib/components/NavIcon.svelte";
 
     interface Props {
         initialLocale: string;

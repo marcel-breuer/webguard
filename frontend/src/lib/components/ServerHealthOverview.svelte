@@ -1,9 +1,9 @@
 <script lang="ts">
     import { onMount } from "svelte";
-    import { FirstPartyApiError } from "$lib/api/client";
-    import { formatDateTime, formatNumber, formatPercentage as formatLocalizedPercentage } from "$lib/i18n/format";
-    import type { MonitoringDetailData } from "$lib/api/monitoring";
-    import Select from "$lib/components/Select.svelte";
+    import { FirstPartyApiError } from "#lib/api/client.ts";
+    import { formatDateTime, formatNumber, formatPercentage as formatLocalizedPercentage } from "#lib/i18n/format.ts";
+    import type { MonitoringDetailData } from "#lib/api/monitoring.ts";
+    import Select from "#lib/components/Select.svelte";
 
     type ServerHealthTelemetry = NonNullable<MonitoringDetailData["server_health_telemetry"]>;
     type TelemetryPeriod = 1 | 7 | 30;

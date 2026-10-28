@@ -1,13 +1,13 @@
 <script lang="ts">
     import { goto } from "$app/navigation";
-    import { requestFirstPartyApi, FirstPartyApiError } from "$lib/api/client";
-    import type { MonitoringFormOptions, MonitoringMutationResult, MonitoringType } from "$lib/api/monitoring";
-    import Button from "$lib/components/Button.svelte";
-    import Checkbox from "$lib/components/Checkbox.svelte";
-    import Field from "$lib/components/Field.svelte";
-    import Input from "$lib/components/Input.svelte";
-    import Select, { type SelectOption } from "$lib/components/Select.svelte";
-    import Textarea from "$lib/components/Textarea.svelte";
+    import { requestFirstPartyApi, FirstPartyApiError } from "#lib/api/client.ts";
+    import type { MonitoringFormOptions, MonitoringMutationResult, MonitoringType } from "#lib/api/monitoring.ts";
+    import Button from "#lib/components/Button.svelte";
+    import Checkbox from "#lib/components/Checkbox.svelte";
+    import Field from "#lib/components/Field.svelte";
+    import Input from "#lib/components/Input.svelte";
+    import Select, { type SelectOption } from "#lib/components/Select.svelte";
+    import Textarea from "#lib/components/Textarea.svelte";
 
     interface Props {
         options: MonitoringFormOptions;

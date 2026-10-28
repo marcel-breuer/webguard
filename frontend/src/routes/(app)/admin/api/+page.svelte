@@ -1,12 +1,12 @@
 <script lang="ts">
-    import { appRoutes } from "$lib/routes";
-    import { formatDateTime, formatNumber } from "$lib/i18n/format";
-    import Button from "$lib/components/Button.svelte";
-    import DataTable from "$lib/components/DataTable.svelte";
-    import Input from "$lib/components/Input.svelte";
-    import Pagination from "$lib/components/Pagination.svelte";
-    import Select from "$lib/components/Select.svelte";
-    import type { AdminApiLog, AdminApiLogUser, Paginated } from "$lib/api/admin";
+    import { appRoutes } from "#lib/routes.ts";
+    import { formatDateTime, formatNumber } from "#lib/i18n/format.ts";
+    import Button from "#lib/components/Button.svelte";
+    import DataTable from "#lib/components/DataTable.svelte";
+    import Input from "#lib/components/Input.svelte";
+    import Pagination from "#lib/components/Pagination.svelte";
+    import Select from "#lib/components/Select.svelte";
+    import type { AdminApiLog, AdminApiLogUser, Paginated } from "#lib/api/admin.ts";
 
     type SortKey = "created_at" | "user_email" | "route";
     type Direction = "asc" | "desc";

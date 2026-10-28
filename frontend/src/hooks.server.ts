@@ -1,4 +1,4 @@
-import type { HandleFetch } from "@sveltejs/kit";
+import type { HandleFetch } from "@sveltejs/kit/hooks";
 
 const correlationIdPattern = /^(?:[\da-f]{32}|[\da-f]{8}-(?:[\da-f]{4}-){3}[\da-f]{12})$/i;
 

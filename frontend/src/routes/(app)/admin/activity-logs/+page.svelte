@@ -1,11 +1,11 @@
 <script lang="ts">
-    import { appRoutes } from "$lib/routes";
-    import { formatDateTime, formatNumber } from "$lib/i18n/format";
-    import DataTable from "$lib/components/DataTable.svelte";
-    import Input from "$lib/components/Input.svelte";
-    import Pagination from "$lib/components/Pagination.svelte";
-    import Select from "$lib/components/Select.svelte";
-    import type { AdminActivityLog, Paginated } from "$lib/api/admin";
+    import { appRoutes } from "#lib/routes.ts";
+    import { formatDateTime, formatNumber } from "#lib/i18n/format.ts";
+    import DataTable from "#lib/components/DataTable.svelte";
+    import Input from "#lib/components/Input.svelte";
+    import Pagination from "#lib/components/Pagination.svelte";
+    import Select from "#lib/components/Select.svelte";
+    import type { AdminActivityLog, Paginated } from "#lib/api/admin.ts";
 
     type SortKey = "description" | "event" | "created_at";
     type Direction = "asc" | "desc";

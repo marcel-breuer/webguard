@@ -386,7 +386,7 @@ class SvelteKitQualityGateTest extends TestCase
         $this->assertStringContainsString('if (endpoint === null)', $appearanceSelector);
         $this->assertStringContainsString('src="/brand/webguard-logo.png"', $statusPage);
         $this->assertStringContainsString('<span class="font-extrabold tracking-tight">WebGuard</span>', $statusPage);
-        $this->assertStringContainsString('import { translate, type TranslationMessages } from "$lib/i18n/localize";', $statusPage);
+        $this->assertStringContainsString('import { translate, type TranslationMessages } from "#lib/i18n/localize.ts";', $statusPage);
         $this->assertStringContainsString('return translate(value, data.locale, data.messages);', $statusPage);
     }
 
@@ -549,13 +549,18 @@ class SvelteKitQualityGateTest extends TestCase
     {
         $gatewayConfiguration = file_get_contents(base_path('docker/gateway/nginx.conf'));
         $proxyHeaders = file_get_contents(base_path('docker/gateway/proxy-headers.conf'));
+        $dockerCompose = file_get_contents(base_path('docker-compose.yml'));
 
         $this->assertIsString($gatewayConfiguration);
         $this->assertIsString($proxyHeaders);
+        $this->assertIsString($dockerCompose);
         $this->assertStringContainsString('map $http_x_forwarded_proto $forwarded_proto', $gatewayConfiguration);
         $this->assertStringContainsString('https https;', $gatewayConfiguration);
         $this->assertStringContainsString('X-Forwarded-Proto $forwarded_proto;', $proxyHeaders);
+        $this->assertStringContainsString('X-Forwarded-Host $http_host;', $proxyHeaders);
         $this->assertStringNotContainsString('X-Forwarded-Proto $scheme;', $proxyHeaders);
+        $this->assertStringContainsString('HOST_HEADER: "X-Forwarded-Host"', $dockerCompose);
+        $this->assertStringContainsString('PROTOCOL_HEADER: "X-Forwarded-Proto"', $dockerCompose);
     }
 
     public function test_gateway_serves_canonical_unsubscribe_pages_from_sveltekit(): void
@@ -618,7 +623,8 @@ class SvelteKitQualityGateTest extends TestCase
         $this->assertStringContainsString('MAIL_MAILER: "${MAIL_MAILER:-smtp}"', $composeConfiguration);
         $this->assertStringContainsString('export APP_URL="${APP_URL:-http://gateway:8080}"', $smokeScript);
         $this->assertStringContainsString('APP_URL: "${APP_URL:?APP_URL must be set to the canonical application URL}"', $composeConfiguration);
-        $this->assertStringContainsString('ORIGIN: "${APP_URL:?APP_URL must be set to the canonical application URL}"', $composeConfiguration);
+        $this->assertStringContainsString('HOST_HEADER: "X-Forwarded-Host"', $composeConfiguration);
+        $this->assertStringContainsString('PROTOCOL_HEADER: "X-Forwarded-Proto"', $composeConfiguration);
         $this->assertStringNotContainsString('SERVICE_URL_GATEWAY', $composeConfiguration);
         $this->assertStringNotContainsString('SERVICE_FQDN_GATEWAY', $composeConfiguration);
         $this->assertStringNotContainsString('SERVICE_URL_PHP', $composeConfiguration);

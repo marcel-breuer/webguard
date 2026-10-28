@@ -1,18 +1,18 @@
 <script lang="ts">
     import { invalidateAll } from "$app/navigation";
-    import { FirstPartyApiError, requestFirstPartyApi } from "$lib/api/client";
-    import { appRoutes } from "$lib/routes";
-    import { formatDateTime, formatNumber } from "$lib/i18n/format";
-    import Button from "$lib/components/Button.svelte";
-    import DataTable from "$lib/components/DataTable.svelte";
-    import Dialog from "$lib/components/Dialog.svelte";
-    import EmptyState from "$lib/components/EmptyState.svelte";
-    import Input from "$lib/components/Input.svelte";
-    import MonitoringForm from "$lib/components/MonitoringForm.svelte";
-    import Pagination from "$lib/components/Pagination.svelte";
-    import Select from "$lib/components/Select.svelte";
-    import StatusBadge from "$lib/components/StatusBadge.svelte";
-    import type { DashboardResponse, MonitoringCardsResponse, MonitoringFormOptions, MonitoringHeatmapPoint, MonitoringListResponse, MonitoringMutationResult, MonitoringSummary } from "$lib/api/monitoring";
+    import { FirstPartyApiError, requestFirstPartyApi } from "#lib/api/client.ts";
+    import { appRoutes } from "#lib/routes.ts";
+    import { formatDateTime, formatNumber } from "#lib/i18n/format.ts";
+    import Button from "#lib/components/Button.svelte";
+    import DataTable from "#lib/components/DataTable.svelte";
+    import Dialog from "#lib/components/Dialog.svelte";
+    import EmptyState from "#lib/components/EmptyState.svelte";
+    import Input from "#lib/components/Input.svelte";
+    import MonitoringForm from "#lib/components/MonitoringForm.svelte";
+    import Pagination from "#lib/components/Pagination.svelte";
+    import Select from "#lib/components/Select.svelte";
+    import StatusBadge from "#lib/components/StatusBadge.svelte";
+    import type { DashboardResponse, MonitoringCardsResponse, MonitoringFormOptions, MonitoringHeatmapPoint, MonitoringListResponse, MonitoringMutationResult, MonitoringSummary } from "#lib/api/monitoring.ts";
 
     type QuickView = "all" | "attention" | "paused" | "maintenance";
     type SortOrder = "name_asc" | "name_desc";

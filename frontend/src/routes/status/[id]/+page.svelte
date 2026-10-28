@@ -1,12 +1,12 @@
 <script lang="ts">
     import { enhance } from "$app/forms";
-    import { formatDateTime, formatNumber, formatPercentage } from "$lib/i18n/format";
-    import { translate, type TranslationMessages } from "$lib/i18n/localize";
-    import Button from "$lib/components/Button.svelte";
-    import Input from "$lib/components/Input.svelte";
-    import AppearanceSelector from "$lib/components/AppearanceSelector.svelte";
-    import LocaleSelector from "$lib/components/LocaleSelector.svelte";
-    import type { PublicStatusPayload } from "$lib/api/public-status";
+    import { formatDateTime, formatNumber, formatPercentage } from "#lib/i18n/format.ts";
+    import { translate, type TranslationMessages } from "#lib/i18n/localize.ts";
+    import Button from "#lib/components/Button.svelte";
+    import Input from "#lib/components/Input.svelte";
+    import AppearanceSelector from "#lib/components/AppearanceSelector.svelte";
+    import LocaleSelector from "#lib/components/LocaleSelector.svelte";
+    import type { PublicStatusPayload } from "#lib/api/public-status.ts";
 
     interface FormState {
         email?: string;

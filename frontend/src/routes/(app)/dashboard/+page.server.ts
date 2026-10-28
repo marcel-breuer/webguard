@@ -1,5 +1,5 @@
 import { error } from "@sveltejs/kit";
-import type { DashboardResponse } from "$lib/api/monitoring";
+import type { DashboardResponse } from "#lib/api/monitoring.ts";
 
 export async function load({ fetch, url }) {
     const servicePage = Number(url.searchParams.get("service_page") ?? "1");

@@ -1,4 +1,4 @@
-import type { PaginationMeta } from "$lib/api/monitoring";
+import type { PaginationMeta } from "#lib/api/monitoring.ts";
 
 export interface IncidentAnalyticsResponse {
     data: {

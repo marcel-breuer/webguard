@@ -1,20 +1,20 @@
 <script lang="ts">
-    import Button from "$lib/components/Button.svelte";
-    import Checkbox from "$lib/components/Checkbox.svelte";
-    import Dialog from "$lib/components/Dialog.svelte";
-    import Field from "$lib/components/Field.svelte";
-    import Input from "$lib/components/Input.svelte";
-    import AppShell from "$lib/components/AppShell.svelte";
-    import Card from "$lib/components/Card.svelte";
-    import DataTable from "$lib/components/DataTable.svelte";
-    import EmptyState from "$lib/components/EmptyState.svelte";
-    import type { FirstPartySession } from "$lib/api/models";
-    import LoadingState from "$lib/components/LoadingState.svelte";
-    import Pagination from "$lib/components/Pagination.svelte";
-    import StatusBadge from "$lib/components/StatusBadge.svelte";
-    import Select from "$lib/components/Select.svelte";
-    import Textarea from "$lib/components/Textarea.svelte";
-    import ToastRegion from "$lib/components/ToastRegion.svelte";
+    import Button from "#lib/components/Button.svelte";
+    import Checkbox from "#lib/components/Checkbox.svelte";
+    import Dialog from "#lib/components/Dialog.svelte";
+    import Field from "#lib/components/Field.svelte";
+    import Input from "#lib/components/Input.svelte";
+    import AppShell from "#lib/components/AppShell.svelte";
+    import Card from "#lib/components/Card.svelte";
+    import DataTable from "#lib/components/DataTable.svelte";
+    import EmptyState from "#lib/components/EmptyState.svelte";
+    import type { FirstPartySession } from "#lib/api/models.ts";
+    import LoadingState from "#lib/components/LoadingState.svelte";
+    import Pagination from "#lib/components/Pagination.svelte";
+    import StatusBadge from "#lib/components/StatusBadge.svelte";
+    import Select from "#lib/components/Select.svelte";
+    import Textarea from "#lib/components/Textarea.svelte";
+    import ToastRegion from "#lib/components/ToastRegion.svelte";
 
     let dialogOpen = $state(false);
     let toastItems = $state([{ id: "preview-saved", tone: "success" as const, message: "Monitoring preferences saved." }]);

@@ -1,4 +1,4 @@
-import type { ApiEnvelope, ApiValidationErrors } from "$lib/api/models";
+import type { ApiEnvelope, ApiValidationErrors } from "#lib/api/models.ts";
 
 export class FirstPartyApiError extends Error {
     public readonly status: number;

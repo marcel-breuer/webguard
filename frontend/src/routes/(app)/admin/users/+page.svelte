@@ -1,6 +1,6 @@
 <script lang="ts">
-    import { appRoutes } from "$lib/routes";
-    import AdminCrudTable from "$lib/components/AdminCrudTable.svelte";
+    import { appRoutes } from "#lib/routes.ts";
+    import AdminCrudTable from "#lib/components/AdminCrudTable.svelte";
 
     interface Props { data: { query: { direction: "asc" | "desc"; page: number; perPage: number; role: string; search: string; sort: string }; users: { data: { items: Array<Record<string, unknown>>; pagination: { current_page: number; last_page: number; total: number } }; options: { packages: Array<{ id: string; monitoring_limit: number }>; roles: string[] } } }; }
     let { data }: Props = $props();

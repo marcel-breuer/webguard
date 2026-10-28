@@ -1,6 +1,6 @@
 import { redirect } from "@sveltejs/kit";
-import { loadFirstPartySession } from "$lib/server/session";
-import { setAuthPageHeaders } from "$lib/server/auth";
+import { loadFirstPartySession } from "#lib/server/session.ts";
+import { setAuthPageHeaders } from "#lib/server/auth.ts";
 
 export async function load({ fetch, setHeaders }) {
     setAuthPageHeaders(setHeaders);

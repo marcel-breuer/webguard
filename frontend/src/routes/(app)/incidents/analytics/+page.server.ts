@@ -1,5 +1,5 @@
 import { error } from "@sveltejs/kit";
-import type { IncidentAnalyticsResponse } from "$lib/api/incidents";
+import type { IncidentAnalyticsResponse } from "#lib/api/incidents.ts";
 
 const permittedFilters = ["days", "incident_type", "severity", "customer_impact", "affected_service", "sort", "direction", "page"] as const;
 

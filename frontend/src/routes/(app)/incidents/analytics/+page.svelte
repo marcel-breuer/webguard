@@ -1,13 +1,13 @@
 <script lang="ts">
-    import Button from "$lib/components/Button.svelte";
-    import { formatDateTime, formatNumber } from "$lib/i18n/format";
-    import Card from "$lib/components/Card.svelte";
-    import EmptyState from "$lib/components/EmptyState.svelte";
-    import Input from "$lib/components/Input.svelte";
-    import Pagination from "$lib/components/Pagination.svelte";
-    import Select from "$lib/components/Select.svelte";
-    import StatusBadge, { type StatusTone } from "$lib/components/StatusBadge.svelte";
-    import type { AnalyticsDistribution, IncidentAnalyticsItem, IncidentAnalyticsResponse, OperationalSummary } from "$lib/api/incidents";
+    import Button from "#lib/components/Button.svelte";
+    import { formatDateTime, formatNumber } from "#lib/i18n/format.ts";
+    import Card from "#lib/components/Card.svelte";
+    import EmptyState from "#lib/components/EmptyState.svelte";
+    import Input from "#lib/components/Input.svelte";
+    import Pagination from "#lib/components/Pagination.svelte";
+    import Select from "#lib/components/Select.svelte";
+    import StatusBadge, { type StatusTone } from "#lib/components/StatusBadge.svelte";
+    import type { AnalyticsDistribution, IncidentAnalyticsItem, IncidentAnalyticsResponse, OperationalSummary } from "#lib/api/incidents.ts";
 
     interface Props { data: { analytics: IncidentAnalyticsResponse }; }
     let { data }: Props = $props();

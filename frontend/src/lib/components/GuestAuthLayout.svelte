@@ -1,7 +1,7 @@
 <script lang="ts">
     import type { Snippet } from "svelte";
-    import AppearanceSelector from "$lib/components/AppearanceSelector.svelte";
-    import LocaleSelector from "$lib/components/LocaleSelector.svelte";
+    import AppearanceSelector from "#lib/components/AppearanceSelector.svelte";
+    import LocaleSelector from "#lib/components/LocaleSelector.svelte";
 
     interface Props {
         title: string;

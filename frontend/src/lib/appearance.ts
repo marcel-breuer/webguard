@@ -1,4 +1,4 @@
-import type { AppearanceTheme } from "$lib/api/models";
+import type { AppearanceTheme } from "#lib/api/models.ts";
 
 export const appearanceStorageKey = "webguard.appearance";
 
