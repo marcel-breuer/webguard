@@ -386,7 +386,7 @@ class SvelteKitQualityGateTest extends TestCase
         $this->assertStringContainsString('if (endpoint === null)', $appearanceSelector);
         $this->assertStringContainsString('src="/brand/webguard-logo.png"', $statusPage);
         $this->assertStringContainsString('<span class="font-extrabold tracking-tight">WebGuard</span>', $statusPage);
-        $this->assertStringContainsString('import { translate, type TranslationMessages } from "$lib/i18n/localize";', $statusPage);
+        $this->assertStringContainsString('import { translate, type TranslationMessages } from "#lib/i18n/localize.ts";', $statusPage);
         $this->assertStringContainsString('return translate(value, data.locale, data.messages);', $statusPage);
     }
 
