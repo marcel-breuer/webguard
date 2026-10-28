@@ -103,7 +103,8 @@ services:
     environment:
       HOST: "0.0.0.0"
       PORT: "3000"
-      ORIGIN: "${APP_URL:?APP_URL must be set to the canonical application URL}"
+      HOST_HEADER: "X-Forwarded-Host"
+      PROTOCOL_HEADER: "X-Forwarded-Proto"
       BODY_SIZE_LIMIT: "100M"
     healthcheck:
       test: ["CMD", "bun", "-e", "const response = await fetch('http://127.0.0.1:3000/_health/frontend'); process.exit(response.ok ? 0 : 1)"]

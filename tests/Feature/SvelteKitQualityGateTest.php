@@ -549,13 +549,18 @@ class SvelteKitQualityGateTest extends TestCase
     {
         $gatewayConfiguration = file_get_contents(base_path('docker/gateway/nginx.conf'));
         $proxyHeaders = file_get_contents(base_path('docker/gateway/proxy-headers.conf'));
+        $dockerCompose = file_get_contents(base_path('docker-compose.yml'));
 
         $this->assertIsString($gatewayConfiguration);
         $this->assertIsString($proxyHeaders);
+        $this->assertIsString($dockerCompose);
         $this->assertStringContainsString('map $http_x_forwarded_proto $forwarded_proto', $gatewayConfiguration);
         $this->assertStringContainsString('https https;', $gatewayConfiguration);
         $this->assertStringContainsString('X-Forwarded-Proto $forwarded_proto;', $proxyHeaders);
+        $this->assertStringContainsString('X-Forwarded-Host $http_host;', $proxyHeaders);
         $this->assertStringNotContainsString('X-Forwarded-Proto $scheme;', $proxyHeaders);
+        $this->assertStringContainsString('HOST_HEADER: "X-Forwarded-Host"', $dockerCompose);
+        $this->assertStringContainsString('PROTOCOL_HEADER: "X-Forwarded-Proto"', $dockerCompose);
     }
 
     public function test_gateway_serves_canonical_unsubscribe_pages_from_sveltekit(): void
