@@ -68,6 +68,8 @@ final class InternalUiNotificationWorkspaceApiTest extends TestCase
             ->assertJsonPath('data.channel', 'slack')
             ->assertJsonPath('data.tested', true);
 
+        $this->assertNotNull($user->fresh()->first_run_notification_tested_at);
+
         $this->assertDatabaseHas('users', [
             'id' => $user->id,
             'monitoring_digest_enabled' => true,
@@ -95,6 +97,17 @@ final class InternalUiNotificationWorkspaceApiTest extends TestCase
 
         $this->actingAs($user)->postJson(route('app.profile.notification-settings.test', ['channel' => 'invalid']))
             ->assertNotFound();
+    }
+
+    public function test_failed_notification_test_does_not_mark_first_run_alert_as_tested(): void
+    {
+        $user = User::factory()->create();
+
+        $this->actingAs($user)
+            ->postJson(route('app.profile.notification-settings.test', ['channel' => 'slack']))
+            ->assertUnprocessable();
+
+        $this->assertNull($user->fresh()->first_run_notification_tested_at);
     }
 
     public function test_member_notification_inbox_is_cursor_paginated_scoped_and_read_safe(): void

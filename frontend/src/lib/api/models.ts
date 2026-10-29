@@ -27,6 +27,11 @@ export interface FirstPartySession {
         theme: AppearanceTheme;
         email_verified_at: string | null;
         is_verified: boolean;
+        onboarding: {
+            notification_tested_at: string | null;
+            completed_at: string | null;
+            dismissed_at: string | null;
+        };
     };
     teams: FirstPartyTeam[];
     csrf_endpoint: string;

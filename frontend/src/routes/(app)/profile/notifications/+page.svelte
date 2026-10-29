@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { invalidateAll } from "$app/navigation";
     import { requestFirstPartyApi, FirstPartyApiError } from "#lib/api/client.ts";
     import Button from "#lib/components/Button.svelte";
     import Card from "#lib/components/Card.svelte";
@@ -29,6 +30,7 @@
         try {
             const result = await requestFirstPartyApi<TestResult>(`/api/profile/notification-settings/${channel}/test`, { method: "POST" });
             testMessage = `${channelLabels[result.data.channel]} test notification sent.`;
+            await invalidateAll();
         } catch (error) {
             testError = error instanceof FirstPartyApiError ? error.message : "The test notification could not be sent.";
         } finally {

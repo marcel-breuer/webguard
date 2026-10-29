@@ -17,6 +17,7 @@ use App\Http\Controllers\Api\Internal\Ui\MonitoringOwnershipController;
 use App\Http\Controllers\Api\Internal\Ui\MonitoringShowController;
 use App\Http\Controllers\Api\Internal\Ui\NotificationInboxController;
 use App\Http\Controllers\Api\Internal\Ui\NotificationSettingsController;
+use App\Http\Controllers\Api\Internal\Ui\OnboardingController;
 use App\Http\Controllers\Api\Internal\Ui\PasswordController;
 use App\Http\Controllers\Api\Internal\Ui\ProfileApiKeyController;
 use App\Http\Controllers\Api\Internal\Ui\ProfileController;
@@ -36,6 +37,9 @@ use Illuminate\Support\Facades\Route;
 Route::middleware(MeasureInternalUiRequest::class)->group(function (): void {
     Route::get('/session', [SessionController::class, 'show'])->name('session.show');
     Route::post('/session/logout', [SessionController::class, 'destroy'])->name('session.destroy');
+    Route::patch('/onboarding', OnboardingController::class)
+        ->middleware('role:member')
+        ->name('onboarding.update');
     Route::patch('/appearance', AppearanceController::class)
         ->middleware('role:member,admin')
         ->name('appearance.update');
