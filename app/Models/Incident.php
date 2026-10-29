@@ -34,6 +34,7 @@ use Illuminate\Support\Carbon;
     'monitoring_id',
     'consensus_status',
     'affected_locations',
+    'consensus_snapshot',
     'problem_description',
     'resolution_description',
     'incident_type',
@@ -94,6 +95,7 @@ class Incident extends Model
         return [
             'consensus_status' => RegionalConsensusStatus::class,
             'affected_locations' => 'array',
+            'consensus_snapshot' => 'array',
             'problem_description' => 'string',
             'resolution_description' => 'string',
             'incident_type' => IncidentType::class,

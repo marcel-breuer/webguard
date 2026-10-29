@@ -74,6 +74,61 @@ class DispatchStatusChangeNotificationsCommandTest extends TestCase
         ]);
     }
 
+    public function test_multi_location_incident_sends_human_readable_and_structured_consensus_evidence(): void
+    {
+        Package::factory()->create();
+        $user = User::factory()->create([
+            'notification_channels' => [
+                'slack' => [
+                    'enabled' => true,
+                    'webhook_url' => 'https://hooks.slack.test/services/test',
+                ],
+            ],
+        ]);
+        $monitoring = Monitoring::factory()->for($user)->create([
+            'notification_on_failure' => true,
+            'notification_channels' => ['slack'],
+        ]);
+        $snapshot = [
+            'status' => 'regional',
+            'total_locations' => 3,
+            'reporting_locations' => 2,
+            'required_failures' => 2,
+            'affected_locations' => ['de-1', 'us-1'],
+            'locations' => [
+                ['code' => 'de-1', 'status' => 'down', 'checked_at' => '2026-10-29T12:00:00+00:00', 'availability' => 'reporting'],
+                ['code' => 'us-1', 'status' => 'down', 'checked_at' => '2026-10-29T12:00:00+00:00', 'availability' => 'reporting'],
+                ['code' => 'jp-1', 'status' => 'unknown', 'checked_at' => null, 'availability' => 'missing'],
+            ],
+        ];
+        $monitoringNotification = MonitoringNotification::query()->create([
+            'monitoring_id' => $monitoring->id,
+            'type' => NotificationType::STATUS_CHANGE,
+            'message' => 'DOWN',
+            'metadata' => ['regional_consensus' => $snapshot],
+            'read' => false,
+            'sent' => false,
+        ]);
+
+        Http::fake([
+            'https://hooks.slack.test/*' => Http::response(['ok' => true], 200),
+        ]);
+
+        Artisan::call('notifications:dispatch-status-changes');
+
+        Http::assertSent(function ($request) use ($snapshot): bool {
+            $payload = $request->data()['payload'] ?? [];
+
+            return data_get($payload, 'event_type') === 'incident'
+                && str_contains((string) data_get($payload, 'message'), 'Regional outage')
+                && str_contains((string) data_get($payload, 'message'), '2 of 2 reporting locations failed')
+                && str_contains((string) data_get($payload, 'message'), 'jp-1 (missing)')
+                && data_get($payload, 'meta.regional_consensus') === $snapshot;
+        });
+
+        $this->assertTrue($monitoringNotification->refresh()->sent);
+    }
+
     public function test_command_respects_per_monitoring_notification_flag(): void
     {
         Package::factory()->create();

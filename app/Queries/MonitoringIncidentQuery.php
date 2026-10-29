@@ -30,7 +30,7 @@ final class MonitoringIncidentQuery
     {
         return $monitoring->incidents()
             ->whereBetween('down_at', [$startDate->startOfDay(), $endDate->endOfDay()])
-            ->select(['id', 'down_at', 'up_at'])
+            ->select(['id', 'down_at', 'up_at', 'consensus_snapshot'])
             ->latest('down_at')
             ->latest('id')
             ->offset($offset)

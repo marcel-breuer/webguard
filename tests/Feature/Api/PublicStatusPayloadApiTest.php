@@ -55,6 +55,11 @@ class PublicStatusPayloadApiTest extends TestCase
             ->attach($monitoring->id, ['position' => 0]);
         Incident::query()->create([
             'monitoring_id' => $monitoring->id,
+            'consensus_snapshot' => [
+                'status' => 'global',
+                'affected_locations' => ['de-1'],
+                'private_diagnostic' => 'private-consensus-diagnostic',
+            ],
             'down_at' => Date::now()->subDay(),
             'up_at' => Date::now()->subHours(23),
         ]);
@@ -74,6 +79,8 @@ class PublicStatusPayloadApiTest extends TestCase
         $this->assertStringNotContainsString('private-status-password', $publicStatusPayload);
         $this->assertStringNotContainsString('private-status-token', $publicStatusPayload);
         $this->assertStringNotContainsString('private-status-request-body', $publicStatusPayload);
+        $this->assertStringNotContainsString('consensus_snapshot', $publicStatusPayload);
+        $this->assertStringNotContainsString('private-consensus-diagnostic', $publicStatusPayload);
 
         $this->getJson(route('public.status.show', ['status' => 'acme-status']))
             ->assertOk()
