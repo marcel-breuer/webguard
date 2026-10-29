@@ -38,9 +38,9 @@ class RegionalConsensusIncidentTest extends TestCase
             'preferred_locations' => ['us-1', 'jp-1', 'sg-1', 'au-1'],
         ]);
 
-        $staleResponse = $this->storeResponse($monitoring, 'sg-1', MonitoringStatus::DOWN);
+        $monitoringResponse = $this->storeResponse($monitoring, 'sg-1', MonitoringStatus::DOWN);
         DB::table('monitoring_response_results')
-            ->where('id', $staleResponse->id)
+            ->where('id', $monitoringResponse->id)
             ->update(['created_at' => Date::now()->subMinutes(20)]);
         $this->storeResponse($monitoring, 'de-1', MonitoringStatus::DOWN);
         $this->storeResponse($monitoring, 'us-1', MonitoringStatus::DOWN);
@@ -62,8 +62,8 @@ class RegionalConsensusIncidentTest extends TestCase
         $this->assertSame('unknown', $snapshot['locations'][4]['status']);
         $this->assertStringNotContainsString('private-token', json_encode($snapshot, JSON_THROW_ON_ERROR));
 
-        $notification = MonitoringNotification::query()->where('monitoring_id', $monitoring->id)->sole();
-        $this->assertSame($snapshot, $notification->metadata['regional_consensus']);
+        $monitoringNotification = MonitoringNotification::query()->where('monitoring_id', $monitoring->id)->sole();
+        $this->assertSame($snapshot, $monitoringNotification->metadata['regional_consensus']);
 
         $this->storeResponse($monitoring, 'de-1', MonitoringStatus::UP);
         $this->assertSame($snapshot, $incident->refresh()->consensus_snapshot);
@@ -88,22 +88,22 @@ class RegionalConsensusIncidentTest extends TestCase
         $this->storeResponse($monitoring, 'de-1', MonitoringStatus::DOWN);
 
         $incident = Incident::query()->where('monitoring_id', $monitoring->id)->sole();
-        $notification = MonitoringNotification::query()->where('monitoring_id', $monitoring->id)->sole();
+        $monitoringNotification = MonitoringNotification::query()->where('monitoring_id', $monitoring->id)->sole();
 
         $this->assertNull($incident->consensus_snapshot);
-        $this->assertNull($notification->metadata);
+        $this->assertNull($monitoringNotification->metadata);
     }
 
     private function storeResponse(
         Monitoring $monitoring,
         string $location,
-        MonitoringStatus $status,
+        MonitoringStatus $monitoringStatus,
         array $diagnostics = [],
     ): MonitoringResponse {
         return MonitoringResponse::query()->create([
             'monitoring_id' => $monitoring->id,
             'location_code' => $location,
-            'status' => $status,
+            'status' => $monitoringStatus,
             'vital_values' => $diagnostics,
         ]);
     }
