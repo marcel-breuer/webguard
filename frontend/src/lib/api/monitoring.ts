@@ -194,6 +194,7 @@ export interface MonitoringDetailData {
         checked_at: string | null;
         interval: number | null;
         status_code: number | null;
+        regional_consensus?: RegionalConsensusSnapshot;
     };
     heatmap: MonitoringHeatmapPoint[];
     availability: {
@@ -215,19 +216,7 @@ export interface MonitoringDetailData {
     incidents: Array<{
         down_at: string;
         up_at: string | null;
-        consensus_snapshot: {
-            status: "localized" | "regional" | "global";
-            total_locations: number;
-            reporting_locations: number;
-            required_failures: number;
-            affected_locations: string[];
-            locations: Array<{
-                code: string;
-                status: "up" | "down" | "unknown";
-                checked_at: string | null;
-                availability: "reporting" | "stale" | "missing";
-            }>;
-        } | null;
+        consensus_snapshot: RegionalConsensusSnapshot | null;
     }>;
     maintenance: {
         active: boolean;
@@ -294,4 +283,18 @@ export interface MonitoringDetailMeta {
     uptime_calendar: {
         oldest_available_month: string | null;
     };
+}
+
+export interface RegionalConsensusSnapshot {
+    status: "healthy" | "localized" | "regional" | "global" | "unknown";
+    total_locations: number;
+    reporting_locations: number;
+    required_failures: number;
+    affected_locations: string[];
+    locations: Array<{
+        code: string;
+        status: "up" | "down" | "unknown";
+        checked_at: string | null;
+        availability: "reporting" | "stale" | "missing";
+    }>;
 }

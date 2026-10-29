@@ -4,12 +4,13 @@
     import { FirstPartyApiError, requestFirstPartyApi } from "#lib/api/client.ts";
     import { formatDateTime, formatMonthYear, formatNumber, formatPercentage } from "#lib/i18n/format.ts";
     import { translate } from "#lib/i18n/localize.ts";
-    import type { MonitoringDetailData, MonitoringDetailMeta } from "#lib/api/monitoring.ts";
+    import type { MonitoringDetailData, MonitoringDetailMeta, RegionalConsensusSnapshot } from "#lib/api/monitoring.ts";
     import Button from "#lib/components/Button.svelte";
     import Select from "#lib/components/Select.svelte";
 
     type Incident = MonitoringDetailData["incidents"][number];
     type RecentCheck = MonitoringDetailData["recent_checks"][number];
+    type ConsensusLocation = RegionalConsensusSnapshot["locations"][number];
     type ResponseTimePeriod = 1 | 7 | 30;
 
     interface Props {
@@ -82,7 +83,7 @@
         );
     }
 
-    function locationEvidence(location: NonNullable<Incident["consensus_snapshot"]>["locations"][number]): string {
+    function locationEvidence(location: ConsensusLocation): string {
         if (location.availability === "stale") {
             return localized(":code — unavailable evidence (stale result; last checked :checked_at)", {
                 code: location.code,
@@ -98,6 +99,28 @@
             code: location.code,
             status: localized(location.status === "up" ? "Up" : location.status === "down" ? "Down" : "Unknown"),
             checked_at: timestamp(location.checked_at),
+        });
+    }
+
+    function consensusStatusLabel(status: RegionalConsensusSnapshot["status"]): string {
+        const labels: Record<RegionalConsensusSnapshot["status"], string> = {
+            healthy: "Healthy",
+            localized: "Localized degradation",
+            regional: "Regional outage",
+            global: "Global outage",
+            unknown: "Awaiting consensus",
+        };
+
+        return localized(labels[status]);
+    }
+
+    function consensusExplanation(snapshot: RegionalConsensusSnapshot): string {
+        return localized("Consensus is :classification: :failed_count of :reporting reporting locations failed; :required failures were required from :total selected locations.", {
+            classification: consensusStatusLabel(snapshot.status),
+            failed_count: snapshot.affected_locations.length,
+            reporting: snapshot.reporting_locations,
+            required: snapshot.required_failures,
+            total: snapshot.total_locations,
         });
     }
 
@@ -434,6 +457,21 @@
     {#if incidentsError}<p class="mt-3 text-sm font-bold text-wg-danger" role="alert">{incidentsError}</p>{/if}
     {#if currentIncidentsMeta.has_more}<div class="mt-5 flex justify-center"><Button variant="secondary" loading={loadingIncidents} onclick={loadMoreIncidents}>Load more</Button></div>{/if}
 </section>
+
+{#if detail.current_check.regional_consensus}
+    {@const consensus = detail.current_check.regional_consensus}
+    <section class="mt-7 rounded-[0.8rem] border border-wg-border bg-wg-surface p-4 shadow-sm sm:p-6" aria-labelledby="regional-consensus-heading">
+        <h2 id="regional-consensus-heading" class="text-2xl font-extrabold">Current regional consensus</h2>
+        <p class="mt-2 text-sm leading-6 text-wg-text-muted">{consensusExplanation(consensus)}</p>
+        <p class="mt-3 text-sm"><span class="font-semibold">Failed locations:</span> {consensus.affected_locations.join(", ") || "None"}</p>
+        <p class="mt-3 text-sm font-semibold">Location evidence</p>
+        <ul class="mt-1 grid gap-1 pl-5 text-sm text-wg-text-muted">
+            {#each consensus.locations as location (location.code)}
+                <li>{locationEvidence(location)}</li>
+            {/each}
+        </ul>
+    </section>
+{/if}
 
 <section class="mt-7" aria-labelledby="recent-checks-heading">
     <div><h2 id="recent-checks-heading" class="text-2xl font-extrabold">Recent Checks</h2><p class="mt-1 text-sm text-wg-text-muted">{formatNumber(checks.length)} loaded checks · Live and archived data</p></div>

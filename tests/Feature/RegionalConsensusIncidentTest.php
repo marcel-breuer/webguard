@@ -44,6 +44,7 @@ class RegionalConsensusIncidentTest extends TestCase
             ->update(['created_at' => Date::now()->subMinutes(20)]);
         $this->storeResponse($monitoring, 'de-1', MonitoringStatus::DOWN);
         $this->storeResponse($monitoring, 'us-1', MonitoringStatus::DOWN);
+        $this->assertFalse(Incident::query()->where('monitoring_id', $monitoring->id)->exists());
         $this->storeResponse($monitoring, 'jp-1', MonitoringStatus::DOWN, diagnostics: ['auth_token' => 'private-token']);
 
         $incident = Incident::query()->where('monitoring_id', $monitoring->id)->sole();
@@ -68,13 +69,20 @@ class RegionalConsensusIncidentTest extends TestCase
         $this->storeResponse($monitoring, 'de-1', MonitoringStatus::UP);
         $this->assertSame($snapshot, $incident->refresh()->consensus_snapshot);
 
-        $this->actingAs($user)
+        $testResponse = $this->actingAs($user)
             ->getJson(route('app.monitorings.detail-data', $monitoring))
             ->assertOk()
             ->assertJsonPath('data.incidents.0.consensus_snapshot.status', 'regional')
             ->assertJsonPath('data.incidents.0.consensus_snapshot.required_failures', 3)
             ->assertJsonPath('data.incidents.0.consensus_snapshot.locations.3.availability', 'stale')
-            ->assertJsonPath('data.incidents.0.consensus_snapshot.locations.4.availability', 'missing');
+            ->assertJsonPath('data.incidents.0.consensus_snapshot.locations.4.availability', 'missing')
+            ->assertJsonPath('data.current_check.regional_consensus.status', 'localized')
+            ->assertJsonPath('data.current_check.regional_consensus.reporting_locations', 3);
+
+        $this->assertEqualsCanonicalizing(
+            ['jp-1', 'us-1'],
+            $testResponse->json('data.current_check.regional_consensus.affected_locations')
+        );
     }
 
     public function test_single_location_incidents_keep_the_existing_unexplained_event_shape(): void

@@ -15,7 +15,7 @@ WebGuard helps teams observe public websites, operational tasks, certificates, d
 - **Customizable checks:** configure HTTP method, body, and headers for monitoring checks.
 - **Consecutive failure confirmation:** require multiple failed checks in a row before an incident opens, reducing noise from transient outages.
 - **Recurring maintenance windows:** schedule weekly or monthly maintenance for individual monitorings or monitoring groups with timezone-aware occurrence handling.
-- **Regional consensus incidents:** combine fresh results from every selected monitoring location before declaring an outage. A single failed location is shown as a localized degradation without paging users, a strict majority opens a regional incident, and unanimous failures classify the incident as global. Each incident preserves its event-time decision evidence, including the failure threshold and fresh, stale, or missing location results. Authenticated monitoring details expose that snapshot so operators can distinguish service outages from regional DNS, routing, CDN, or probe problems.
+- **Regional consensus incidents:** combine fresh results from every selected monitoring location before declaring an outage. A single failed location is shown as a localized degradation without paging users, a strict majority opens a regional incident, and unanimous failures classify the incident as global. Authenticated monitoring details explain the current classification and preserve each incident's event-time decision evidence, including the failure threshold and fresh, stale, or missing location results, so operators can distinguish service outages from regional DNS, routing, CDN, or probe problems.
 
 ## Product Surface
 

@@ -34,7 +34,7 @@ class MonitoringStatusPayloadService
             statusIdentifier: MonitoringStatusMeta::statusIdentifier($latestStatusCode, $maintenanceActive),
             statusKey: MonitoringStatusMeta::statusKey($latestStatusCode, $maintenanceActive),
             regionalConsensus: count($monitoring->preferredLocationCodes()) > 1
-                ? $this->serializeConsensus($this->regionalConsensusService->snapshot($monitoring))
+                ? $this->serializeConsensus($this->regionalConsensusService->snapshot($monitoring, includeUnavailableEvidence: true))
                 : null,
             monitoring: $includeMonitoring
                 ? new MonitoringSummaryPayload(
