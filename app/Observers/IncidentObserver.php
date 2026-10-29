@@ -26,6 +26,9 @@ class IncidentObserver
             'monitoring_id' => $incident->monitoring_id,
             'type' => NotificationType::STATUS_CHANGE,
             'message' => 'DOWN',
+            'metadata' => $incident->consensus_snapshot !== null
+                ? ['regional_consensus' => $incident->consensus_snapshot]
+                : null,
             'read' => false,
             'sent' => false,
         ]);

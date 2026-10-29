@@ -102,6 +102,18 @@ return [
         'up' => 'Status der Überwachung :name wurde auf VERFÜGBAR geändert',
         'down' => 'Status der Überwachung :name wurde auf NICHT VERFÜGBAR geändert',
     ],
+    'regional_consensus' => [
+        'message' => ':classification: :failed_count von :reporting meldenden Standorten sind ausgefallen. :required Ausfälle unter :total ausgewählten Standorten waren erforderlich. Ausgefallen: :failed_locations. Nicht verfügbare Nachweise: :unavailable_locations.',
+        'none' => 'keine',
+        'statuses' => [
+            'regional' => 'Regionaler Ausfall',
+            'global' => 'Globaler Ausfall',
+        ],
+        'availability' => [
+            'stale' => 'veraltet',
+            'missing' => 'fehlt',
+        ],
+    ],
     'ssl_messages' => [
         'expiring' => 'Das SSL-Zertifikat für :name läuft bald ab.',
         'expired' => 'Das SSL-Zertifikat für :name ist abgelaufen.',

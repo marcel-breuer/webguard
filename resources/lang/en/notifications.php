@@ -102,6 +102,18 @@ return [
         'up' => 'Monitoring :name status changed to UP',
         'down' => 'Monitoring :name status changed to DOWN',
     ],
+    'regional_consensus' => [
+        'message' => ':classification incident: :failed_count of :reporting reporting locations failed. :required failures were required from :total selected locations. Failed: :failed_locations. Unavailable evidence: :unavailable_locations.',
+        'none' => 'none',
+        'statuses' => [
+            'regional' => 'Regional outage',
+            'global' => 'Global outage',
+        ],
+        'availability' => [
+            'stale' => 'stale',
+            'missing' => 'missing',
+        ],
+    ],
     'ssl_messages' => [
         'expiring' => 'SSL certificate for :name is expiring soon.',
         'expired' => 'SSL certificate for :name has expired.',

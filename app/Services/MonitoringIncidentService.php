@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Data\MonitoringIncidentPayload;
+use App\Models\Incident;
 use App\Models\Monitoring;
 use App\Queries\MonitoringIncidentQuery;
 use Carbon\Carbon;
@@ -49,7 +50,7 @@ class MonitoringIncidentService
         return [
             'data' => $incidents
                 ->take($limit)
-                ->map(fn ($incident): array => $this->incidentPayload($incident))
+                ->map(fn (Incident $incident): array => $this->incidentPayload($incident))
                 ->values()
                 ->all(),
             'has_more' => $hasMore,
@@ -58,9 +59,9 @@ class MonitoringIncidentService
     }
 
     /**
-     * @return array{down_at: string, up_at: string|null}
+     * @return array{down_at: string, up_at: string|null, consensus_snapshot: array<string, mixed>|null}
      */
-    private function incidentPayload(object $incident): array
+    private function incidentPayload(Incident $incident): array
     {
         $downAt = Date::parse($incident->down_at);
         $upAt = $incident->up_at ? Date::parse($incident->up_at) : null;
@@ -68,6 +69,7 @@ class MonitoringIncidentService
         return [
             'down_at' => $downAt->toIso8601String(),
             'up_at' => $upAt?->toIso8601String(),
+            'consensus_snapshot' => $incident->consensus_snapshot,
         ];
     }
 }

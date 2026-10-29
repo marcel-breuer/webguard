@@ -63,12 +63,36 @@ class DispatchStatusChangeNotificationsCommand extends Command
                 default => NotificationEventType::PERFORMANCE_RECOVERED,
             };
             $performanceMetadata = $notification->metadata ?? [];
+            $regionalConsensus = ! $isPerformanceNotification && $identifier === 'down'
+                ? ($performanceMetadata['regional_consensus'] ?? null)
+                : null;
             $hasHistoricalResponseTimeDetails = $isPerformanceNotification
                 && ($performanceMetadata['alert_kind'] ?? null) === 'historical_response_time';
 
             if (! $isPerformanceNotification) {
                 $this->dispatchStatusPageSubscriberEmails($monitoring, $notification, $identifier);
             }
+
+            if (is_array($regionalConsensus)) {
+                $message = $this->regionalConsensusMessage($regionalConsensus);
+            } elseif ($hasHistoricalResponseTimeDetails) {
+                $message = $notification->translated_message;
+            } else {
+                $message = sprintf(
+                    $isPerformanceNotification
+                        ? '%s (%s) performance changed to %s.'
+                        : '%s (%s) changed status to %s.',
+                    $monitoring->name,
+                    $monitoring->target,
+                    mb_strtoupper($identifier)
+                );
+            }
+
+            $metadata = array_merge(
+                $hasHistoricalResponseTimeDetails ? $performanceMetadata : [],
+                is_array($regionalConsensus) ? ['regional_consensus' => $regionalConsensus] : [],
+                ['notification_id' => $notification->id],
+            );
 
             $payload = new NotificationPayload(
                 eventType: $eventType,
@@ -79,16 +103,7 @@ class DispatchStatusChangeNotificationsCommand extends Command
                     NotificationEventType::PERFORMANCE_RECOVERED => 'Monitoring performance recovered',
                     default => 'Monitoring update',
                 },
-                message: $hasHistoricalResponseTimeDetails
-                    ? $notification->translated_message
-                    : sprintf(
-                        $isPerformanceNotification
-                            ? '%s (%s) performance changed to %s.'
-                            : '%s (%s) changed status to %s.',
-                        $monitoring->name,
-                        $monitoring->target,
-                        mb_strtoupper($identifier)
-                    ),
+                message: $message,
                 severity: match ($eventType) {
                     NotificationEventType::INCIDENT => 'critical',
                     NotificationEventType::PERFORMANCE_DEGRADED => 'warning',
@@ -98,9 +113,7 @@ class DispatchStatusChangeNotificationsCommand extends Command
                 monitoringName: $monitoring->name,
                 monitoringTarget: $monitoring->target,
                 occurredAt: $notification->created_at,
-                meta: array_merge($hasHistoricalResponseTimeDetails ? $performanceMetadata : [], [
-                    'notification_id' => $notification->id,
-                ]),
+                meta: $metadata,
             );
 
             $this->monitoringNotificationPreferenceResolver
@@ -123,6 +136,39 @@ class DispatchStatusChangeNotificationsCommand extends Command
         }
 
         return Command::SUCCESS;
+    }
+
+    /** @param array<string, mixed> $snapshot */
+    private function regionalConsensusMessage(array $snapshot): string
+    {
+        $status = in_array($snapshot['status'] ?? null, ['regional', 'global'], true)
+            ? $snapshot['status']
+            : 'regional';
+        $affectedLocations = is_array($snapshot['affected_locations'] ?? null)
+            ? array_values(array_map('strval', $snapshot['affected_locations']))
+            : [];
+        $unavailableLocations = is_array($snapshot['locations'] ?? null)
+            ? collect($snapshot['locations'])
+                ->filter(static fn (mixed $location): bool => is_array($location) && in_array($location['availability'] ?? null, ['stale', 'missing'], true))
+                ->map(static fn (array $location): string => sprintf(
+                    '%s (%s)',
+                    (string) ($location['code'] ?? ''),
+                    __('notifications.regional_consensus.availability.' . $location['availability'])
+                ))
+                ->implode(', ')
+            : '';
+
+        return __('notifications.regional_consensus.message', [
+            'classification' => __('notifications.regional_consensus.statuses.' . $status),
+            'failed_count' => count($affectedLocations),
+            'reporting' => (int) ($snapshot['reporting_locations'] ?? 0),
+            'total' => (int) ($snapshot['total_locations'] ?? 0),
+            'required' => (int) ($snapshot['required_failures'] ?? 0),
+            'failed_locations' => $affectedLocations === [] ? '—' : implode(', ', $affectedLocations),
+            'unavailable_locations' => $unavailableLocations === ''
+                ? __('notifications.regional_consensus.none')
+                : $unavailableLocations,
+        ]);
     }
 
     private function dispatchStatusPageSubscriberEmails(

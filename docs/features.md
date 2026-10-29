@@ -15,7 +15,7 @@ WebGuard helps teams observe public websites, operational tasks, certificates, d
 - **Customizable checks:** configure HTTP method, body, and headers for monitoring checks.
 - **Consecutive failure confirmation:** require multiple failed checks in a row before an incident opens, reducing noise from transient outages.
 - **Recurring maintenance windows:** schedule weekly or monthly maintenance for individual monitorings or monitoring groups with timezone-aware occurrence handling.
-- **Regional consensus incidents:** combine fresh results from every selected monitoring location before declaring an outage. A single failed location is shown as a localized degradation without paging users, a strict majority opens a regional incident, and unanimous failures classify the incident as global. The monitoring detail view shows the current state of every location so operators can distinguish service outages from regional DNS, routing, CDN, or probe problems.
+- **Regional consensus incidents:** combine fresh results from every selected monitoring location before declaring an outage. A single failed location is shown as a localized degradation without paging users, a strict majority opens a regional incident, and unanimous failures classify the incident as global. Authenticated monitoring details explain the current classification and preserve each incident's event-time decision evidence, including the failure threshold and fresh, stale, or missing location results, so operators can distinguish service outages from regional DNS, routing, CDN, or probe problems.
 
 ## Product Surface
 
@@ -37,6 +37,6 @@ WebGuard helps teams observe public websites, operational tasks, certificates, d
 
 ## Notifications
 
-- **Flexible notifications:** receive notifications for status changes, SSL expiry, and domain expiry through in-app notifications and configurable Slack, Telegram, Discord, Microsoft Teams, and webhook channels.
+- **Flexible notifications:** receive notifications for status changes, SSL expiry, and domain expiry through in-app notifications and configurable Slack, Telegram, Discord, Microsoft Teams, and webhook channels. Multi-location incident messages include the classification, failed and reporting counts, required threshold, and structured event-time evidence.
 - **Per-user team notifications:** each team member keeps their own notification channel choices and read state for shared team monitorings.
 - **Weekly monitoring digest:** email weekly uptime, incident, downtime, SSL, and domain expiry summaries to active users.
