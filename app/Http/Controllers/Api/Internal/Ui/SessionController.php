@@ -40,6 +40,11 @@ final class SessionController extends Controller
                     'theme' => $user->theme,
                     'email_verified_at' => $user->email_verified_at?->toIso8601String(),
                     'is_verified' => $user->hasVerifiedEmail(),
+                    'onboarding' => [
+                        'notification_tested_at' => $user->first_run_notification_tested_at?->toIso8601String(),
+                        'completed_at' => $user->first_run_setup_completed_at?->toIso8601String(),
+                        'dismissed_at' => $user->first_run_setup_dismissed_at?->toIso8601String(),
+                    ],
                 ],
                 'teams' => $teams,
                 'csrf_endpoint' => route('sanctum.csrf-cookie', absolute: false),

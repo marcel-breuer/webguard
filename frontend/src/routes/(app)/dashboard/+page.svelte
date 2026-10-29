@@ -8,6 +8,7 @@
     import Dialog from "#lib/components/Dialog.svelte";
     import EmptyState from "#lib/components/EmptyState.svelte";
     import Input from "#lib/components/Input.svelte";
+    import FirstRunOnboarding from "#lib/components/FirstRunOnboarding.svelte";
     import MonitoringForm from "#lib/components/MonitoringForm.svelte";
     import Pagination from "#lib/components/Pagination.svelte";
     import StatusBadge from "#lib/components/StatusBadge.svelte";
@@ -32,6 +33,9 @@
     const dashboard = $derived(data.dashboard.data);
     const pagination = $derived(data.dashboard.meta.service_pagination);
     const services = $derived(dashboard.services.filter((service) => matchesService(service, serviceQuery, activeFilter)));
+    const onboardingVisible = $derived(data.session.user.role === "regular"
+        && data.session.user.onboarding.completed_at === null
+        && data.session.user.onboarding.dismissed_at === null);
 
     function matchesService(service: DashboardService, query: string, filter: typeof activeFilter): boolean {
         const normalizedQuery = query.trim().toLocaleLowerCase();
@@ -169,10 +173,21 @@
 
     {#if createError}<p class="mb-6 text-sm font-bold text-wg-danger" role="alert">{createError}</p>{/if}
 
+    {#if onboardingVisible}
+        <FirstRunOnboarding
+            onboarding={data.session.user.onboarding}
+            hasActiveMonitoring={dashboard.summary.total > dashboard.summary.paused}
+            firstMonitoringId={dashboard.services[0]?.id ?? null}
+            onAddWebsite={openCreateModal}
+        />
+    {/if}
+
     {#if dashboard.summary.total === 0}
-        <EmptyState title="No websites yet" description="Add your website and WebGuard will check it automatically.">
-            {#snippet action()}<Button type="button" loading={createLoading} onclick={openCreateModal}>Add your website</Button>{/snippet}
-        </EmptyState>
+        {#if !onboardingVisible}
+            <EmptyState title="No websites yet" description="Add your website and WebGuard will check it automatically.">
+                {#snippet action()}<Button type="button" loading={createLoading} onclick={openCreateModal}>Add your website</Button>{/snippet}
+            </EmptyState>
+        {/if}
     {:else}
         <Card title="Website health" titleId="health-heading" description={healthMessage()}>
             {#snippet actions()}<StatusBadge tone={healthTone()} label={healthBadgeLabel()} />{/snippet}

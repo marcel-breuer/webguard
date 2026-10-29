@@ -19,6 +19,7 @@ WebGuard helps teams observe public websites, operational tasks, certificates, d
 
 ## Product Surface
 
+- **Guided first-run setup:** help new users create their first active website check, understand when its first result is expected, and verify a notification channel with a successful test.
 - **Real-time dashboard:** visualize monitoring data with statistics and charts.
 - **Monitoring management:** create and edit monitorings through structured forms, assign them to monitoring groups, and manage ownership with team-admin controls.
 - **Team collaboration:** create teams, invite registered or new users by email, assign admin/member roles, and share team-owned monitorings with read-only members.

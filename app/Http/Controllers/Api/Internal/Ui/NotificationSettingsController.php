@@ -53,6 +53,7 @@ final class NotificationSettingsController extends Controller
 
         try {
             $notificationChannelTestService->send($user, $notificationChannel, $config);
+            $user->forceFill(['first_run_notification_tested_at' => now()])->save();
         } catch (Throwable $throwable) {
             Log::warning('Notification channel test failed.', [
                 'channel' => $notificationChannel->value,

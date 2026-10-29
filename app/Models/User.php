@@ -42,6 +42,9 @@ use Spatie\Activitylog\Support\LogOptions;
  * @property string|null $format_locale
  * @property array<string, mixed>|null $notification_channels
  * @property Carbon|null $notification_channels_hint_seen_at
+ * @property Carbon|null $first_run_notification_tested_at
+ * @property Carbon|null $first_run_setup_completed_at
+ * @property Carbon|null $first_run_setup_dismissed_at
  * @property bool $monitoring_digest_enabled
  * @property string $monitoring_digest_frequency
  * @property bool $unread_notifications_reminder_enabled
@@ -78,6 +81,9 @@ use Spatie\Activitylog\Support\LogOptions;
     'avatar',
     'notification_channels',
     'notification_channels_hint_seen_at',
+    'first_run_notification_tested_at',
+    'first_run_setup_completed_at',
+    'first_run_setup_dismissed_at',
     'monitoring_digest_enabled',
     'monitoring_digest_frequency',
     'unread_notifications_reminder_enabled',
@@ -244,6 +250,9 @@ class User extends Authenticatable implements MustVerifyEmail
             ->dontLogEmptyChanges()
             ->dontLogIfAttributesChangedOnly([
                 'notification_channels_hint_seen_at',
+                'first_run_notification_tested_at',
+                'first_run_setup_completed_at',
+                'first_run_setup_dismissed_at',
                 'updated_at',
             ])
             ->setDescriptionForEvent(fn (string $eventName): string => 'user_' . $eventName);
@@ -301,6 +310,9 @@ class User extends Authenticatable implements MustVerifyEmail
             'theme' => 'string',
             'notification_channels' => 'array',
             'notification_channels_hint_seen_at' => 'datetime',
+            'first_run_notification_tested_at' => 'datetime',
+            'first_run_setup_completed_at' => 'datetime',
+            'first_run_setup_dismissed_at' => 'datetime',
             'monitoring_digest_enabled' => 'boolean',
             'monitoring_digest_frequency' => 'string',
             'unread_notifications_reminder_enabled' => 'boolean',
