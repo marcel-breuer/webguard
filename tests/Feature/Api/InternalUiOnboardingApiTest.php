@@ -88,7 +88,7 @@ final class InternalUiOnboardingApiTest extends TestCase
             ->patchJson(route('app.onboarding.update'), ['action' => 'dismiss'])
             ->assertOk()
             ->assertJsonPath('data.completed_at', null)
-            ->assertJsonPath('data.dismissed_at', fn (string|null $value): bool => $value !== null);
+            ->assertJsonPath('data.dismissed_at', fn (?string $value): bool => $value !== null);
 
         $demoUser = User::factory()->create(['role' => UserRole::DEMO]);
 
