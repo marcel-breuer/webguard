@@ -17,3 +17,7 @@ Read the applicable `AGENTS.md` first. Identify relevant skills, read only those
 | Documentation Change | Update repository docs | Setup, usage, testing, deployment, or behavior docs change | `documentation-change/SKILL.md` |
 | CI/CD Change | Change GitHub workflows or release automation | CI, tag, dependency update, or workflow files change | `ci-cd-change/SKILL.md` |
 | Docker Change | Change container build or compose runtime | Dockerfile, compose, scripts, healthchecks, or container env change | `docker-change/SKILL.md` |
+
+## UI review
+
+Use `$unslop` for new UI views, redesigns, and focused UI reviews. Codex discovers the project skill at `.agents/skills/unslop/SKILL.md`; it was copied from [heydamir/unslop](https://github.com/heydamir/unslop/tree/a6f121eee5f29c2f74976b75456feae8b66afb3a/skills/unslop) at revision `a6f121eee5f29c2f74976b75456feae8b66afb3a`. The skill is licensed CC BY 4.0; retain its attribution to Damir Sokolovsky and the upstream repository when adapting it.
