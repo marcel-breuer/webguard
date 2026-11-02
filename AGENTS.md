@@ -228,6 +228,7 @@ If a command cannot be executed, agents MUST state why.
 ## Frontend Rules
 
 - Reuse shared Svelte components in `frontend/src/lib/components` before adding new structures.
+- Use `$unslop` from `.agents/skills/unslop/SKILL.md` for new UI views, UI redesigns, and focused UI reviews. Audit the current UI before proposing changes; preserve existing branding, design tokens, component libraries, reusable components, and these repository rules. When an audited screen is already good, report only evidence-backed issues and avoid speculative redesigns.
 - Keep UI text localized where surrounding views use `resources/lang`.
 - Preserve accessible labels, focus states, form errors, responsive behavior, and dark/theme behavior where present.
 - Use Tailwind classes consistently with existing Svelte markup.
