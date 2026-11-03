@@ -45,7 +45,7 @@ try {
     await rejectedContext.close();
 
     await page.getByRole("button", { name: "Einstellungen", exact: true }).click();
-    await page.getByRole("checkbox").check();
+    await page.getByRole("checkbox", { name: /Statistik/ }).check();
     await page.getByRole("button", { name: "Auswahl speichern" }).click();
     await page.waitForFunction(() => window.dataLayer?.some((entry) => Array.isArray(entry) && entry[0] === "consent" && entry[1] === "update"));
     assert.equal(googleRequests.length, 1, "GTM should load once after opt-in");
@@ -58,7 +58,7 @@ try {
     assert.deepEqual(loginEvents[0], { event: "webguard_page_view", page_category: "authentication" });
 
     await page.getByRole("button", { name: "Cookie-Einstellungen" }).click();
-    await page.getByRole("checkbox").uncheck();
+    await page.getByRole("checkbox", { name: /Statistik/ }).uncheck();
     await page.getByRole("button", { name: "Auswahl speichern" }).click();
     const consentUpdates = await page.evaluate(() => window.dataLayer?.filter((entry) =>
         Array.isArray(entry) && entry[0] === "consent" && entry[1] === "update",
