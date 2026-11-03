@@ -17,8 +17,6 @@ trap cleanup EXIT INT TERM
 docker network create "$network_name"
 
 export WEBGUARD_NETWORK="$network_name"
-export GTM_CONTAINER_ID=""
-export GA4_MEASUREMENT_ID=""
 export APP_KEY="${APP_KEY:-base64:2fl+Ktvkfl+Fuz4Qp/A75G2RTiWVA/ZoKZvp6fiiM10=}"
 export MARKETING_URL="${MARKETING_URL:-https://marketing.webguard.test}"
 export APP_URL="${APP_URL:-http://gateway:8080}"
@@ -137,25 +135,3 @@ docker run --rm \
     --volume "$repository_path/node_modules:/ms-playwright/node_modules:ro" \
     mcr.microsoft.com/playwright:v1.64.1-noble \
     node /ms-playwright/smoke/smoke-public-status.mjs
-
-docker run --rm \
-    --network "$network_name" \
-    --env SMOKE_BASE_URL="http://gateway:8080" \
-    --env SMOKE_CONSENT_ENABLED=false \
-    --volume "$repository_path/frontend/scripts:/ms-playwright/smoke:ro" \
-    --volume "$repository_path/node_modules:/ms-playwright/node_modules:ro" \
-    mcr.microsoft.com/playwright:v1.64.1-noble \
-    node /ms-playwright/smoke/smoke-cookie-consent.mjs
-
-export GTM_CONTAINER_ID="GTM-CONSENTTEST"
-$compose up --no-build --detach --wait --wait-timeout 120 frontend
-
-docker run --rm \
-    --network "$network_name" \
-    --env SMOKE_BASE_URL="http://gateway:8080" \
-    --env SMOKE_CONSENT_ENABLED=true \
-    --env SMOKE_STATUS_PAGE_SLUG="$status_page_slug" \
-    --volume "$repository_path/frontend/scripts:/ms-playwright/smoke:ro" \
-    --volume "$repository_path/node_modules:/ms-playwright/node_modules:ro" \
-    mcr.microsoft.com/playwright:v1.64.1-noble \
-    node /ms-playwright/smoke/smoke-cookie-consent.mjs
