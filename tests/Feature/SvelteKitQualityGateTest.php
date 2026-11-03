@@ -525,19 +525,23 @@ class SvelteKitQualityGateTest extends TestCase
         $this->assertStringContainsString('1000 ms rendering budget', $browserSmokeTest);
     }
 
-    public function test_browser_smoke_test_covers_optional_cookie_consent_and_status_page_exclusion(): void
+    public function test_sveltekit_layout_and_runtime_configuration_have_no_google_consent_integration(): void
     {
-        $browserSmokeTest = file_get_contents(base_path('frontend/scripts/smoke-cookie-consent.mjs'));
-        $topologySmokeTest = file_get_contents(base_path('.github/scripts/smoke-sveltekit-topology.sh'));
+        $layout = file_get_contents(base_path('frontend/src/routes/+layout.svelte'));
+        $serverLoad = file_get_contents(base_path('frontend/src/routes/+layout.server.ts'));
+        $compose = file_get_contents(base_path('docker-compose.yml'));
+        $environmentExample = file_get_contents(base_path('.env.example'));
 
-        $this->assertIsString($browserSmokeTest);
-        $this->assertIsString($topologySmokeTest);
-        $this->assertStringContainsString('Google must not be contacted before consent', $browserSmokeTest);
-        $this->assertStringContainsString('GTM-CONSENTTEST', $browserSmokeTest);
-        $this->assertStringContainsString('analytics_storage, "denied"', $browserSmokeTest);
-        $this->assertStringContainsString('SMOKE_CONSENT_ENABLED=false', $topologySmokeTest);
-        $this->assertStringContainsString('SMOKE_CONSENT_ENABLED=true', $topologySmokeTest);
-        $this->assertStringContainsString('smoke-cookie-consent.mjs', $topologySmokeTest);
+        $this->assertIsString($layout);
+        $this->assertIsString($serverLoad);
+        $this->assertIsString($compose);
+        $this->assertIsString($environmentExample);
+        $this->assertStringNotContainsString('CookieConsent', $layout);
+        $this->assertStringNotContainsString('analytics:', $serverLoad);
+        $this->assertStringNotContainsString('GTM_CONTAINER_ID', $compose);
+        $this->assertStringNotContainsString('GA4_MEASUREMENT_ID', $compose);
+        $this->assertStringNotContainsString('GTM_CONTAINER_ID', $environmentExample);
+        $this->assertStringNotContainsString('GA4_MEASUREMENT_ID', $environmentExample);
     }
 
     public function test_gateway_and_sveltekit_preserve_safe_request_correlation(): void
