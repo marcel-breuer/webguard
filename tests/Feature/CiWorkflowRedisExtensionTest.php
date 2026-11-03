@@ -155,7 +155,7 @@ class CiWorkflowRedisExtensionTest extends TestCase
         $this->assertArrayHasKey('prettier', $packageConfig['devDependencies'] ?? []);
         $this->assertArrayHasKey('prettier-plugin-blade', $packageConfig['devDependencies'] ?? []);
         $this->assertArrayHasKey('prettier-plugin-tailwindcss', $packageConfig['devDependencies'] ?? []);
-        $this->assertSame('1.63.0', $packageConfig['devDependencies']['playwright'] ?? null);
+        $this->assertSame('1.64.1', $packageConfig['devDependencies']['playwright'] ?? null);
     }
 
     public function test_topology_job_installs_its_locked_playwright_dependency(): void

@@ -64,6 +64,7 @@ class MonitoringGroupSlaReportingTest extends TestCase
 
     public function test_owner_can_download_the_previous_calendar_month_report_only_for_an_owned_configured_group(): void
     {
+        Date::setTestNow('2026-10-01 00:00:00');
         Package::factory()->create();
         $user = User::factory()->create();
         $monitoringGroup = MonitoringGroup::factory()->for($user)->create(['sla_target_percentage' => 99.9]);

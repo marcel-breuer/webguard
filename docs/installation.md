@@ -131,6 +131,7 @@ For SMTP on port `465`, set `MAIL_ENCRYPTION=ssl`. For SMTP on port `587`, set `
 Optional:
 
 - `MARKETING_URL` for the required canonical landing page, including its imprint, terms of use, and privacy policy
+- `GTM_CONTAINER_ID` and/or `GA4_MEASUREMENT_ID` for the optional SvelteKit analytics consent flow; both are empty by default. See [Optional Web App analytics](analytics-consent.md) and keep them empty until the documented privacy release gates are approved.
 
 ### Build and Startup Performance
 
