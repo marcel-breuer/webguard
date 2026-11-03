@@ -2,9 +2,14 @@
     import "../app.css";
     import { localize } from "#lib/i18n/localize.ts";
     import type { TranslationMessages } from "#lib/i18n/localize.ts";
+    import CookieConsent from "#lib/components/CookieConsent.svelte";
 
     interface Props {
-        data: { locale: string; messages: TranslationMessages };
+        data: {
+            locale: string;
+            messages: TranslationMessages;
+            analytics: { enabled: boolean; gtmContainerId: string | null; ga4MeasurementId: string | null };
+        };
         children: import("svelte").Snippet;
     }
 
@@ -19,4 +24,12 @@
     <meta name="theme-color" content="#6b21a8" />
 </svelte:head>
 
-<div use:localize={{ locale: data.locale, messages: data.messages }}>{@render children()}</div>
+<div use:localize={{ locale: data.locale, messages: data.messages }}>
+    {@render children()}
+    {#if data.analytics.enabled}
+        <CookieConsent
+            gtmContainerId={data.analytics.gtmContainerId}
+            ga4MeasurementId={data.analytics.ga4MeasurementId}
+        />
+    {/if}
+</div>
