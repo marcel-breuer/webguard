@@ -13,21 +13,6 @@ class CiCoverageCheckScriptTest extends TestCase
 {
     private string $repositoryPath;
 
-    private function prepareRepository(): void
-    {
-        if (! $this->gitIsAvailable()) {
-            $this->markTestSkipped('The git binary is required for patch coverage tests.');
-        }
-
-        $this->repositoryPath = sys_get_temp_dir() . '/webguard-coverage-' . bin2hex(random_bytes(6));
-        mkdir($this->repositoryPath . '/app', 0777, true);
-
-        $this->runCommand(['git', 'init', '-b', 'main']);
-        $this->runCommand(['git', 'config', 'user.email', 'tests@example.test']);
-        $this->runCommand(['git', 'config', 'user.name', 'WebGuard Tests']);
-        $this->commitFile('app/Service.php', "<?php\n\nreturn 1;\n", 'chore: initial');
-    }
-
     protected function tearDown(): void
     {
         if (isset($this->repositoryPath) && is_dir($this->repositoryPath)) {
@@ -58,7 +43,7 @@ class CiCoverageCheckScriptTest extends TestCase
     {
         $this->prepareRepository();
         $base = $this->currentRevision();
-        $this->commitFile('app/Service.php', "<?php\n\n\$a = 1;\n\$b = 2;\n\$c = 3;\n",'feat: add statements');
+        $this->commitFile('app/Service.php', "<?php\n\n\$a = 1;\n\$b = 2;\n\$c = 3;\n", 'feat: add statements');
         $this->commitFile('app/Other.php', "<?php\n\n\$x = 1;\n", 'feat: add file');
         $this->writeClover(['app/Service.php' => [3 => 1, 4 => 0, 5 => 0], 'app/Other.php' => [3 => 0]]);
 
@@ -126,6 +111,21 @@ class CiCoverageCheckScriptTest extends TestCase
         $this->assertStringContainsString('--patch-min="$COVERAGE_PATCH_MIN"', $checkStep['run'] ?? '');
         $this->assertStringContainsString('--total-min="$COVERAGE_TOTAL_MIN"', $checkStep['run'] ?? '');
         $this->assertStringContainsString('$GITHUB_STEP_SUMMARY', $checkStep['run'] ?? '');
+    }
+
+    private function prepareRepository(): void
+    {
+        if (! $this->gitIsAvailable()) {
+            $this->markTestSkipped('The git binary is required for patch coverage tests.');
+        }
+
+        $this->repositoryPath = sys_get_temp_dir() . '/webguard-coverage-' . bin2hex(random_bytes(6));
+        mkdir($this->repositoryPath . '/app', 0777, true);
+
+        $this->runCommand(['git', 'init', '-b', 'main']);
+        $this->runCommand(['git', 'config', 'user.email', 'tests@example.test']);
+        $this->runCommand(['git', 'config', 'user.name', 'WebGuard Tests']);
+        $this->commitFile('app/Service.php', "<?php\n\nreturn 1;\n", 'chore: initial');
     }
 
     /**
