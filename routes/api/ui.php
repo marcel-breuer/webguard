@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\Internal\Ui\AdminWorkspaceController;
 use App\Http\Controllers\Api\Internal\Ui\AppearanceController;
 use App\Http\Controllers\Api\Internal\Ui\DashboardController;
 use App\Http\Controllers\Api\Internal\Ui\IncidentAnalyticsController;
+use App\Http\Controllers\Api\Internal\Ui\IncidentDiagnosisController;
 use App\Http\Controllers\Api\Internal\Ui\LocaleController;
 use App\Http\Controllers\Api\Internal\Ui\MonitoringCardsController;
 use App\Http\Controllers\Api\Internal\Ui\MonitoringDetailDataController;
@@ -151,6 +152,9 @@ Route::middleware(MeasureInternalUiRequest::class)->group(function (): void {
         Route::delete('/maintenance/one-off/{monitoring}', [MobileMaintenanceController::class, 'cancelOneOff'])->name('maintenance.one-off.destroy');
         Route::get('/dashboard', DashboardController::class)->name('dashboard');
         Route::get('/incidents/analytics', IncidentAnalyticsController::class)->name('incidents.analytics');
+        Route::get('/incidents/open/diagnoses', [IncidentDiagnosisController::class, 'open'])->name('incidents.diagnoses.open');
+        Route::get('/incidents/{incident}/diagnosis', [IncidentDiagnosisController::class, 'show'])->name('incidents.diagnosis.show');
+        Route::post('/incidents/{incident}/diagnosis', [IncidentDiagnosisController::class, 'recompute'])->name('incidents.diagnosis.recompute');
         Route::get('/monitorings', MonitoringIndexController::class)->name('monitorings.index');
         Route::get('/monitorings/form-options', [MonitoringFormOptionsController::class, 'create'])->name('monitorings.form-options');
         Route::post('/monitorings', [MonitoringManagementController::class, 'store'])->name('monitorings.store');

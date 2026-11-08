@@ -4,13 +4,17 @@ declare(strict_types=1);
 
 namespace App\Observers;
 
+use App\Enums\IncidentDiagnosisTrigger;
 use App\Enums\NotificationType;
 use App\Models\Incident;
 use App\Models\Monitoring;
 use App\Models\MonitoringNotification;
+use App\Services\IncidentDiagnosisService;
 use App\Services\MonitoringStatsCache;
 use App\Services\OperationsOverviewCache;
 use App\Services\StatusPageIncidentUpdatePublisher;
+use Illuminate\Support\Facades\Log;
+use Throwable;
 
 class IncidentObserver
 {
@@ -21,6 +25,7 @@ class IncidentObserver
     {
         resolve(OperationsOverviewCache::class)->flush();
         $this->flushMonitoringStats($incident);
+        $this->storeDiagnosis($incident);
 
         MonitoringNotification::query()->create([
             'monitoring_id' => $incident->monitoring_id,
@@ -54,6 +59,21 @@ class IncidentObserver
             ]);
 
             resolve(StatusPageIncidentUpdatePublisher::class)->publishResolved($incident);
+        }
+    }
+
+    /**
+     * A failing diagnosis must never prevent an incident from opening.
+     */
+    private function storeDiagnosis(Incident $incident): void
+    {
+        try {
+            resolve(IncidentDiagnosisService::class)->diagnoseAndStore($incident, IncidentDiagnosisTrigger::INCIDENT_OPENED);
+        } catch (Throwable $throwable) {
+            Log::warning('Incident diagnosis could not be stored.', [
+                'incident_id' => $incident->getKey(),
+                'exception' => $throwable::class,
+            ]);
         }
     }
 

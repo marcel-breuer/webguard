@@ -27,6 +27,8 @@ use Illuminate\Support\Carbon;
  * @property string $monitoring_id
  * @property Carbon $down_at
  * @property Carbon|null $up_at
+ * @property array<string, mixed>|null $diagnosis_snapshot
+ * @property Carbon|null $diagnosed_at
  * @property Carbon $created_at
  * @property Carbon $updated_at
  * @property-read Monitoring $monitoring
@@ -36,6 +38,8 @@ use Illuminate\Support\Carbon;
     'consensus_status',
     'affected_locations',
     'consensus_snapshot',
+    'diagnosis_snapshot',
+    'diagnosed_at',
     'problem_description',
     'resolution_description',
     'incident_type',
@@ -99,6 +103,8 @@ class Incident extends Model
             'consensus_status' => RegionalConsensusStatus::class,
             'affected_locations' => 'array',
             'consensus_snapshot' => 'array',
+            'diagnosis_snapshot' => 'array',
+            'diagnosed_at' => 'datetime',
             'problem_description' => 'string',
             'resolution_description' => 'string',
             'incident_type' => IncidentType::class,

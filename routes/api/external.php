@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\External\MobileNotificationBoardController;
 use App\Http\Controllers\Api\External\MobileOverviewController;
 use App\Http\Controllers\Api\External\MobilePushDeviceController;
 use App\Http\Controllers\Api\External\MobileStatusPageWorkspaceController;
+use App\Http\Controllers\Api\Internal\Ui\IncidentDiagnosisController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/overview', MobileOverviewController::class)
@@ -20,6 +21,11 @@ Route::get('/monitorings/{monitoring}/notification-preferences', [MobileMonitori
     ->name('monitorings.notification-preferences.show');
 Route::patch('/monitorings/{monitoring}/notification-preferences', [MobileMonitoringNotificationPreferenceController::class, 'update'])
     ->name('monitorings.notification-preferences.update');
+
+Route::get('/incidents/open/diagnoses', [IncidentDiagnosisController::class, 'open'])
+    ->name('incidents.diagnoses.open');
+Route::get('/incidents/{incident}/diagnosis', [IncidentDiagnosisController::class, 'show'])
+    ->name('incidents.diagnosis.show');
 
 Route::get('/notification-board', [MobileNotificationBoardController::class, 'index'])
     ->name('notification-board.index');

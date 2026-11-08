@@ -547,6 +547,12 @@ return [
         'By customer impact' => 'By customer impact',
         'Narrow the operational view without a separate submit step.' => 'Narrow the operational view without a separate submit step.',
         'Services with more than one incident in this period.' => 'Services with more than one incident in this period.',
+        'Probable cause' => 'Probable cause',
+        'Recompute diagnosis' => 'Recompute diagnosis',
+        'Supporting evidence' => 'Supporting evidence',
+        'Other hypotheses' => 'Other hypotheses',
+        'No diagnosis is available for this incident yet.' => 'No diagnosis is available for this incident yet.',
+        'The diagnosis could not be updated.' => 'The diagnosis could not be updated.',
     ],
     'status_pages' => [
         'Add component' => 'Add component',
