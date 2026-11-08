@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use Illuminate\Support\Carbon;
+use Illuminate\Database\Eloquent\Factories\Factory;
 use App\Enums\NotificationType;
 use App\Models\Scopes\UserScope;
 use Illuminate\Database\Eloquent\Attributes\Appends;
@@ -20,7 +22,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
- * @property \Illuminate\Support\Carbon|null $user_read_at
+ * @property Carbon|null $user_read_at
  * @property int|string|null $failed_delivery_count
  */
 #[Appends(['created_at_for_humans', 'translated_message'])]
@@ -37,7 +39,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 #[WithoutIncrementing]
 class MonitoringNotification extends Model
 {
-    /** @use HasFactory<\Illuminate\Database\Eloquent\Factories\Factory<self>> */
+    /** @use HasFactory<Factory<self>> */
     use HasFactory;
     use HasUlids;
 

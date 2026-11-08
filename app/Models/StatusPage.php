@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\WithoutIncrementing;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
@@ -24,7 +25,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 #[WithoutIncrementing]
 class StatusPage extends Model
 {
-    /** @use HasFactory<\Illuminate\Database\Eloquent\Factories\Factory<self>> */
+    /** @use HasFactory<Factory<self>> */
     use HasFactory;
     use HasUlids;
 

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Queries;
 
+use stdClass;
 use Carbon\Carbon;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Collection;
@@ -17,7 +18,7 @@ final class MonitoringCheckHistoryQuery
     private const ARCHIVED_TABLE = 'monitoring_response_archived';
 
     /**
-     * @return Collection<int, \stdClass>
+     * @return Collection<int, stdClass>
      */
     public function for(string $monitoringId, ?Carbon $startDate, Carbon $endDate, int $offset, int $limit): Collection
     {
@@ -59,7 +60,7 @@ final class MonitoringCheckHistoryQuery
     }
 
     /**
-     * @return Collection<int, \stdClass>
+     * @return Collection<int, stdClass>
      */
     public function forRange(string $monitoringId, Carbon $startDate, Carbon $endDate): Collection
     {

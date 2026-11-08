@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use Database\Factories\MonitoringFactory;
 use App\Enums\HttpMethod;
 use App\Enums\MonitoringLifecycleStatus;
 use App\Enums\MonitoringType;
@@ -87,7 +88,7 @@ use Spatie\Activitylog\Support\LogOptions;
 #[WithoutIncrementing]
 class Monitoring extends Model
 {
-    /** @use HasFactory<\Database\Factories\MonitoringFactory> */
+    /** @use HasFactory<MonitoringFactory> */
     use HasFactory;
     use HasUlids;
     use LogsActivity;

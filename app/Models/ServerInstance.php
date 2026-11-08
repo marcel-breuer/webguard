@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\Factory;
 use Carbon\CarbonInterface;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
@@ -39,7 +40,7 @@ use Illuminate\Support\Facades\Hash;
 #[WithoutIncrementing]
 class ServerInstance extends Model
 {
-    /** @use HasFactory<\Illuminate\Database\Eloquent\Factories\Factory<self>> */
+    /** @use HasFactory<Factory<self>> */
     use HasFactory;
     use HasUlids;
 

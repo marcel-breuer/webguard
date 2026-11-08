@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use Database\Factories\PackageFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\WithoutIncrementing;
 use Illuminate\Database\Eloquent\Collection;
@@ -34,7 +35,7 @@ use Illuminate\Support\Carbon;
 #[WithoutIncrementing]
 class Package extends Model
 {
-    /** @use HasFactory<\Database\Factories\PackageFactory> */
+    /** @use HasFactory<PackageFactory> */
     use HasFactory;
     use HasUlids;
 

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\Factory;
 use App\Enums\IncidentContributingCategory;
 use App\Enums\IncidentCustomerImpact;
 use App\Enums\IncidentSeverity;
@@ -48,7 +49,7 @@ use Illuminate\Support\Carbon;
 ])]
 class Incident extends Model
 {
-    /** @use HasFactory<\Illuminate\Database\Eloquent\Factories\Factory<self>> */
+    /** @use HasFactory<Factory<self>> */
     use HasFactory;
     use HasUlids;
 
