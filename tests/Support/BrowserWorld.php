@@ -135,7 +135,8 @@ final class BrowserWorld
         } while (microtime(true) < $deadline);
 
         self::captureFailure($page);
-        $visibleText = mb_substr((string) $page->script('function() { return document.body.innerText; }'), 0, 500);
+        $wide = json_encode($page->script('function() { const width = document.documentElement.clientWidth; return [width, document.body.scrollWidth, ...Array.from(document.querySelectorAll("body *")).filter((element) => element.getBoundingClientRect().right > width + 1).slice(0, 5).map((element) => element.tagName + "." + String(element.className).slice(0, 60) + " right=" + Math.round(element.getBoundingClientRect().right))]; }'));
+        $visibleText = $wide . ' ' . mb_substr((string) $page->script('function() { return document.body.innerText; }'), 0, 500);
 
         throw new RuntimeException(sprintf("Timed out after %ds waiting for [%s] on %s.\nVisible text: %s", $timeoutSeconds, $expression, $page->url(), $visibleText));
     }
