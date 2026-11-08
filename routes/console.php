@@ -47,8 +47,8 @@ Schedule::command('instances:prune-callback-idempotency')->dailyAt('02:45')->wit
 // Prune audit log entries older than one month.
 Schedule::command('activitylog:clean --days=30 --force')->dailyAt('02:30')->withoutOverlapping();
 
-// Aggregate raw monitoring data into daily summaries.
-Schedule::command('monitoring:aggregate-daily')->dailyAt('00:30');
+// Aggregate raw monitoring data into daily summaries and re-aggregate recent days so a missed run heals itself.
+Schedule::command('monitoring:aggregate-daily 3')->dailyAt('00:30')->withoutOverlapping()->runInBackground();
 
 // Evaluate passive heartbeat monitorings for missed pings.
 Schedule::command('monitoring:evaluate-heartbeats')->everyMinute()->withoutOverlapping();
@@ -57,7 +57,7 @@ Schedule::command('monitoring:evaluate-heartbeats')->everyMinute()->withoutOverl
 Schedule::command('monitoring:evaluate-server-health')->everyMinute()->withoutOverlapping();
 
 // Archive old monitoring responses weekly.
-Schedule::command('monitoring:archive-responses')->weekly();
+Schedule::command('monitoring:archive-responses')->weekly()->withoutOverlapping()->runInBackground();
 
 // Check for expiring SSL certificates and domains daily.
 Schedule::command('notifications:send-ssl-expiry-warnings')->dailyAt('06:00')->withoutOverlapping();

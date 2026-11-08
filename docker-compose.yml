@@ -156,15 +156,7 @@ services:
       PHP_MAX_EXECUTION_TIME: "3600"
       PHP_OPCACHE_ENABLE: "1"
       AUTORUN_ENABLED: "false"
-    command:
-      - sh
-      - -lc
-      - |
-        trap "exit 0" TERM INT QUIT
-        while true; do
-          php artisan schedule:run --verbose --no-interaction
-          sleep 60 & wait %1
-        done
+    command: ["php", "/var/www/html/artisan", "schedule:work", "--no-interaction"]
     stop_signal: SIGTERM
     healthcheck:
       test: ["CMD", "php", "artisan", "schedule:list", "--no-interaction", "--no-ansi"]
