@@ -547,6 +547,12 @@ return [
         'By customer impact' => 'Nach Kundenauswirkung',
         'Narrow the operational view without a separate submit step.' => 'Schränken Sie die Betriebsansicht ohne separaten Übermittlungsschritt ein.',
         'Services with more than one incident in this period.' => 'Dienste mit mehr als einem Vorfall in diesem Zeitraum.',
+        'Probable cause' => 'Wahrscheinliche Ursache',
+        'Recompute diagnosis' => 'Diagnose neu berechnen',
+        'Supporting evidence' => 'Belege',
+        'Other hypotheses' => 'Weitere Hypothesen',
+        'No diagnosis is available for this incident yet.' => 'Für diesen Vorfall liegt noch keine Diagnose vor.',
+        'The diagnosis could not be updated.' => 'Die Diagnose konnte nicht aktualisiert werden.',
     ],
     'status_pages' => [
         'Add component' => 'Komponente hinzufügen',

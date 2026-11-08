@@ -214,9 +214,11 @@ export interface MonitoringDetailData {
         aggregated: { avg: number | null; min: number | null; max: number | null };
     };
     incidents: Array<{
+        id: string;
         down_at: string;
         up_at: string | null;
         consensus_snapshot: RegionalConsensusSnapshot | null;
+        diagnosis: IncidentDiagnosis | null;
     }>;
     maintenance: {
         active: boolean;
@@ -297,4 +299,30 @@ export interface RegionalConsensusSnapshot {
         checked_at: string | null;
         availability: "reporting" | "stale" | "missing";
     }>;
+}
+
+export interface IncidentDiagnosisHypothesis {
+    rank: number;
+    category: string;
+    label: string;
+    confidence: number;
+    confidence_level: "high" | "medium" | "low";
+    confidence_label: string;
+    summary: string;
+    evidence: Array<{ type: string; message: string; data: Record<string, unknown> }>;
+}
+
+export interface IncidentDiagnosis {
+    version: number;
+    generated_at: string | null;
+    reference_at: string | null;
+    trigger: string | null;
+    persisted: boolean;
+    primary: IncidentDiagnosisHypothesis | null;
+    hypotheses: IncidentDiagnosisHypothesis[];
+}
+
+export interface IncidentDiagnosisPayload {
+    incident: { id: string; monitoring_id: string; monitoring_name: string | null; status: "open" | "resolved"; down_at: string; up_at: string | null };
+    diagnosis: IncidentDiagnosis | null;
 }

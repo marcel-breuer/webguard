@@ -6,6 +6,7 @@
     import { translate } from "#lib/i18n/localize.ts";
     import type { MonitoringDetailData, MonitoringDetailMeta, RegionalConsensusSnapshot } from "#lib/api/monitoring.ts";
     import Button from "#lib/components/Button.svelte";
+    import IncidentDiagnosisPanel from "#lib/components/IncidentDiagnosis.svelte";
     import Select from "#lib/components/Select.svelte";
 
     type Incident = MonitoringDetailData["incidents"][number];
@@ -426,6 +427,9 @@
                 <li class="list-none rounded-[0.8rem] border border-wg-border wg-glass-panel p-4 shadow-sm">
                     <p class="font-bold">{incident.up_at ? "Resolved incident" : "Open incident"}</p>
                     <p class="mt-1 text-sm text-wg-text-muted">{timestamp(incident.down_at)} · {duration(incident)}</p>
+                    {#if incident.diagnosis || !incident.up_at}
+                        <IncidentDiagnosisPanel incidentId={incident.id} diagnosis={incident.diagnosis} />
+                    {/if}
                     {#if incident.consensus_snapshot}
                         {@const consensus = incident.consensus_snapshot}
                         <div class="mt-4 rounded-xl border border-wg-border bg-wg-surface-muted/40 p-4">

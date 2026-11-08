@@ -117,6 +117,13 @@ The server exposes these tools:
 | `list_monitorings` | Optional `limit` from 1 to 100 (default 50) | Visible monitoring IDs, names, types, and statuses. Targets and credentials are omitted. |
 | `get_monitoring_analytics` | Required `monitoring_id`; optional `days` from 1 to 365 (default 30) | The monitoring analytics payload exposed by the Core API, scoped to a monitoring visible to the authenticated user. |
 
+| `list_open_incidents` | Optional `limit` from 1 to 50 (default 20) | Open incidents on visible monitorings, newest first, each with its incident summary and ranked probable-cause diagnosis. |
+| `diagnose_incident` | Required `incident_id`; optional `recompute` (default `false`) | The diagnosis for one incident on a visible monitoring. Incidents opened before diagnoses existed are diagnosed on first read; `recompute` refreshes the stored snapshot from current data. An unknown or inaccessible incident returns the same tool error. |
+
+Incident diagnoses use the monitoring ownership rules of the other tools: only
+incidents on monitorings the key owner owns or shares through a team are
+returned. Public-label monitorings of other users are not included.
+
 Create a key from the profile's API key settings and select **Read analytics**.
 Configure an MCP client to connect to `<APP_URL>/api/mcp` and pass the key as
 its bearer token. MCP clients make several protocol requests per connection;
@@ -125,6 +132,34 @@ caller.
 
 Existing pre-scoped tokens remain compatible. They are not converted
 to new keys automatically; rotate them from the profile when practical.
+
+## Incident diagnosis
+
+Every incident stores a deterministic root-cause snapshot when it opens. The
+diagnosis is additive and backwards compatible; existing incident payloads only
+gain an `id` and a `diagnosis` field per incident.
+
+| Method | Path | Result |
+| --- | --- | --- |
+| `GET` | `/api/mobile/incidents/open/diagnoses` | Up to 50 open incidents on visible monitorings, newest first, each as `{ incident, diagnosis }`. |
+| `GET` | `/api/mobile/incidents/{incident}/diagnosis` | `{ data: { incident, diagnosis } }` for one visible incident. A missing snapshot is created on demand. |
+
+The browser session API additionally serves `/api/incidents/open/diagnoses`,
+`GET /api/incidents/{incident}/diagnosis`, and
+`POST /api/incidents/{incident}/diagnosis`, which recomputes and stores the
+snapshot. Incidents on monitorings the caller cannot see return `404`.
+
+`diagnosis` contains `primary`, ordered `hypotheses`, `generated_at`,
+`reference_at`, `trigger` (`incident_opened`, `recomputed`, or `on_demand`), and
+`signals` (the raw event-time evidence). Each hypothesis has `rank`,
+`category` (`maintenance`, `certificate`, `domain`, `dns`, `network_regional`,
+`connectivity`, `server_error`, `client_error`, `timeout_performance`,
+`config_change`, `shared_dependency`, `missed_heartbeat`, `server_resources`,
+or `unknown`), `confidence` (1-99) with `confidence_level` (`high` at 70 or
+more, `medium` at 40 or more, otherwise `low`), a localized `summary`, and
+`evidence` items with a localized `message` and structured `data`. Text follows
+the caller's language. Configuration-change evidence lists changed field names
+only; values, targets, and credentials are never included.
 
 ## Mobile monitoring management
 

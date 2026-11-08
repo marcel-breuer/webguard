@@ -14,7 +14,10 @@ use Illuminate\Support\Facades\Date;
 
 class MonitoringIncidentService
 {
-    public function __construct(private readonly MonitoringIncidentQuery $monitoringIncidentQuery) {}
+    public function __construct(
+        private readonly MonitoringIncidentQuery $monitoringIncidentQuery,
+        private readonly IncidentDiagnosisPresenter $incidentDiagnosisPresenter,
+    ) {}
 
     /**
      * @return Collection<int, MonitoringIncidentPayload>
@@ -35,7 +38,7 @@ class MonitoringIncidentService
     }
 
     /**
-     * @return array{data: list<array{down_at: string, up_at: string|null}>, has_more: bool, next_offset: int|null}
+     * @return array{data: list<array<string, mixed>>, has_more: bool, next_offset: int|null}
      */
     public function getIncidentPage(
         Monitoring $monitoring,
@@ -59,17 +62,25 @@ class MonitoringIncidentService
     }
 
     /**
-     * @return array{down_at: string, up_at: string|null, consensus_snapshot: array<string, mixed>|null}
+     * @return array{id: string, down_at: string, up_at: string|null, consensus_snapshot: array<string, mixed>|null, diagnosis: array<string, mixed>|null}
      */
     private function incidentPayload(Incident $incident): array
     {
         $downAt = Date::parse($incident->down_at);
         $upAt = $incident->up_at ? Date::parse($incident->up_at) : null;
 
+        $diagnosis = $this->incidentDiagnosisPresenter->present($incident->diagnosis_snapshot);
+
+        if ($diagnosis !== null) {
+            unset($diagnosis['signals']);
+        }
+
         return [
+            'id' => (string) $incident->getKey(),
             'down_at' => $downAt->toIso8601String(),
             'up_at' => $upAt?->toIso8601String(),
             'consensus_snapshot' => $incident->consensus_snapshot,
+            'diagnosis' => $diagnosis,
         ];
     }
 }
