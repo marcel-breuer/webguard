@@ -142,6 +142,38 @@ Every change should include the narrowest useful validation:
 Bug fixes should include a regression test that fails before the fix and passes
 after it.
 
+### Coverage Gates
+
+The `Coverage` workflow (`.github/workflows/coverage.yml`) runs the full Pest
+suite with Xdebug on every pull request to `main`, nightly, and on manual
+dispatch. It fails when either threshold is missed:
+
+| Gate | Threshold | Enforced by |
+| --- | --- | --- |
+| Total line coverage of `app/` | 85 % | `composer test:coverage` (`pest --coverage --min=85`) and `COVERAGE_TOTAL_MIN` |
+| Patch coverage: executable lines added or changed in `app/` by the pull request | 80 % | `COVERAGE_PATCH_MIN` and `.github/scripts/check-coverage.php` |
+
+The baseline was 86.6 % total line coverage when the gate was introduced. The
+patch check compares the pull request base commit with the tested merge commit
+using `git diff` and the clover report, so it needs no external service or
+token. Pull requests without executable changes in `app/` pass the patch check.
+The job summary shows both values and lists uncovered changed lines; the clover
+report is uploaded as the `coverage-<run id>` artifact.
+
+Run the same check locally after a coverage run:
+
+```bash
+php .github/scripts/check-coverage.php --clover=coverage.xml --base=origin/main \
+  --path=app --total-min=85 --patch-min=80
+```
+
+To raise a threshold, update `--min` in the `test:coverage` Composer script and
+`COVERAGE_TOTAL_MIN` together (a feature test keeps them in sync), or change
+`COVERAGE_PATCH_MIN`. Raise the total minimum only to a value at least one
+point below the latest measured total so unrelated flakiness or small refactors
+do not block merges. Never lower a threshold to make a pull request pass; add
+tests instead.
+
 ## Risk Areas
 
 Prioritize tests around these project-specific risks:

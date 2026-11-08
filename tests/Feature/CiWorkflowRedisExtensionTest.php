@@ -52,7 +52,7 @@ class CiWorkflowRedisExtensionTest extends TestCase
         $this->assertSame('^3.9', $composerConfig['require-dev']['larastan/larastan'] ?? null);
         $this->assertSame('^2.2', $composerConfig['require-dev']['phpstan/phpstan'] ?? null);
         $this->assertSame(['./vendor/bin/phpstan analyse --ansi --memory-limit=1G'], $composerConfig['scripts']['analyse'] ?? null);
-        $this->assertSame(['./vendor/bin/pest --coverage --min=0'], $composerConfig['scripts']['test:coverage'] ?? null);
+        $this->assertSame(['./vendor/bin/pest --coverage --min=85'], $composerConfig['scripts']['test:coverage'] ?? null);
         $this->assertFileExists(base_path('phpstan.neon'));
 
         $ciConfig = Yaml::parseFile(base_path('.github/workflows/ci.yml'));
