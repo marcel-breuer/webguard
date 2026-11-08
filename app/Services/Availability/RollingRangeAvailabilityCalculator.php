@@ -22,7 +22,7 @@ class RollingRangeAvailabilityCalculator
     ) {}
 
     /**
-     * @param  Collection<int, int>  $normalizedDays  Ascending, unique, positive day counts.
+     * @param  Collection<int, int<1, max>>  $normalizedDays  Ascending, unique, positive day counts.
      * @return array<string, MonitoringAvailabilityPayload>
      */
     public function calculate(
@@ -31,7 +31,7 @@ class RollingRangeAvailabilityCalculator
         Carbon $now,
         bool $includeIntradayRawData
     ): array {
-        $maxRangeDays = $normalizedDays->last();
+        $maxRangeDays = max(...$normalizedDays->all());
         $globalStartDate = $now->copy()->subDays($maxRangeDays)->startOfDay();
         $today = $now->copy()->startOfDay();
         $historicalEndDate = $today->copy()->subDay()->endOfDay();
@@ -81,15 +81,13 @@ class RollingRangeAvailabilityCalculator
             'unknown_total' => 0,
         ];
         $dailyResultIndex = 0;
-        $dailyResultCount = $dailyResults->count();
 
         return $normalizedDays
-            ->mapWithKeys(function (int $day) use ($dailyResults, $dailyResultCount, &$dailyResultIndex, &$rollingTotals, $now, $today, $trackingStartedAt, $liveUptimeDowntime, $overlappingIncidents): array {
+            ->mapWithKeys(function (int $day) use ($dailyResults, &$dailyResultIndex, &$rollingTotals, $now, $today, $trackingStartedAt, $liveUptimeDowntime, $overlappingIncidents): array {
                 $startDate = $now->copy()->subDays($day)->startOfDay();
                 $startDateString = $startDate->toDateString();
 
-                while ($dailyResultIndex < $dailyResultCount) {
-                    $dailyResult = $dailyResults[$dailyResultIndex];
+                while ($dailyResult = $dailyResults[$dailyResultIndex] ?? null) {
                     $dailyResultDate = $dailyResult->date->toDateString();
 
                     if ($dailyResultDate < $startDateString) {

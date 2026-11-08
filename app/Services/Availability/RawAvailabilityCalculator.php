@@ -65,7 +65,7 @@ class RawAvailabilityCalculator
         $currentStatus = $responseAtStart ? $this->resolvedStatus($monitoring, $responseAtStart) : null;
 
         foreach ($responses as $response) {
-            $responseTimestamp = Date::parse($response->created_at);
+            $responseTimestamp = Date::parse($response->getAttribute('created_at'));
 
             if ($responseTimestamp->gt($cursor)) {
                 $segmentMinutes = (int) $cursor->diffInMinutes($responseTimestamp);

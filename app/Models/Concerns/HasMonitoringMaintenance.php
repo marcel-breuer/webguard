@@ -6,7 +6,6 @@ namespace App\Models\Concerns;
 
 use App\Models\MaintenanceWindow;
 use App\Models\Monitoring;
-use App\Models\Monitoring;
 use App\Services\MaintenanceWindowService;
 use Carbon\CarbonInterface;
 use Illuminate\Database\Eloquent\Attributes\Scope;

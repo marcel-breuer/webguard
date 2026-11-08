@@ -158,10 +158,7 @@ class MonitoringInputNormalizer
         )));
     }
 
-    /**
-     * @return array<string, mixed>|null|string
-     */
-    private function httpHeaders(): array|null|string
+    private function httpHeaders(): mixed
     {
         $httpHeaders = $this->request->input('http_headers', $this->request->input('http_header'));
 

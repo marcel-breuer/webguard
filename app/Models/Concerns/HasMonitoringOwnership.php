@@ -6,7 +6,6 @@ namespace App\Models\Concerns;
 
 use App\Enums\TeamRole;
 use App\Models\Monitoring;
-use App\Models\Monitoring;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Builder;
