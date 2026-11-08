@@ -80,7 +80,8 @@ final class IncidentDiagnosisEvidenceCollector
 
     public function collect(Incident $incident): ?IncidentDiagnosisEvidence
     {
-        $monitoring = $incident->monitoring;
+        $incident->loadMissing('monitoring');
+        $monitoring = $incident->getRelation('monitoring');
 
         if (! $monitoring instanceof Monitoring) {
             return null;
@@ -94,7 +95,7 @@ final class IncidentDiagnosisEvidenceCollector
             referenceAt: $referenceAt->toIso8601String(),
             monitoringType: $monitoring->type,
             host: $host,
-            timeoutMs: $monitoring->timeout !== null ? $monitoring->timeout * 1000 : null,
+            timeoutMs: is_numeric($monitoring->getAttribute('timeout')) ? (int) $monitoring->getAttribute('timeout') * 1000 : null,
             consensus: $this->consensus($incident),
             failingChecks: array_map(
                 fn (MonitoringResponse $monitoringResponse): array => $this->failingCheck($monitoring, $monitoringResponse),
@@ -156,7 +157,7 @@ final class IncidentDiagnosisEvidenceCollector
      */
     private function failingResponses(Monitoring $monitoring, CarbonInterface $referenceAt): array
     {
-        return $monitoring->responseResults()
+        return array_values($monitoring->responseResults()
             ->whereBetween('created_at', [
                 $referenceAt->copy()->subMinutes(self::FAILING_CHECK_LOOKBACK_MINUTES),
                 $referenceAt->copy()->addMinutes(self::REFERENCE_GRACE_MINUTES),
@@ -166,8 +167,7 @@ final class IncidentDiagnosisEvidenceCollector
             ->limit(self::FAILING_CHECK_LIMIT)
             ->get()
             ->filter(fn (MonitoringResponse $monitoringResponse): bool => $this->monitoringHealthEvaluator->availabilityFor($monitoring, $monitoringResponse) === MonitoringStatus::DOWN)
-            ->values()
-            ->all();
+            ->all());
     }
 
     /**
@@ -206,11 +206,11 @@ final class IncidentDiagnosisEvidenceCollector
         $breaches = [];
 
         foreach ([
-            'cpu_usage_percent' => $monitoring->server_health_cpu_threshold_percent,
-            'ram_usage_percent' => $monitoring->server_health_ram_threshold_percent,
-            'storage_usage_percent' => $monitoring->server_health_storage_threshold_percent,
+            'cpu_usage_percent' => $monitoring->getAttribute('server_health_cpu_threshold_percent'),
+            'ram_usage_percent' => $monitoring->getAttribute('server_health_ram_threshold_percent'),
+            'storage_usage_percent' => $monitoring->getAttribute('server_health_storage_threshold_percent'),
         ] as $metric => $threshold) {
-            if (is_numeric($metrics[$metric] ?? null) && (float) $metrics[$metric] >= (float) ($threshold ?? self::DEFAULT_SERVER_HEALTH_THRESHOLD_PERCENT)) {
+            if (is_numeric($metrics[$metric] ?? null) && (float) $metrics[$metric] >= (is_numeric($threshold) ? (float) $threshold : self::DEFAULT_SERVER_HEALTH_THRESHOLD_PERCENT)) {
                 $breaches[] = $metric;
             }
         }
@@ -269,10 +269,11 @@ final class IncidentDiagnosisEvidenceCollector
             ->selectRaw('AVG(response_time) as average_ms, COUNT(*) as samples')
             ->first();
 
-        $samples = (int) ($row->samples ?? 0);
+        $samples = $row === null ? 0 : (int) $row->samples;
+        $average = $row?->average_ms;
 
         return [
-            'avg' => $samples > 0 && is_numeric($row->average_ms ?? null) ? round((float) $row->average_ms, 1) : null,
+            'avg' => $samples > 0 && is_numeric($average) ? round((float) $average, 1) : null,
             'samples' => $samples,
         ];
     }
@@ -292,10 +293,13 @@ final class IncidentDiagnosisEvidenceCollector
             return null;
         }
 
+        $expiresAt = $sslResult->getAttribute('expires_at');
+        $expiresAt = $expiresAt instanceof CarbonInterface ? $expiresAt : null;
+
         return [
             'is_valid' => (bool) $sslResult->is_valid,
-            'expired' => $sslResult->expires_at !== null && $sslResult->expires_at->lte($referenceAt),
-            'expires_at' => $sslResult->expires_at?->toIso8601String(),
+            'expired' => $expiresAt?->lte($referenceAt) ?? false,
+            'expires_at' => $expiresAt?->toIso8601String(),
         ];
     }
 
@@ -400,7 +404,7 @@ final class IncidentDiagnosisEvidenceCollector
      */
     private function configChanges(Monitoring $monitoring, CarbonInterface $referenceAt): array
     {
-        return Activity::query()
+        return array_values(Activity::query()
             ->where('subject_type', $monitoring->getMorphClass())
             ->where('subject_id', (string) $monitoring->getKey())
             ->where('event', 'updated')
@@ -426,8 +430,7 @@ final class IncidentDiagnosisEvidenceCollector
                 ];
             })
             ->filter()
-            ->values()
-            ->all();
+            ->all());
     }
 
     /**
@@ -437,7 +440,7 @@ final class IncidentDiagnosisEvidenceCollector
     {
         $monitoringIds = $this->sameOwnerMonitorings($monitoring)->select('id');
 
-        return Incident::query()
+        return array_values(Incident::query()
             ->whereKeyNot($incident->getKey())
             ->whereIn('monitoring_id', $monitoringIds)
             ->whereBetween('down_at', [
@@ -449,16 +452,19 @@ final class IncidentDiagnosisEvidenceCollector
             ->oldest('id')
             ->limit(self::CORRELATION_LIMIT)
             ->get()
-            ->filter(static fn (Incident $correlated): bool => $correlated->monitoring instanceof Monitoring)
-            ->map(static fn (Incident $correlated): array => [
-                'incident_id' => (string) $correlated->getKey(),
-                'monitoring_id' => (string) $correlated->monitoring_id,
-                'monitoring_name' => (string) $correlated->monitoring->name,
-                'down_at' => Date::parse($correlated->down_at)->toIso8601String(),
-                'same_host' => MonitoringHost::same($host, MonitoringHost::for($correlated->monitoring)),
-            ])
-            ->values()
-            ->all();
+            ->map(static function (Incident $correlated) use ($host): ?array {
+                $correlatedMonitoring = $correlated->getRelation('monitoring');
+
+                return $correlatedMonitoring instanceof Monitoring ? [
+                    'incident_id' => (string) $correlated->getKey(),
+                    'monitoring_id' => (string) $correlated->monitoring_id,
+                    'monitoring_name' => (string) $correlatedMonitoring->name,
+                    'down_at' => Date::parse($correlated->down_at)->toIso8601String(),
+                    'same_host' => MonitoringHost::same($host, MonitoringHost::for($correlatedMonitoring)),
+                ] : null;
+            })
+            ->filter()
+            ->all());
     }
 
     /**

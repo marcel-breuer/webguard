@@ -51,11 +51,10 @@ class MonitoringIncidentService
         $hasMore = $incidents->count() > $limit;
 
         return [
-            'data' => $incidents
+            'data' => array_values($incidents
                 ->take($limit)
                 ->map(fn (Incident $incident): array => $this->incidentPayload($incident))
-                ->values()
-                ->all(),
+                ->all()),
             'has_more' => $hasMore,
             'next_offset' => $hasMore ? $offset + $limit : null,
         ];

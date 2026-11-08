@@ -51,11 +51,10 @@ final class McpMonitoringTools
     {
         throw_if($limit < 1 || $limit > 50, ToolCallException::class, 'The limit must be between 1 and 50.');
 
-        $incidents = $this->incidentDiagnosisAccessService
+        $incidents = array_values($this->incidentDiagnosisAccessService
             ->listOpen($this->user, $limit)
             ->map(fn ($incident): array => $this->incidentDiagnosisAccessService->payload($incident))
-            ->values()
-            ->all();
+            ->all());
 
         return ['incidents' => $incidents, 'count' => count($incidents)];
     }
