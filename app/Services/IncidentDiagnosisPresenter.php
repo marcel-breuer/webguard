@@ -123,7 +123,7 @@ final class IncidentDiagnosisPresenter
      */
     private function message(string $group, array $definition): string
     {
-        $key = 'incidents.diagnosis.' . $group . '.' . (string) ($definition['key'] ?? 'unknown');
+        $key = 'incidents.diagnosis.' . $group . '.' . ($definition['key'] ?? 'unknown');
         $params = is_array($definition['params'] ?? null) ? $definition['params'] : [];
         $replacements = [];
 
