@@ -26,6 +26,7 @@ use Illuminate\Support\Facades\Date;
 #[WithoutIncrementing]
 class StatusPageSubscriber extends Model
 {
+    /** @use HasFactory<\Illuminate\Database\Eloquent\Factories\Factory<self>> */
     use HasFactory;
     use HasUlids;
 
@@ -55,6 +56,10 @@ class StatusPageSubscriber extends Model
         return $this->verified_at !== null;
     }
 
+    /**
+     * @param  Builder<StatusPageSubscriber>  $builder
+     * @return Builder<StatusPageSubscriber>
+     */
     #[Scope]
     protected function verified(Builder $builder): Builder
     {

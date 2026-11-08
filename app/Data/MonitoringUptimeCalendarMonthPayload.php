@@ -18,7 +18,7 @@ final readonly class MonitoringUptimeCalendarMonthPayload implements JsonSeriali
     ) {}
 
     /**
-     * @return array{days: list<array{date: string, uptime_percentage: float|null}>, monthly_average_uptime: float|null}
+     * @return array{days: array<int, array{date: string, uptime_percentage: float|null}>, monthly_average_uptime: float|null}
      */
     public function toArray(): array
     {
@@ -32,7 +32,7 @@ final readonly class MonitoringUptimeCalendarMonthPayload implements JsonSeriali
     }
 
     /**
-     * @return array{days: list<array{date: string, uptime_percentage: float|null}>, monthly_average_uptime: float|null}
+     * @return array{days: array<int, array{date: string, uptime_percentage: float|null}>, monthly_average_uptime: float|null}
      */
     public function jsonSerialize(): array
     {

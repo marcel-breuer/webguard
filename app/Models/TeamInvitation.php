@@ -28,6 +28,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 #[WithoutIncrementing]
 class TeamInvitation extends Model
 {
+    /** @use HasFactory<\Illuminate\Database\Eloquent\Factories\Factory<self>> */
     use HasFactory;
     use HasUlids;
 
@@ -54,6 +55,10 @@ class TeamInvitation extends Model
             && $this->expires_at->isFuture();
     }
 
+    /**
+     * @param  Builder<TeamInvitation>  $builder
+     * @return Builder<TeamInvitation>
+     */
     #[Scope]
     protected function pending(Builder $builder): Builder
     {

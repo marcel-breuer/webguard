@@ -37,6 +37,7 @@ use Illuminate\Support\Carbon;
 #[WithoutIncrementing]
 class NotificationChannelDelivery extends Model
 {
+    /** @use HasFactory<\Illuminate\Database\Eloquent\Factories\Factory<self>> */
     use HasFactory;
     use HasUlids;
 

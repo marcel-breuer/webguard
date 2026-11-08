@@ -22,6 +22,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 #[WithoutIncrementing]
 class TeamMembership extends Model
 {
+    /** @use HasFactory<\Database\Factories\TeamMembershipFactory> */
     use HasFactory;
     use HasUlids;
 

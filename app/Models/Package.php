@@ -34,7 +34,9 @@ use Illuminate\Support\Carbon;
 #[WithoutIncrementing]
 class Package extends Model
 {
-    use HasFactory, HasUlids;
+    /** @use HasFactory<\Database\Factories\PackageFactory> */
+    use HasFactory;
+    use HasUlids;
 
     protected $keyType = 'string';
 

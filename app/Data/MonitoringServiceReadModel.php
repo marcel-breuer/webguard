@@ -29,7 +29,7 @@ final readonly class MonitoringServiceReadModel implements JsonSerializable
             id: (string) $monitoring->getKey(),
             name: (string) $monitoring->name,
             target: (string) $monitoring->target,
-            type: $monitoring->type?->value,
+            type: $monitoring->type->value,
             groupName: $monitoring->groups->first()?->name,
             status: $status,
             hasOpenIncident: $monitoring->latestIncident?->up_at === null && $monitoring->latestIncident !== null,

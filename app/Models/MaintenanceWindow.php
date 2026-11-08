@@ -29,6 +29,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 #[WithoutIncrementing]
 class MaintenanceWindow extends Model
 {
+    /** @use HasFactory<\Illuminate\Database\Eloquent\Factories\Factory<self>> */
     use HasFactory;
     use HasUlids;
 
@@ -58,12 +59,20 @@ class MaintenanceWindow extends Model
                 ->exists();
     }
 
+    /**
+     * @param  Builder<MaintenanceWindow>  $builder
+     * @return Builder<MaintenanceWindow>
+     */
     #[Scope]
     protected function enabled(Builder $builder): Builder
     {
         return $builder->where('enabled', true);
     }
 
+    /**
+     * @param  Builder<MaintenanceWindow>  $builder
+     * @return Builder<MaintenanceWindow>
+     */
     #[Scope]
     protected function visibleTo(Builder $builder, User $user): Builder
     {

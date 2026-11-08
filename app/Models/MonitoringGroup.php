@@ -25,6 +25,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 #[WithoutIncrementing]
 class MonitoringGroup extends Model
 {
+    /** @use HasFactory<\Database\Factories\MonitoringGroupFactory> */
     use HasFactory;
     use HasUlids;
 

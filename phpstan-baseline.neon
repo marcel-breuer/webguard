@@ -1,0 +1,1657 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Method App\\Console\\Commands\\Monitoring\\AggregateDailyResultsCommand\:\:handle\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Console/Commands/Monitoring/AggregateDailyResultsCommand.php
+
+		-
+			message: '#^Instanceof between App\\Models\\Monitoring and App\\Models\\Monitoring will always evaluate to true\.$#'
+			identifier: instanceof.alwaysTrue
+			count: 1
+			path: app/Console/Commands/Monitoring/ArchiveMonitoringResponsesCommand.php
+
+		-
+			message: '#^Instanceof between Illuminate\\Support\\Carbon and Carbon\\CarbonInterface will always evaluate to true\.$#'
+			identifier: instanceof.alwaysTrue
+			count: 1
+			path: app/Console/Commands/Monitoring/ArchiveMonitoringResponsesCommand.php
+
+		-
+			message: '#^Method App\\Console\\Commands\\Monitoring\\ArchiveMonitoringResponsesCommand\:\:handle\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Console/Commands/Monitoring/ArchiveMonitoringResponsesCommand.php
+
+		-
+			message: '#^Method App\\Console\\Commands\\Monitoring\\PurgeSoftDeletedMonitoringsCommand\:\:handle\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Console/Commands/Monitoring/PurgeSoftDeletedMonitoringsCommand.php
+
+		-
+			message: '#^Cannot access property \$email on App\\Models\\User\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: app/Console/Commands/Monitoring/SendMonitoringGroupSlaReportsCommand.php
+
+		-
+			message: '#^Match arm comparison between App\\Enums\\NotificationEventType\:\:PERFORMANCE_RECOVERED and App\\Enums\\NotificationEventType\:\:PERFORMANCE_RECOVERED is always true\.$#'
+			identifier: match.alwaysTrue
+			count: 1
+			path: app/Console/Commands/Notifications/DispatchStatusChangeNotificationsCommand.php
+
+		-
+			message: '#^Parameter \#3 \$selectedChannels of method App\\Services\\Notifications\\NotificationRouter\:\:dispatch\(\) expects list\<string\>\|null, array\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Console/Commands/Notifications/DispatchStatusChangeNotificationsCommand.php
+
+		-
+			message: '#^Parameter \$occurredAt of class App\\Services\\Notifications\\NotificationPayload constructor expects Carbon\\CarbonInterface, Carbon\\Carbon\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Console/Commands/Notifications/DispatchStatusChangeNotificationsCommand.php
+
+		-
+			message: '#^Expression on left side of \?\? is not nullable\.$#'
+			identifier: nullCoalesce.expr
+			count: 2
+			path: app/Console/Commands/Notifications/SendSslExpiryWarningsCommand.php
+
+		-
+			message: '#^Negated boolean expression is always false\.$#'
+			identifier: booleanNot.alwaysFalse
+			count: 1
+			path: app/Console/Commands/Notifications/SendSslExpiryWarningsCommand.php
+
+		-
+			message: '#^Parameter \#3 \$selectedChannels of method App\\Services\\Notifications\\NotificationRouter\:\:dispatch\(\) expects list\<string\>\|null, array\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Console/Commands/Notifications/SendSslExpiryWarningsCommand.php
+
+		-
+			message: '#^Offset ''monitorings_count'' on array\{uptime_percentage\: float\|null, incidents_count\: int, longest_downtime_minutes\: int, monitorings_count\: int\} on left side of \?\? always exists and is not nullable\.$#'
+			identifier: nullCoalesce.offset
+			count: 1
+			path: app/Console/Commands/Notifications/SendWeeklyMonitoringDigestCommand.php
+
+		-
+			message: '#^Cannot access property \$id on App\\Models\\Package\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: app/Console/Commands/User/CreateAdminUserCommand.php
+
+		-
+			message: '#^Method App\\Console\\Commands\\User\\CreateAdminUserCommand\:\:handle\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Console/Commands/User/CreateAdminUserCommand.php
+
+		-
+			message: '#^Method App\\Data\\MonitoringUptimeCalendarPayload\:\:toArray\(\) should return array\<string, array\{days\: list\<array\{date\: string, uptime_percentage\: float\|null\}\>, monthly_average_uptime\: float\|null\}\> but returns array\<string, array\{days\: array\<int, array\{date\: string, uptime_percentage\: float\|null\}\>, monthly_average_uptime\: float\|null\}\>\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Data/MonitoringUptimeCalendarPayload.php
+
+		-
+			message: '#^Call to an undefined method App\\Models\\Monitoring\|Illuminate\\Database\\Eloquent\\Collection\<int, App\\Models\\Monitoring\>\:\:preferredLocationCodes\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Http/Controllers/Api/Internal/MonitoringController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Api\\Internal\\MonitoringController\:\:storeIncident\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/Api/Internal/MonitoringController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Api\\Internal\\MonitoringController\:\:updateIncident\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/Api/Internal/MonitoringController.php
+
+		-
+			message: '#^Parameter \#1 \$monitoring of method App\\Services\\MonitoringCheckIntervalService\:\:secondsFor\(\) expects App\\Models\\Monitoring, App\\Models\\Monitoring\|Illuminate\\Database\\Eloquent\\Collection\<int, App\\Models\\Monitoring\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Http/Controllers/Api/Internal/MonitoringController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Api\\Internal\\MonitoringListController\:\:__invoke\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/Api/Internal/MonitoringListController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Api\\Internal\\Ui\\AdminWorkspaceController\:\:paginated\(\) has parameter \$lengthAwarePaginator with generic class Illuminate\\Pagination\\LengthAwarePaginator but does not specify its types\: TKey, TValue$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Http/Controllers/Api/Internal/Ui/AdminWorkspaceController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Api\\Internal\\Ui\\AdminWorkspaceController\:\:paginated\(\) should return array\{items\: list\<array\<string, mixed\>\>, pagination\: array\{current_page\: int, last_page\: int, total\: int\}\} but returns array\{items\: array\<int, mixed\>, pagination\: array\{current_page\: int, last_page\: int, total\: int\}\}\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Http/Controllers/Api/Internal/Ui/AdminWorkspaceController.php
+
+		-
+			message: '#^Using nullsafe method call on non\-nullable type Illuminate\\Support\\Carbon\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 3
+			path: app/Http/Controllers/Api/Internal/Ui/AdminWorkspaceController.php
+
+		-
+			message: '#^Using nullsafe property access on non\-nullable type App\\Models\\User\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Http/Controllers/Api/Internal/Ui/AdminWorkspaceController.php
+
+		-
+			message: '#^Parameter \#1 \$name of function cookie expects non\-empty\-string\|null, string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Http/Controllers/Api/Internal/Ui/AuthWorkspaceController.php
+
+		-
+			message: '#^Parameter \#1 \$name of function cookie expects non\-empty\-string\|null, string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Http/Controllers/Api/Internal/Ui/LocaleController.php
+
+		-
+			message: '#^Cannot access property \$monitoring_limit on App\\Models\\Package\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: app/Http/Controllers/Api/Internal/Ui/MonitoringManagementController.php
+
+		-
+			message: '#^Parameter \#2 \$team of method App\\Services\\Monitorings\\MonitoringOwnershipService\:\:moveToTeam\(\) expects App\\Models\\Team, App\\Models\\Team\|Illuminate\\Database\\Eloquent\\Collection\<int, App\\Models\\Team\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Http/Controllers/Api/Internal/Ui/MonitoringOwnershipController.php
+
+		-
+			message: '#^Offset ''cursor'' might not exist on array\<string, mixed\>\|null\.$#'
+			identifier: offsetAccess.notFound
+			count: 1
+			path: app/Http/Controllers/Api/Internal/Ui/NotificationInboxController.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Contracts\\Pagination\\LengthAwarePaginator\<int, Laravel\\Sanctum\\PersonalAccessToken\>\:\:getCollection\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Http/Controllers/Api/Internal/Ui/ProfileApiKeyController.php
+
+		-
+			message: '#^Parameter \#1 \$personalAccessToken of method App\\Http\\Controllers\\Api\\Internal\\Ui\\ProfileApiKeyController\:\:payload\(\) expects App\\Models\\PersonalAccessToken, Laravel\\Sanctum\\PersonalAccessToken given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Http/Controllers/Api/Internal/Ui/ProfileApiKeyController.php
+
+		-
+			message: '#^Parameter \#1 \$name of function cookie expects non\-empty\-string\|null, string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Http/Controllers/Api/Internal/Ui/ProfileController.php
+
+		-
+			message: '#^Cannot access property \$name on App\\Models\\Team\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: app/Http/Controllers/Api/Internal/Ui/SessionController.php
+
+		-
+			message: '#^Cannot call method isDemo\(\) on App\\Models\\User\|null\.$#'
+			identifier: method.nonObject
+			count: 2
+			path: app/Http/Controllers/Api/Internal/Ui/StatusPageManagementController.php
+
+		-
+			message: '#^Parameter \#2 \$attributes of method App\\Services\\StatusPageManagementService\:\:create\(\) expects array\{name\: string, description\?\: string\|null, is_public\: bool, auto_publish_incident_updates\?\: bool, components\: list\<array\{name\: string, description\?\: string\|null, source_type\: string, monitoring_group_id\?\: string\|null, monitoring_ids\?\: list\<string\>\}\>\}, array\<string, mixed\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Http/Controllers/Api/Internal/Ui/StatusPageManagementController.php
+
+		-
+			message: '#^Parameter \#2 \$attributes of method App\\Services\\StatusPageManagementService\:\:update\(\) expects array\{name\: string, description\?\: string\|null, is_public\: bool, auto_publish_incident_updates\?\: bool, components\: list\<array\{name\: string, description\?\: string\|null, source_type\: string, monitoring_group_id\?\: string\|null, monitoring_ids\?\: list\<string\>\}\>\}, array\<string, mixed\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Http/Controllers/Api/Internal/Ui/StatusPageManagementController.php
+
+		-
+			message: '#^Parameter \#2 \$data of method App\\Services\\Teams\\TeamMembershipService\:\:createTeam\(\) expects array\{name\: string, description\?\: string\|null\}, array\<string, mixed\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Http/Controllers/Api/Internal/Ui/TeamStoreController.php
+
+		-
+			message: '#^Cannot access property \$email on App\\Models\\User\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: app/Http/Controllers/Api/Internal/Ui/TeamWorkspaceController.php
+
+		-
+			message: '#^Cannot access property \$name on App\\Models\\User\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: app/Http/Controllers/Api/Internal/Ui/TeamWorkspaceController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Api\\Mobile\\MobileMaintenanceController\:\:state\(\) has parameter \$allowed with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Controllers/Api/Mobile/MobileMaintenanceController.php
+
+		-
+			message: '#^Offset ''cursor'' might not exist on array\<string, mixed\>\|null\.$#'
+			identifier: offsetAccess.notFound
+			count: 1
+			path: app/Http/Controllers/Api/Mobile/MobileNotificationBoardController.php
+
+		-
+			message: '#^Parameter \#3 \$attributes of method App\\Services\\MobileStatusPageWorkspaceService\:\:updateIncidentUpdate\(\) expects array\{status\: string, message\: string\}, array\<string, mixed\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Http/Controllers/Api/Mobile/MobileStatusPageWorkspaceController.php
+
+		-
+			message: '#^Parameter \#3 \$attributes of method App\\Services\\StatusPageAnnouncementService\:\:create\(\) expects array\{title\: string, message\: string, notify_subscribers\: bool\}, array\<string, mixed\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Http/Controllers/Api/Mobile/MobileStatusPageWorkspaceController.php
+
+		-
+			message: '#^Parameter \#3 \$attributes of method App\\Services\\StatusPageAnnouncementService\:\:update\(\) expects array\{title\: string, message\: string\}, array\<string, mixed\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Http/Controllers/Api/Mobile/MobileStatusPageWorkspaceController.php
+
+		-
+			message: '#^Cannot access property \$monitoring_limit on App\\Models\\Package\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: app/Http/Controllers/Api/MonitoringManagementController.php
+
+		-
+			message: '#^Parameter \#2 \$team of method App\\Services\\Monitorings\\MonitoringOwnershipService\:\:moveToTeam\(\) expects App\\Models\\Team, App\\Models\\Team\|Illuminate\\Database\\Eloquent\\Collection\<int, App\\Models\\Team\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Http/Controllers/Api/MonitoringManagementController.php
+
+		-
+			message: '#^Cannot call method hasVerifiedEmail\(\) on App\\Models\\User\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: app/Http/Controllers/Auth/VerifyEmailController.php
+
+		-
+			message: '#^Cannot call method markEmailAsVerified\(\) on App\\Models\\User\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: app/Http/Controllers/Auth/VerifyEmailController.php
+
+		-
+			message: '#^Parameter \#1 \$user of class Illuminate\\Auth\\Events\\Verified constructor expects Illuminate\\Contracts\\Auth\\MustVerifyEmail, App\\Models\\User\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Http/Controllers/Auth/VerifyEmailController.php
+
+		-
+			message: '#^Cannot access property \$locale on App\\Models\\User\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: app/Http/Controllers/LocaleController.php
+
+		-
+			message: '#^Cannot call method update\(\) on App\\Models\\User\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: app/Http/Controllers/LocaleController.php
+
+		-
+			message: '#^Parameter \#1 \$name of function cookie expects non\-empty\-string\|null, string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Http/Controllers/LocaleController.php
+
+		-
+			message: '#^Method App\\Http\\Middleware\\CheckUserRole\:\:handle\(\) has parameter \$roles with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Http/Middleware/CheckUserRole.php
+
+		-
+			message: '#^Parameter \#1 \$boolean of function abort_unless expects bool, App\\Models\\User\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Http/Middleware/CheckUserRole.php
+
+		-
+			message: '#^Using nullsafe method call on non\-nullable type App\\Models\\User\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Http/Middleware/RequireExternalApiAbility.php
+
+		-
+			message: '#^Cannot access property \$locale on App\\Models\\User\|null\.$#'
+			identifier: property.nonObject
+			count: 2
+			path: app/Http/Middleware/SetLocaleMiddleware.php
+
+		-
+			message: '#^Method App\\Http\\Middleware\\SetLocaleMiddleware\:\:resolveLocaleFromCookieOrHeader\(\) should return string but returns array\|string\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Http/Middleware/SetLocaleMiddleware.php
+
+		-
+			message: '#^Method App\\Http\\Middleware\\SetLocaleMiddleware\:\:resolveLocaleFromCookieOrHeader\(\) should return string but returns string\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Http/Middleware/SetLocaleMiddleware.php
+
+		-
+			message: '#^Parameter \#1 \$locale of static method App\\Enums\\SupportedLanguage\:\:isSupported\(\) expects string\|null, array\|string\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Http/Middleware/SetLocaleMiddleware.php
+
+		-
+			message: '#^Instanceof between Laravel\\Sanctum\\PersonalAccessToken and Laravel\\Sanctum\\PersonalAccessToken will always evaluate to true\.$#'
+			identifier: instanceof.alwaysTrue
+			count: 1
+			path: app/Http/Middleware/TrackApiUsage.php
+
+		-
+			message: '#^Unable to resolve the template type TKey in call to function collect$#'
+			identifier: argument.templateType
+			count: 1
+			path: app/Http/Requests/Api/MonitoringUptimeSummaryRequest.php
+
+		-
+			message: '#^Unable to resolve the template type TValue in call to function collect$#'
+			identifier: argument.templateType
+			count: 1
+			path: app/Http/Requests/Api/MonitoringUptimeSummaryRequest.php
+
+		-
+			message: '#^Method App\\Http\\Requests\\LoginRequest\:\:rules\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Requests/LoginRequest.php
+
+		-
+			message: '#^Parameter \#1 \$value of static method Illuminate\\Support\\Str\:\:lower\(\) expects string, Illuminate\\Support\\Stringable given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Http/Requests/LoginRequest.php
+
+		-
+			message: '#^Method App\\Http\\Requests\\MaintenanceRequest\:\:after\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Requests/MaintenanceRequest.php
+
+		-
+			message: '#^Method App\\Http\\Requests\\MonitoringRequest\:\:normalizeHttpHeaders\(\) should return array\<string, mixed\>\|string\|null but returns mixed\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Http/Requests/MonitoringRequest.php
+
+		-
+			message: '#^Method App\\Http\\Requests\\MonitoringRequest\:\:rules\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Requests/MonitoringRequest.php
+
+		-
+			message: '#^Method App\\Http\\Requests\\MonitoringRequest\:\:targetRules\(\) should return array\<int, \(callable\(\)\: mixed\)\|Illuminate\\Contracts\\Validation\\ValidationRule\|string\> but returns array\{Illuminate\\Validation\\Rules\\RequiredIf, ''nullable'', ''string'', ''max\:255'', Closure\(mixed, mixed, mixed\)\: void\}\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Http/Requests/MonitoringRequest.php
+
+		-
+			message: '#^Method App\\Http\\Requests\\UpdateNotificationSettingsRequest\:\:rules\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Requests/UpdateNotificationSettingsRequest.php
+
+		-
+			message: '#^Using nullsafe method call on non\-nullable type Illuminate\\Support\\Carbon\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 2
+			path: app/Http/Resources/External/MobileIncidentWorkspaceResource.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$name\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Http/Resources/External/MobileMaintenanceWindowResource.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>name" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Http/Resources/External/MobileMaintenanceWindowResource.php
+
+		-
+			message: '#^Using nullsafe property access on non\-nullable type App\\Enums\\MonitoringLifecycleStatus\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Http/Resources/External/MobileMonitoringAssignmentResource.php
+
+		-
+			message: '#^Using nullsafe property access on non\-nullable type App\\Enums\\MonitoringType\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Http/Resources/External/MobileMonitoringAssignmentResource.php
+
+		-
+			message: '#^Using nullsafe method call on non\-nullable type Illuminate\\Support\\Carbon\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 2
+			path: app/Http/Resources/External/MobilePushDeviceResource.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>monitorings" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Http/Resources/External/MobileStatusPageResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Instance\\MonitoringResource\:\:\$auth_password\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Instance/MonitoringResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Instance\\MonitoringResource\:\:\$auth_username\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Instance/MonitoringResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Instance\\MonitoringResource\:\:\$deleted_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Instance/MonitoringResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Instance\\MonitoringResource\:\:\$dns_expected_values\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Instance/MonitoringResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Instance\\MonitoringResource\:\:\$dns_record_type\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Instance/MonitoringResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Instance\\MonitoringResource\:\:\$domainResult\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Http/Resources/Instance/MonitoringResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Instance\\MonitoringResource\:\:\$expected_http_statuses\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Instance/MonitoringResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Instance\\MonitoringResource\:\:\$heartbeat_grace_minutes\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Instance/MonitoringResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Instance\\MonitoringResource\:\:\$heartbeat_interval_minutes\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Instance/MonitoringResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Instance\\MonitoringResource\:\:\$heartbeat_last_ping_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Instance/MonitoringResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Instance\\MonitoringResource\:\:\$http_body\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Instance/MonitoringResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Instance\\MonitoringResource\:\:\$http_headers\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Instance/MonitoringResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Instance\\MonitoringResource\:\:\$http_method\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Instance/MonitoringResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Instance\\MonitoringResource\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Instance/MonitoringResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Instance\\MonitoringResource\:\:\$keyword\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Instance/MonitoringResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Instance\\MonitoringResource\:\:\$latestResponseResult\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Http/Resources/Instance/MonitoringResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Instance\\MonitoringResource\:\:\$latest_response_at_for_location\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Instance/MonitoringResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Instance\\MonitoringResource\:\:\$maintenance_from\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Instance/MonitoringResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Instance\\MonitoringResource\:\:\$maintenance_until\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Instance/MonitoringResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Instance\\MonitoringResource\:\:\$name\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Instance/MonitoringResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Instance\\MonitoringResource\:\:\$port\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Instance/MonitoringResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Instance\\MonitoringResource\:\:\$preferred_location\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Instance/MonitoringResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Instance\\MonitoringResource\:\:\$public_label_enabled\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Instance/MonitoringResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Instance\\MonitoringResource\:\:\$server_health_cpu_threshold_percent\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Instance/MonitoringResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Instance\\MonitoringResource\:\:\$server_health_last_reported_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Instance/MonitoringResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Instance\\MonitoringResource\:\:\$server_health_ram_threshold_percent\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Instance/MonitoringResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Instance\\MonitoringResource\:\:\$server_health_storage_threshold_percent\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Instance/MonitoringResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Instance\\MonitoringResource\:\:\$status\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Instance/MonitoringResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Instance\\MonitoringResource\:\:\$target\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Instance/MonitoringResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Instance\\MonitoringResource\:\:\$timeout\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Instance/MonitoringResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Instance\\MonitoringResource\:\:\$type\.$#'
+			identifier: property.notFound
+			count: 4
+			path: app/Http/Resources/Instance/MonitoringResource.php
+
+		-
+			message: '#^Call to an undefined method App\\Http\\Resources\\Instance\\MonitoringResource\:\:isUnderMaintenance\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Http/Resources/Instance/MonitoringResource.php
+
+		-
+			message: '#^Call to an undefined method App\\Http\\Resources\\Instance\\MonitoringResource\:\:preferredLocationCodes\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Http/Resources/Instance/MonitoringResource.php
+
+		-
+			message: '#^Expression on left side of \?\? is not nullable\.$#'
+			identifier: nullCoalesce.expr
+			count: 2
+			path: app/Http/Resources/InternalUi/MonitoringResource.php
+
+		-
+			message: '#^Using nullsafe method call on non\-nullable type Illuminate\\Support\\Carbon\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Http/Resources/InternalUi/MonitoringResource.php
+
+		-
+			message: '#^Using nullsafe property access on non\-nullable type App\\Enums\\MonitoringPerformanceStatus\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Http/Resources/InternalUi/MonitoringResource.php
+
+		-
+			message: '#^Cannot call method copy\(\) on Carbon\\Carbon\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: app/Jobs/EvaluateHeartbeatMonitoringsJob.php
+
+		-
+			message: '#^Cannot call method copy\(\) on Carbon\\Carbon\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: app/Jobs/EvaluateServerHealthMonitoringsJob.php
+
+		-
+			message: '#^Offset ''ends_at'' might not exist on array\|null\.$#'
+			identifier: offsetAccess.notFound
+			count: 1
+			path: app/Jobs/SendPlannedMaintenanceNotification.php
+
+		-
+			message: '#^Offset ''monitorings'' might not exist on array\|null\.$#'
+			identifier: offsetAccess.notFound
+			count: 1
+			path: app/Jobs/SendPlannedMaintenanceNotification.php
+
+		-
+			message: '#^Offset ''starts_at'' might not exist on array\|null\.$#'
+			identifier: offsetAccess.notFound
+			count: 1
+			path: app/Jobs/SendPlannedMaintenanceNotification.php
+
+		-
+			message: '#^Unable to resolve the template type TKey in call to function collect$#'
+			identifier: argument.templateType
+			count: 1
+			path: app/Jobs/SendPlannedMaintenanceNotification.php
+
+		-
+			message: '#^Unable to resolve the template type TValue in call to function collect$#'
+			identifier: argument.templateType
+			count: 1
+			path: app/Jobs/SendPlannedMaintenanceNotification.php
+
+		-
+			message: '#^Strict comparison using \=\=\= between App\\Models\\Monitoring and null will always evaluate to false\.$#'
+			identifier: identical.alwaysFalse
+			count: 1
+			path: app/Jobs/SendStatusPageIncidentUpdateNotifications.php
+
+		-
+			message: '#^Cannot call method isoFormat\(\) on Illuminate\\Support\\Carbon\|string\.$#'
+			identifier: method.nonObject
+			count: 2
+			path: app/Mail/MonitoringAlertMail.php
+
+		-
+			message: '#^Method App\\Mail\\MonitoringAlertMail\:\:regionalConsensusEvidence\(\) should return array\{classification\: string, failed_count\: int, reporting\: int, total\: int, required\: int, locations\: list\<array\{code\: string, status\: string, checked_at\: string\}\>\}\|null but returns array\{classification\: \(array\|string\), failed_count\: int\<0, max\>, reporting\: int, total\: int, required\: int, locations\: array\<int, array\{code\: string, status\: string, checked_at\: string\}\>\}\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Mail/MonitoringAlertMail.php
+
+		-
+			message: '#^Cannot access property \$name on App\\Models\\StatusPage\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: app/Mail/PublicStatusPageAnnouncementMail.php
+
+		-
+			message: '#^Cannot access property \$name on App\\Models\\StatusPage\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: app/Mail/PublicStatusPageMaintenanceScheduledMail.php
+
+		-
+			message: '#^Cannot access property \$name on App\\Models\\StatusPage\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: app/Mail/PublicStatusPageStatusUpdateMail.php
+
+		-
+			message: '#^Cannot access property \$name on App\\Models\\StatusPage\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: app/Mail/PublicStatusPageSubscriptionConfirmationMail.php
+
+		-
+			message: '#^Cannot access property \$name on App\\Models\\Monitoring\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: app/Mail/StatusPageStatusUpdateMail.php
+
+		-
+			message: '#^Cannot access property \$name on App\\Models\\Monitoring\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: app/Mail/StatusPageSubscriptionConfirmationMail.php
+
+		-
+			message: '#^Cannot access property \$name on App\\Models\\Team\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: app/Mail/TeamInvitationMail.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$user_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Models/MaintenanceWindow.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Builder\<Illuminate\\Database\\Eloquent\\Model\>\:\:visibleTo\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Models/MaintenanceWindow.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:isManageableBy\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Models/MaintenanceWindow.php
+
+		-
+			message: '#^Method App\\Models\\MaintenanceWindow\:\:monitoring\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/MaintenanceWindow.php
+
+		-
+			message: '#^Method App\\Models\\MaintenanceWindow\:\:monitoringGroup\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/MaintenanceWindow.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Contracts\\Database\\Eloquent\\Builder\:\:withMaintenanceWindowState\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Models/Monitoring.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Builder\:\:statusChange\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: app/Models/Monitoring.php
+
+		-
+			message: '#^Call to function is_string\(\) with string will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: app/Models/Monitoring.php
+
+		-
+			message: '#^Cannot access property \$id on App\\Models\\User\|null\.$#'
+			identifier: property.nonObject
+			count: 2
+			path: app/Models/Monitoring.php
+
+		-
+			message: '#^Right side of && is always true\.$#'
+			identifier: booleanAnd.rightAlwaysTrue
+			count: 1
+			path: app/Models/Monitoring.php
+
+		-
+			message: '#^Cannot access property \$name on App\\Models\\Monitoring\|null\.$#'
+			identifier: property.nonObject
+			count: 5
+			path: app/Models/MonitoringNotification.php
+
+		-
+			message: '#^Cannot call method isoFormat\(\) on Carbon\\Carbon\|string\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: app/Models/MonitoringNotification.php
+
+		-
+			message: '#^Cannot call method locale\(\) on Carbon\\Carbon\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: app/Models/MonitoringNotification.php
+
+		-
+			message: '#^Strict comparison using \=\=\= between App\\Enums\\NotificationType\:\:PERFORMANCE and App\\Enums\\NotificationType\:\:PERFORMANCE will always evaluate to true\.$#'
+			identifier: identical.alwaysTrue
+			count: 1
+			path: app/Models/MonitoringNotification.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>name" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Models/MonitoringNotification.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>users" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Models/MonitoringNotification.php
+
+		-
+			message: '#^Cannot access property \$id on App\\Models\\User\|null\.$#'
+			identifier: property.nonObject
+			count: 2
+			path: app/Models/Scopes/UserScope.php
+
+		-
+			message: '#^Parameter \#1 \$builder \(Illuminate\\Database\\Eloquent\\Builder\<Illuminate\\Database\\Eloquent\\Model\>\) of method App\\Models\\Scopes\\UserScope\:\:apply\(\) should be compatible with parameter \$builder \(Illuminate\\Database\\Eloquent\\Builder\<covariant Illuminate\\Database\\Eloquent\\Model\>\) of method Illuminate\\Database\\Eloquent\\Scope\<Illuminate\\Database\\Eloquent\\Model\>\:\:apply\(\)$#'
+			identifier: method.childParameterType
+			count: 1
+			path: app/Models/Scopes/UserScope.php
+
+		-
+			message: '#^Instanceof between App\\Models\\Monitoring and App\\Models\\Monitoring will always evaluate to true\.$#'
+			identifier: instanceof.alwaysTrue
+			count: 1
+			path: app/Observers/IncidentObserver.php
+
+		-
+			message: '#^Call to an undefined method object\:\:getEmailForVerification\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Providers/AppServiceProvider.php
+
+		-
+			message: '#^Call to an undefined method object\:\:getKey\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Providers/AppServiceProvider.php
+
+		-
+			message: '#^Call to function method_exists\(\) with Illuminate\\Contracts\\Queue\\Job and ''getQueue'' will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: app/Providers/AppServiceProvider.php
+
+		-
+			message: '#^Parameter \#2 \$durationMs of method App\\Services\\OperationalMetricsService\:\:recordSlowQuery\(\) expects float, float\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Providers/AppServiceProvider.php
+
+		-
+			message: '#^Method App\\Queries\\MaintenanceOverviewQuery\:\:manageableMonitoringIdsFor\(\) should return list\<string\> but returns array\<int, string\>\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Queries/MaintenanceOverviewQuery.php
+
+		-
+			message: '#^Parameter \#1 \$sql of method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\Monitoring\>\:\:orderByRaw\(\) expects literal\-string, non\-falsy\-string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Queries/MaintenanceOverviewQuery.php
+
+		-
+			message: '#^Parameter \#2 \$direction of method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\Monitoring\>\:\:orderBy\(\) expects ''asc''\|''desc''\|SortDirection, string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Queries/MaintenanceOverviewQuery.php
+
+		-
+			message: '#^Parameter \#1 \$expression of method Illuminate\\Database\\Query\\Builder\:\:selectRaw\(\) expects literal\-string, non\-falsy\-string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Queries/MonitoringCheckHistoryQuery.php
+
+		-
+			message: '#^Cannot call method isoFormat\(\) on Illuminate\\Support\\Carbon\|string\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: app/Services/IncidentAnalyticsPayloadService.php
+
+		-
+			message: '#^Method App\\Services\\IncidentAnalyticsPayloadService\:\:distribution\(\) should return list\<array\{key\: string, label\: string, count\: int\}\> but returns array\<int, array\{key\: string, label\: \(array\|string\), count\: int\}\>\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Services/IncidentAnalyticsPayloadService.php
+
+		-
+			message: '#^Method App\\Services\\IncidentAnalyticsPayloadService\:\:groupCounts\(\) should return Illuminate\\Support\\Collection\<string, int\> but returns Illuminate\\Support\\Collection\<\(int\|string\), int\<0, max\>\>\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Services/IncidentAnalyticsPayloadService.php
+
+		-
+			message: '#^Method App\\Services\\IncidentAnalyticsPayloadService\:\:incidentTrend\(\) should return array\{points\: list\<array\{label\: string, count\: int, x\: float, y\: float\}\>, max\: int\} but returns array\{points\: array\<int, non\-empty\-array\>, max\: int\<1, max\>\}\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Services/IncidentAnalyticsPayloadService.php
+
+		-
+			message: '#^Parameter \#1 \$num of function round expects float\|int, float\|int\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Services/IncidentAnalyticsPayloadService.php
+
+		-
+			message: '#^Unable to resolve the template type TGroupKey in call to method Illuminate\\Support\\Collection\<int,App\\Models\\Incident\>\:\:groupBy\(\)$#'
+			identifier: argument.templateType
+			count: 1
+			path: app/Services/IncidentAnalyticsPayloadService.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>monitorings" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Services/IncidentAnalyticsPayloadService.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>value" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 6
+			path: app/Services/IncidentAnalyticsPayloadService.php
+
+		-
+			message: '#^Method App\\Services\\IncidentTimelineService\:\:events\(\) should return Illuminate\\Support\\Collection\<int, array\{id\: string\|null, title\: string, description\: string\|null, occurred_at\: Illuminate\\Support\\Carbon, source_type\: string\}\> but returns Illuminate\\Support\\Collection\<int, array\{id\: null, title\: string, description\: string\|null, occurred_at\: Illuminate\\Support\\Carbon, source_type\: string\}\>\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Services/IncidentTimelineService.php
+
+		-
+			message: '#^Parameter \#1 \.\.\.\$values of method Illuminate\\Support\\Collection\<int,array\<string, Illuminate\\Support\\Carbon\|string\|null\>\>\:\:push\(\) expects array\{id\: null, title\: string, description\: string\|null, occurred_at\: Illuminate\\Support\\Carbon, source_type\: string\}, array\{id\: null, title\: ''Incident update\:…'', description\: string, occurred_at\: Carbon\\Carbon\|null, source_type\: ''incident_update''\} given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Services/IncidentTimelineService.php
+
+		-
+			message: '#^Parameter \#1 \.\.\.\$values of method Illuminate\\Support\\Collection\<int,array\<string, Illuminate\\Support\\Carbon\|string\|null\>\>\:\:push\(\) expects array\{id\: null, title\: string, description\: string\|null, occurred_at\: Illuminate\\Support\\Carbon, source_type\: string\}, array\{id\: string, title\: string, description\: string\|null, occurred_at\: Carbon\\Carbon, source_type\: string\} given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Services/IncidentTimelineService.php
+
+		-
+			message: '#^Using nullsafe method call on non\-nullable type Illuminate\\Support\\Carbon\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 2
+			path: app/Services/InstanceCallbackIdempotencyService.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$name\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Services/MaintenanceOverviewService.php
+
+		-
+			message: '#^Parameter \#1 \$callback of method Illuminate\\Support\\Collection\<int,App\\Models\\MaintenanceWindow\>\:\:map\(\) contains unresolvable type\.$#'
+			identifier: argument.unresolvableType
+			count: 1
+			path: app/Services/MaintenanceOverviewService.php
+
+		-
+			message: '#^Return type of call to method Illuminate\\Support\\Collection\<int,App\\Models\\MaintenanceWindow\>\:\:map\(\) contains unresolvable type\.$#'
+			identifier: method.unresolvableReturnType
+			count: 1
+			path: app/Services/MaintenanceOverviewService.php
+
+		-
+			message: '#^Return type of call to method Illuminate\\Support\\Collection\<int,array\<string, mixed\>\>\:\:all\(\) contains unresolvable type\.$#'
+			identifier: method.unresolvableReturnType
+			count: 1
+			path: app/Services/MaintenanceOverviewService.php
+
+		-
+			message: '#^Return type of call to method Illuminate\\Support\\Collection\<int,array\<string, mixed\>\>\:\:values\(\) contains unresolvable type\.$#'
+			identifier: method.unresolvableReturnType
+			count: 1
+			path: app/Services/MaintenanceOverviewService.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>name" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Services/MaintenanceOverviewService.php
+
+		-
+			message: '#^Method App\\Services\\McpMonitoringQueryService\:\:listAccessible\(\) should return array\{monitorings\: list\<array\{id\: string, name\: string, type\: string, status\: string\}\>, count\: int\} but returns array\{monitorings\: array\<int, array\{id\: string, name\: string, type\: string, status\: string\}\>, count\: int\<0, max\>\}\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Services/McpMonitoringQueryService.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$monitorings\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Services/MobileMaintenanceWorkspaceService.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:isManageableBy\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Services/MobileMaintenanceWorkspaceService.php
+
+		-
+			message: '#^Using nullsafe property access on non\-nullable type App\\Enums\\MonitoringPerformanceStatus\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Services/MobileMonitoringDetailPayloadService.php
+
+		-
+			message: '#^Cannot call method timelineEvents\(\) on App\\Models\\Incident\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: app/Services/MobileStatusPageWorkspaceService.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$created_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Services/MonitoringAvailabilityService.php
+
+		-
+			message: '#^Anonymous function never returns null so it can be removed from the return type\.$#'
+			identifier: return.unusedType
+			count: 1
+			path: app/Services/MonitoringAvailabilityService.php
+
+		-
+			message: '#^Call to function is_numeric\(\) with int will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: app/Services/MonitoringAvailabilityService.php
+
+		-
+			message: '#^Cannot access property \$date on App\\Models\\MonitoringDailyResult\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: app/Services/MonitoringAvailabilityService.php
+
+		-
+			message: '#^Cannot access property \$downtime_minutes on App\\Models\\MonitoringDailyResult\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: app/Services/MonitoringAvailabilityService.php
+
+		-
+			message: '#^Cannot access property \$downtime_total on App\\Models\\MonitoringDailyResult\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: app/Services/MonitoringAvailabilityService.php
+
+		-
+			message: '#^Cannot access property \$unknown_minutes on App\\Models\\MonitoringDailyResult\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: app/Services/MonitoringAvailabilityService.php
+
+		-
+			message: '#^Cannot access property \$unknown_total on App\\Models\\MonitoringDailyResult\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: app/Services/MonitoringAvailabilityService.php
+
+		-
+			message: '#^Cannot access property \$uptime_minutes on App\\Models\\MonitoringDailyResult\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: app/Services/MonitoringAvailabilityService.php
+
+		-
+			message: '#^Cannot access property \$uptime_total on App\\Models\\MonitoringDailyResult\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: app/Services/MonitoringAvailabilityService.php
+
+		-
+			message: '#^Cannot call method diffInDays\(\) on Carbon\\Carbon\|null\.$#'
+			identifier: method.nonObject
+			count: 2
+			path: app/Services/MonitoringAvailabilityService.php
+
+		-
+			message: '#^Cannot call method toDateString\(\) on string\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: app/Services/MonitoringAvailabilityService.php
+
+		-
+			message: '#^Method App\\Services\\MonitoringAvailabilityService\:\:getUptimeDowntimesForRanges\(\) should return array\<string, App\\Data\\MonitoringAvailabilityPayload\> but returns array\<int, App\\Data\\MonitoringAvailabilityPayload\>\.$#'
+			identifier: return.type
+			count: 3
+			path: app/Services/MonitoringAvailabilityService.php
+
+		-
+			message: '#^Cannot call method diffInDays\(\) on Carbon\\Carbon\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: app/Services/MonitoringBadgePayloadService.php
+
+		-
+			message: '#^Cannot call method isoFormat\(\) on Illuminate\\Support\\Carbon\|string\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: app/Services/MonitoringBadgePayloadService.php
+
+		-
+			message: '#^Offset ''status'' on array\{status\: string, since\: string\|null\} on left side of \?\? always exists and is not nullable\.$#'
+			identifier: nullCoalesce.offset
+			count: 1
+			path: app/Services/MonitoringBadgePayloadService.php
+
+		-
+			message: '#^Parameter \#1 \$expression of method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\Incident\>\:\:selectRaw\(\) expects literal\-string, string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Services/MonitoringBadgePayloadService.php
+
+		-
+			message: '#^Parameter \#1 \.\.\.\$arg1 of function max expects non\-empty\-array, array\<int, int\> given\.$#'
+			identifier: argument.type
+			count: 2
+			path: app/Services/MonitoringBadgePayloadService.php
+
+		-
+			message: '#^Cannot call method toArray\(\) on App\\Data\\MonitoringStatusPayload\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: app/Services/MonitoringCardDataService.php
+
+		-
+			message: '#^Parameter \#2 \$monitoringIds of method App\\Queries\\MonitoringCardQuery\:\:for\(\) expects list\<string\>, array\<int, string\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Services/MonitoringCardDataService.php
+
+		-
+			message: '#^Access to an undefined property object\:\:\$created_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Services/MonitoringCheckHistoryService.php
+
+		-
+			message: '#^Access to an undefined property object\:\:\$http_status_code\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Services/MonitoringCheckHistoryService.php
+
+		-
+			message: '#^Access to an undefined property object\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Services/MonitoringCheckHistoryService.php
+
+		-
+			message: '#^Access to an undefined property object\:\:\$response_time\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Services/MonitoringCheckHistoryService.php
+
+		-
+			message: '#^Access to an undefined property object\:\:\$source\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Services/MonitoringCheckHistoryService.php
+
+		-
+			message: '#^Parameter \#2 \$rows of method App\\Services\\MonitoringCheckHistoryService\:\:paginateRows\(\) expects Illuminate\\Support\\Collection\<int, object\>, Illuminate\\Support\\Collection\<int, stdClass\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Services/MonitoringCheckHistoryService.php
+
+		-
+			message: '#^Parameter \$heatmap of class App\\Data\\MonitoringDashboardPayload constructor expects Illuminate\\Support\\Collection\<int, array\{date\: string, uptime\: int, downtime\: int, unknown\: int\}\>, Illuminate\\Support\\Collection\<int, array\{date\: Carbon\\Carbon, uptime\: int, downtime\: int, unknown\: int\}\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Services/MonitoringDashboardPayloadService.php
+
+		-
+			message: '#^Variable \$threshold on left side of \?\? always exists and is not nullable\.$#'
+			identifier: nullCoalesce.variable
+			count: 1
+			path: app/Services/MonitoringHealthEvaluator.php
+
+		-
+			message: '#^Method App\\Services\\MonitoringHeatmapService\:\:getHeatmapsForMonitorings\(\) should return array\<string, list\<array\{date\: Carbon\\Carbon, uptime\: int, downtime\: int, unknown\: int\}\>\> but returns array\<string, array\<mixed, mixed\>\>\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Services/MonitoringHeatmapService.php
+
+		-
+			message: '#^Method App\\Services\\MonitoringHeatmapService\:\:getHeatmapsForMonitorings\(\) should return array\<string, list\<array\{date\: Carbon\\Carbon, uptime\: int, downtime\: int, unknown\: int\}\>\> but returns array\<string, array\<mixed\>\>\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Services/MonitoringHeatmapService.php
+
+		-
+			message: '#^Parameter \#1 \$expression of method Illuminate\\Database\\Eloquent\\Builder\<Illuminate\\Database\\Eloquent\\Model\>\:\:selectRaw\(\) expects literal\-string, non\-falsy\-string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Services/MonitoringHeatmapService.php
+
+		-
+			message: '#^Parameter \#1 \$key of method Illuminate\\Support\\Collection\<int,object\>\:\:get\(\) expects int\|null, string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Services/MonitoringHeatmapService.php
+
+		-
+			message: '#^Unable to resolve the template type TKey in call to function collect$#'
+			identifier: argument.templateType
+			count: 1
+			path: app/Services/MonitoringHeatmapService.php
+
+		-
+			message: '#^Method App\\Services\\MonitoringIncidentService\:\:getIncidentPage\(\) should return array\{data\: list\<array\{down_at\: string, up_at\: string\|null\}\>, has_more\: bool, next_offset\: int\|null\} but returns array\{data\: array\<int, array\{down_at\: string, up_at\: string\|null, consensus_snapshot\: array\<string, mixed\>\|null\}\>, has_more\: bool, next_offset\: int\|null\}\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Services/MonitoringIncidentService.php
+
+		-
+			message: '#^Cannot call method isoFormat\(\) on Illuminate\\Support\\Carbon\|string\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: app/Services/MonitoringOverviewService.php
+
+		-
+			message: '#^Cannot call method toDateString\(\) on Illuminate\\Support\\Carbon\|null\.$#'
+			identifier: method.nonObject
+			count: 2
+			path: app/Services/MonitoringOverviewService.php
+
+		-
+			message: '#^Cannot call method toDateString\(\) on string\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: app/Services/MonitoringOverviewService.php
+
+		-
+			message: '#^Method App\\Services\\MonitoringOverviewService\:\:overview\(\) should return array\{monitorings\: Illuminate\\Database\\Eloquent\\Collection\<int, App\\Models\\Monitoring\>, serviceReadModels\: Illuminate\\Support\\Collection\<int, App\\Data\\MonitoringServiceReadModel\>, signalRoomPagination\: array\{current_page\: int, last_page\: int, total\: int, from\: int\|null, to\: int\|null\}, summary\: array\{total\: int, healthy\: int, down\: int, unknown\: int, paused\: int, maintenance\: int\}, overallState\: string, attentionItems\: Illuminate\\Support\\Collection\<int, array\{type\: string, monitoring\: App\\Models\\Monitoring\|null, count\: int\|null\}\>, recentIncidents\: Illuminate\\Database\\Eloquent\\Collection\<int, App\\Models\\Incident\>, maintenanceMonitorings\: Illuminate\\Support\\Collection\<int, App\\Models\\Monitoring\>, \.\.\.\} but returns array\{monitorings\: Illuminate\\Database\\Eloquent\\Collection\<int, App\\Models\\Monitoring\>, serviceReadModels\: Illuminate\\Support\\Collection\<int, App\\Data\\MonitoringServiceReadModel\>, signalRoomPagination\: array\{current_page\: int\<1, max\>, last_page\: int\<1, max\>, total\: int\<0, max\>, from\: int\|null, to\: int\|null\}, summary\: array\{total\: int\<0, max\>, healthy\: int\<0, max\>, down\: int\<0, max\>, unknown\: int\<0, max\>, paused\: int\<0, max\>, maintenance\: int\<0, max\>\}, overallState\: string, attentionItems\: Illuminate\\Support\\Collection\<int, array\{type\: string, monitoring\: App\\Models\\Monitoring\|null, count\: int\|null, statusPage\: App\\Models\\StatusPage\|null\}\>, recentIncidents\: Illuminate\\Database\\Eloquent\\Collection\<int, App\\Models\\Incident\>, maintenanceMonitorings\: Illuminate\\Database\\Eloquent\\Collection\<int, App\\Models\\Monitoring\>, \.\.\.\}\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Services/MonitoringOverviewService.php
+
+		-
+			message: '#^Method App\\Services\\MonitoringOverviewService\:\:trend\(\) should return list\<array\{date\: string, label\: string, uptime_percentage\: float\|null, has_data\: bool\}\> but returns array\<int, array\{date\: string, label\: string, uptime_percentage\: float\|null, has_data\: bool\}\>\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Services/MonitoringOverviewService.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>monitoring_limit" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Services/MonitoringOverviewService.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>monitorings" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Services/MonitoringOverviewService.php
+
+		-
+			message: '#^Strict comparison using \=\=\= between float and null will always evaluate to false\.$#'
+			identifier: identical.alwaysFalse
+			count: 1
+			path: app/Services/MonitoringPerformanceService.php
+
+		-
+			message: '#^Method App\\Services\\MonitoringResponseTimeBaselineService\:\:for\(\) should return array\{median_ms\: float, sample_count\: int\}\|null but returns array\{median_ms\: 0\|float\|null, sample_count\: int\<20, max\>\}\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Services/MonitoringResponseTimeBaselineService.php
+
+		-
+			message: '#^Parameter \#1 \$expression of method Illuminate\\Database\\Eloquent\\Builder\<Illuminate\\Database\\Eloquent\\Model\>\:\:selectRaw\(\) expects literal\-string, non\-falsy\-string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Services/MonitoringResponseTimeService.php
+
+		-
+			message: '#^Offset ''checked_at'' might not exist on array\{checked_at\: Illuminate\\Support\\Carbon, cpu_usage_percent\: float\|null, ram_usage_percent\: float\|null, storage_usage_percent\: float\|null, normalized_load\: float\|null\}\|null\.$#'
+			identifier: offsetAccess.notFound
+			count: 1
+			path: app/Services/MonitoringServerHealthTelemetryService.php
+
+		-
+			message: '#^Parameter \#1 \$bucket of method App\\Services\\MonitoringServerHealthTelemetryService\:\:average\(\) expects Illuminate\\Support\\Collection\<int, array\<string, mixed\>\>, Illuminate\\Support\\Collection\<int, array\{checked_at\: Illuminate\\Support\\Carbon, cpu_usage_percent\: float\|null, ram_usage_percent\: float\|null, storage_usage_percent\: float\|null, normalized_load\: float\|null\}\> given\.$#'
+			identifier: argument.type
+			count: 4
+			path: app/Services/MonitoringServerHealthTelemetryService.php
+
+		-
+			message: '#^Parameter \#3 \$callback of method Illuminate\\Cache\\Repository\:\:remember\(\) expects Closure\(\)\: mixed, callable\(\)\: mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Services/MonitoringStatsCache.php
+
+		-
+			message: '#^Unable to resolve the template type TCacheValue in call to method Illuminate\\Cache\\Repository\:\:remember\(\)$#'
+			identifier: argument.templateType
+			count: 1
+			path: app/Services/MonitoringStatsCache.php
+
+		-
+			message: '#^Cannot call method copy\(\) on Carbon\\Carbon\|null\.$#'
+			identifier: method.nonObject
+			count: 2
+			path: app/Services/MonitoringStatusService.php
+
+		-
+			message: '#^Cannot call method toIso8601String\(\) on Carbon\\Carbon\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: app/Services/MonitoringStatusService.php
+
+		-
+			message: '#^Method App\\Services\\MonitoringStatusService\:\:getStatusSince\(\) should return array\{status\: string, since\: string\|null\} but returns array\{status\: App\\Enums\\MonitoringStatus, since\: string\|null\}\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Services/MonitoringStatusService.php
+
+		-
+			message: '#^Cannot call method copy\(\) on Carbon\\Carbon\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: app/Services/MonitoringUptimeCalendarService.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\MonitoringNotification\:\:\$read_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Services/NotificationBoardService.php
+
+		-
+			message: '#^Cannot access property \$id on App\\Models\\Monitoring\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: app/Services/NotificationBoardService.php
+
+		-
+			message: '#^Cannot access property \$name on App\\Models\\Monitoring\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: app/Services/NotificationBoardService.php
+
+		-
+			message: '#^Cannot access property \$target on App\\Models\\Monitoring\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: app/Services/NotificationBoardService.php
+
+		-
+			message: '#^Match expression does not handle remaining value\: string$#'
+			identifier: match.unhandled
+			count: 1
+			path: app/Services/NotificationBoardService.php
+
+		-
+			message: '#^Method App\\Services\\NotificationBoardService\:\:markRead\(\) should return list\<string\> but returns array\<int, string\>\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Services/NotificationBoardService.php
+
+		-
+			message: '#^Method App\\Services\\NotificationBoardService\:\:mobileEntries\(\) should return Illuminate\\Support\\Collection\<int, array\<string, mixed\>\> but returns Illuminate\\Support\\Collection\<int, array\{id\: string, event_type\: string, severity\: string, message\: string, occurred_at\: string\|null, read\: bool, delivery_status\: string, monitoring\: array\{id\: string, name\: string, target\: string\}, \.\.\.\}\>\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Services/NotificationBoardService.php
+
+		-
+			message: '#^Parameter \#2 \$eventType of method App\\Services\\NotificationBoardService\:\:filterMobileEntriesByEventType\(\) expects string, string\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Services/NotificationBoardService.php
+
+		-
+			message: '#^Method Redis\:\:pipeline\(\) invoked with 1 parameter, 0 required\.$#'
+			identifier: arguments.count
+			count: 1
+			path: app/Services/OperationalMetricsService.php
+
+		-
+			message: '#^Parameter \#3 \$callback of method Illuminate\\Cache\\Repository\:\:remember\(\) expects Closure\(\)\: mixed, callable\(\)\: T given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Services/OperationsOverviewCache.php
+
+		-
+			message: '#^Unable to resolve the template type TCacheValue in call to method Illuminate\\Cache\\Repository\:\:remember\(\)$#'
+			identifier: argument.templateType
+			count: 1
+			path: app/Services/OperationsOverviewCache.php
+
+		-
+			message: '#^Parameter \#1 \$item of method App\\Services\\OperationsOverviewPayloadService\:\:attentionPayload\(\) expects array\{type\: string, monitoring\: App\\Models\\Monitoring\|null, count\: int\|null, statusPage\: App\\Models\\StatusPage\|null\}, array\{type\: string, monitoring\: App\\Models\\Monitoring\|null, count\: int\|null\} given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Services/OperationsOverviewPayloadService.php
+
+		-
+			message: '#^Using nullsafe method call on non\-nullable type App\\Models\\Monitoring\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Services/OperationsOverviewPayloadService.php
+
+		-
+			message: '#^Using nullsafe method call on non\-nullable type Illuminate\\Support\\Carbon\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Services/OperationsOverviewPayloadService.php
+
+		-
+			message: '#^Using nullsafe property access on non\-nullable type App\\Models\\Monitoring\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 2
+			path: app/Services/OperationsOverviewPayloadService.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$monitorings\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Services/PlannedMaintenanceNotificationService.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>monitorings" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 2
+			path: app/Services/PlannedMaintenanceNotificationService.php
+
+		-
+			message: '#^Method App\\Services\\PublicStatusPayloadService\:\:statusPageIncidents\(\) should return list\<array\<string, mixed\>\> but returns array\<int, array\{monitoring_name\: string, down_at\: string, up_at\: string\|null, updates\: array\<int, array\{status\: string, message\: string, published_at\: string\|null\}\>\}\>\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Services/PublicStatusPayloadService.php
+
+		-
+			message: '#^Offset ''status'' on array\{status\: App\\Enums\\MonitoringStatus\|string, checked_at\: string\|null, next\: string, interval\: int\} on left side of \?\? always exists and is not nullable\.$#'
+			identifier: nullCoalesce.offset
+			count: 2
+			path: app/Services/PublicStatusPayloadService.php
+
+		-
+			message: '#^Offset ''status'' on array\{status\: string, since\: string\|null\} on left side of \?\? always exists and is not nullable\.$#'
+			identifier: nullCoalesce.offset
+			count: 2
+			path: app/Services/PublicStatusPayloadService.php
+
+		-
+			message: '#^Using nullsafe method call on non\-nullable type Illuminate\\Support\\Carbon\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Services/PublicStatusPayloadService.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>monitorings" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Services/PublicStatusPayloadService.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>value" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Services/PublicStatusPayloadService.php
+
+		-
+			message: '#^Method App\\Services\\RegionalConsensusService\:\:snapshot\(\) should return array\{status\: App\\Enums\\RegionalConsensusStatus, total_locations\: int, reporting_locations\: int, required_failures\: int, affected_locations\: list\<string\>, locations\: list\<array\{code\: string, status\: string, checked_at\: string\|null, availability\?\: string\}\>\} but returns array\{status\: App\\Enums\\RegionalConsensusStatus, total_locations\: int\<0, max\>, reporting_locations\: int\<0, max\>, required_failures\: int, affected_locations\: array\<int, string\>, locations\: array\<int, array\{code\: string, status\: string, checked_at\: string\|null, availability\?\: string\}\>\}\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Services/RegionalConsensusService.php
+
+		-
+			message: '#^Offset ''monitoring_group_id'' might not exist on array\{name\: string, description\?\: string\|null, source_type\: string, monitoring_group_id\?\: string\|null, monitoring_ids\?\: list\<string\>\}\.$#'
+			identifier: offsetAccess.notFound
+			count: 1
+			path: app/Services/StatusPageManagementService.php
+
+		-
+			message: '#^Parameter \#1 \$array \(list\<array\{name\: string, description\?\: string\|null, source_type\: string, monitoring_group_id\?\: string\|null, monitoring_ids\?\: list\<string\>\}\>\) of array_values is already a list, call has no effect\.$#'
+			identifier: arrayValues.list
+			count: 1
+			path: app/Services/StatusPageManagementService.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>monitorings" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Services/StatusPageUptimeCalendarService.php
+
+		-
+			message: '#^Anonymous function should return App\\Models\\Team but returns App\\Models\\Team\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Services/Teams/TeamInvitationService.php
+
+		-
+			message: '#^Cannot call method memberships\(\) on App\\Models\\Team\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: app/Services/Teams/TeamInvitationService.php
+
+		-
+			message: '#^Parameter \#1 \$boolean of function abort_unless expects bool, App\\Models\\TeamInvitation\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Services/Teams/TeamInvitationService.php
+
+		-
+			message: '#^Method App\\Services\\WeeklyMonitoringDigestService\:\:getOverlappingIncidentDurations\(\) should return list\<int\> but returns array\<int, int\<1, max\>\>\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Services/WeeklyMonitoringDigestService.php
+
+		-
+			message: '#^Method App\\Services\\WeeklyMonitoringDigestService\:\:getOverlappingMaintenanceWindow\(\) should return array\{from\: Illuminate\\Support\\Carbon, until\: Illuminate\\Support\\Carbon\}\|null but returns array\{from\: Carbon\\Carbon, until\: Carbon\\Carbon\}\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Services/WeeklyMonitoringDigestService.php
+
+		-
+			message: '#^Parameter \#2 \$result of method App\\Services\\WeeklyMonitoringDigestService\:\:buildExpiryWarning\(\) expects App\\Models\\MonitoringDomainResult\|App\\Models\\MonitoringSslResult, App\\Models\\MonitoringDomainResult\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Services/WeeklyMonitoringDigestService.php
+
+		-
+			message: '#^Parameter \#2 \$result of method App\\Services\\WeeklyMonitoringDigestService\:\:buildExpiryWarning\(\) expects App\\Models\\MonitoringDomainResult\|App\\Models\\MonitoringSslResult, App\\Models\\MonitoringSslResult\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Services/WeeklyMonitoringDigestService.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$attribute_changes\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Support/ActivityLog/RedactActivityLogChanges.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$properties\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Support/ActivityLog/RedactActivityLogChanges.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$subject\.$#'
+			identifier: property.notFound
+			count: 3
+			path: app/Support/ActivityLog/RedactActivityLogChanges.php
+
+		-
+			message: '#^Call to function method_exists\(\) with Illuminate\\Database\\Eloquent\\Model and ''getPrevious'' will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: app/Support/ActivityLog/RedactActivityLogChanges.php
+
+		-
+			message: '#^Method App\\Support\\MonitoringResponseHistory\:\:queryForEndDate\(\) should return Illuminate\\Database\\Eloquent\\Builder\<Illuminate\\Database\\Eloquent\\Model\> but returns Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\MonitoringResponse\>\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Support/MonitoringResponseHistory.php
+
+		-
+			message: '#^Method App\\Support\\MonitoringResponseHistory\:\:queryForEndDate\(\) should return Illuminate\\Database\\Eloquent\\Builder\<Illuminate\\Database\\Eloquent\\Model\> but returns Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\MonitoringResponseArchived\>\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Support/MonitoringResponseHistory.php
+
+		-
+			message: '#^Parameter \#1 \$title of static method Illuminate\\Support\\Str\:\:slug\(\) expects string, bool\|string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: config/cache.php
+
+		-
+			message: '#^Comparison operation "\>\=" between int\<80500, 80699\> and 80500 is always true\.$#'
+			identifier: greaterOrEqual.alwaysTrue
+			count: 2
+			path: config/database.php
+
+		-
+			message: '#^Parameter \#1 \$title of static method Illuminate\\Support\\Str\:\:slug\(\) expects string, bool\|string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: config/session.php
+
+		-
+			message: '#^Parameter \#1 \$content of function response expects array\|Illuminate\\Contracts\\View\\View\|string\|null, string\|false given\.$#'
+			identifier: argument.type
+			count: 1
+			path: routes/web.php

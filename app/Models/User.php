@@ -63,9 +63,9 @@ use Spatie\Activitylog\Support\LogOptions;
  * @property-read int|null $api_logs_count
  * @property-read Package|null $package
  *
- * @method static Builder|static newModelQuery()
- * @method static Builder|static newQuery()
- * @method static Builder|static query()
+ * @method static Builder<static> newModelQuery()
+ * @method static Builder<static> newQuery()
+ * @method static Builder<static> query()
  */
 #[Fillable([
     'name',
@@ -96,6 +96,7 @@ use Spatie\Activitylog\Support\LogOptions;
 class User extends Authenticatable implements MustVerifyEmail
 {
     use HasApiTokens;
+    /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory;
     use HasUlids;
     use LogsActivity;

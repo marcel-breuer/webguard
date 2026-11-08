@@ -35,6 +35,7 @@ use Override;
 #[WithoutIncrementing]
 class ApiLog extends Model
 {
+    /** @use HasFactory<\Illuminate\Database\Eloquent\Factories\Factory<self>> */
     use HasFactory;
     use HasUuids;
 

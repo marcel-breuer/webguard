@@ -24,6 +24,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 #[WithoutIncrementing]
 class StatusPageComponent extends Model
 {
+    /** @use HasFactory<\Illuminate\Database\Eloquent\Factories\Factory<self>> */
     use HasFactory;
     use HasUlids;
 

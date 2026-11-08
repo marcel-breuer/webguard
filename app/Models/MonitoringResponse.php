@@ -45,6 +45,7 @@ use Illuminate\Support\Carbon;
 #[WithoutIncrementing]
 class MonitoringResponse extends Model
 {
+    /** @use HasFactory<\Illuminate\Database\Eloquent\Factories\Factory<self>> */
     use HasFactory;
     use HasUlids;
 

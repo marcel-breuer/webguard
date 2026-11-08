@@ -56,6 +56,7 @@ use Illuminate\Support\Carbon;
 ])]
 class MonitoringDailyResult extends Model
 {
+    /** @use HasFactory<\Illuminate\Database\Eloquent\Factories\Factory<self>> */
     use HasFactory;
 
     /**

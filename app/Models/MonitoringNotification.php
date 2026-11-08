@@ -19,6 +19,10 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+/**
+ * @property \Illuminate\Support\Carbon|null $user_read_at
+ * @property int|string|null $failed_delivery_count
+ */
 #[Appends(['created_at_for_humans', 'translated_message'])]
 #[Fillable([
     'monitoring_id',
@@ -33,6 +37,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 #[WithoutIncrementing]
 class MonitoringNotification extends Model
 {
+    /** @use HasFactory<\Illuminate\Database\Eloquent\Factories\Factory<self>> */
     use HasFactory;
     use HasUlids;
 
@@ -114,6 +119,9 @@ class MonitoringNotification extends Model
 
     /**
      * Scope notifications by type.
+     *
+     * @param  Builder<MonitoringNotification>  $builder
+     * @return Builder<MonitoringNotification>
      */
     #[Scope]
     protected function ofType(Builder $builder, NotificationType|string $type): Builder
@@ -125,6 +133,9 @@ class MonitoringNotification extends Model
 
     /**
      * Scope notifications to status change entries.
+     *
+     * @param  Builder<MonitoringNotification>  $builder
+     * @return Builder<MonitoringNotification>
      */
     #[Scope]
     protected function statusChange(Builder $builder): Builder
@@ -134,6 +145,9 @@ class MonitoringNotification extends Model
 
     /**
      * Scope notifications to SSL expiry entries.
+     *
+     * @param  Builder<MonitoringNotification>  $builder
+     * @return Builder<MonitoringNotification>
      */
     #[Scope]
     protected function sslExpiry(Builder $builder): Builder
@@ -143,6 +157,9 @@ class MonitoringNotification extends Model
 
     /**
      * Scope notifications to domain expiry entries.
+     *
+     * @param  Builder<MonitoringNotification>  $builder
+     * @return Builder<MonitoringNotification>
      */
     #[Scope]
     protected function domainExpiry(Builder $builder): Builder
@@ -152,6 +169,9 @@ class MonitoringNotification extends Model
 
     /**
      * Scope notifications to performance entries.
+     *
+     * @param  Builder<MonitoringNotification>  $builder
+     * @return Builder<MonitoringNotification>
      */
     #[Scope]
     protected function performance(Builder $builder): Builder
@@ -161,6 +181,9 @@ class MonitoringNotification extends Model
 
     /**
      * Scope notifications to read entries.
+     *
+     * @param  Builder<MonitoringNotification>  $builder
+     * @return Builder<MonitoringNotification>
      */
     #[Scope]
     protected function read(Builder $builder): Builder
@@ -177,6 +200,9 @@ class MonitoringNotification extends Model
 
     /**
      * Scope notifications to unread entries.
+     *
+     * @param  Builder<MonitoringNotification>  $builder
+     * @return Builder<MonitoringNotification>
      */
     #[Scope]
     protected function unread(Builder $builder): Builder
@@ -193,6 +219,8 @@ class MonitoringNotification extends Model
 
     /**
      * Get the created_at attribute formatted for display.
+     *
+     * @return Attribute<string, never>
      */
     protected function createdAtForHumans(): Attribute
     {
@@ -203,6 +231,8 @@ class MonitoringNotification extends Model
 
     /**
      * Get the translated message attribute.
+     *
+     * @return Attribute<string, never>
      */
     protected function translatedMessage(): Attribute
     {

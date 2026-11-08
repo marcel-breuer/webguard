@@ -11,6 +11,12 @@ use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * @property string $request_hash
+ * @property int $response_status
+ * @property array<string, mixed> $response_body
+ * @property \Illuminate\Support\Carbon $expires_at
+ */
 #[Fillable([
     'instance_code',
     'endpoint',
@@ -24,6 +30,7 @@ use Illuminate\Database\Eloquent\Model;
 #[WithoutIncrementing]
 class InstanceCallbackIdempotency extends Model
 {
+    /** @use HasFactory<\Illuminate\Database\Eloquent\Factories\Factory<self>> */
     use HasFactory;
     use HasUlids;
 

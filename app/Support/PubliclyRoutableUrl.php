@@ -61,7 +61,7 @@ class PubliclyRoutableUrl
 
         $port = $parts['port'] ?? ($scheme === 'https' ? 443 : 80);
 
-        if (! is_int($port) || $port < 1 || $port > 65535) {
+        if ($port < 1) {
             return null;
         }
 

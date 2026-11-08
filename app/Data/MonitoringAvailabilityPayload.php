@@ -24,9 +24,9 @@ final readonly class MonitoringAvailabilityPayload implements JsonSerializable
      *     data: array{from: Carbon, to: Carbon},
      *     has_data: bool,
      *     tracking_started_at: string|null,
-     *     uptime: array{minutes: int, percentage: float|null, total: int},
-     *     downtime: array{minutes: int, percentage: float|null, total: int, incidents_count: int},
-     *     unknown: array{minutes: int, percentage: float|null, total: int}
+     *     uptime: array{minutes: int, percentage: float|null, total: int, incidents_count?: int},
+     *     downtime: array{minutes: int, percentage: float|null, total: int, incidents_count?: int},
+     *     unknown: array{minutes: int, percentage: float|null, total: int, incidents_count?: int}
      * }
      */
     public function toArray(): array
@@ -49,9 +49,9 @@ final readonly class MonitoringAvailabilityPayload implements JsonSerializable
      *     data: array{from: Carbon, to: Carbon},
      *     has_data: bool,
      *     tracking_started_at: string|null,
-     *     uptime: array{minutes: int, percentage: float|null, total: int},
-     *     downtime: array{minutes: int, percentage: float|null, total: int, incidents_count: int},
-     *     unknown: array{minutes: int, percentage: float|null, total: int}
+     *     uptime: array{minutes: int, percentage: float|null, total: int, incidents_count?: int},
+     *     downtime: array{minutes: int, percentage: float|null, total: int, incidents_count?: int},
+     *     unknown: array{minutes: int, percentage: float|null, total: int, incidents_count?: int}
      * }
      */
     public function jsonSerialize(): array

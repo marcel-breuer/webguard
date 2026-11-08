@@ -23,6 +23,7 @@ final class MaintenanceOverviewQuery
             ->manageableBy($user)
             ->pluck('id')
             ->map(static fn ($id): string => (string) $id)
+            ->values()
             ->all();
     }
 
@@ -97,6 +98,9 @@ final class MaintenanceOverviewQuery
             ->get(['id', 'name']);
     }
 
+    /**
+     * @param  Builder<Monitoring>  $builder
+     */
     private function applyStatusFilter(Builder $builder, string $status): void
     {
         if ($status === '') {
@@ -125,6 +129,9 @@ final class MaintenanceOverviewQuery
         };
     }
 
+    /**
+     * @param  Builder<Monitoring>  $builder
+     */
     private function applySort(Builder $builder, string $sort, string $direction): void
     {
         if ($sort === 'maintenance_status') {

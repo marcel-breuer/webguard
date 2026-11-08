@@ -24,6 +24,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 #[WithoutIncrementing]
 class StatusPage extends Model
 {
+    /** @use HasFactory<\Illuminate\Database\Eloquent\Factories\Factory<self>> */
     use HasFactory;
     use HasUlids;
 

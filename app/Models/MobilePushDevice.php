@@ -52,6 +52,7 @@ use Illuminate\Support\Carbon;
 #[WithoutIncrementing]
 class MobilePushDevice extends Model
 {
+    /** @use HasFactory<\Database\Factories\MobilePushDeviceFactory> */
     use HasFactory;
     use HasUlids;
 
@@ -63,6 +64,10 @@ class MobilePushDevice extends Model
         return $this->belongsTo(User::class);
     }
 
+    /**
+     * @param  Builder<MobilePushDevice>  $builder
+     * @return Builder<MobilePushDevice>
+     */
     #[Scope]
     protected function active(Builder $builder): Builder
     {

@@ -26,6 +26,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 #[WithoutIncrementing]
 class Team extends Model
 {
+    /** @use HasFactory<\Database\Factories\TeamFactory> */
     use HasFactory;
     use HasUlids;
 
@@ -93,6 +94,10 @@ class Team extends Model
             ->count();
     }
 
+    /**
+     * @param  Builder<Team>  $builder
+     * @return Builder<Team>
+     */
     #[Scope]
     protected function visibleTo(Builder $builder, User $user): Builder
     {
@@ -101,6 +106,10 @@ class Team extends Model
         });
     }
 
+    /**
+     * @param  Builder<Team>  $builder
+     * @return Builder<Team>
+     */
     #[Scope]
     protected function administeredBy(Builder $builder, User $user): Builder
     {

@@ -9,6 +9,7 @@ use Laravel\Sanctum\PersonalAccessToken as SanctumPersonalAccessToken;
 
 class PersonalAccessToken extends SanctumPersonalAccessToken
 {
+    /** @use HasFactory<\Illuminate\Database\Eloquent\Factories\Factory<self>> */
     use HasFactory;
 
     public static function findToken($token): ?static
