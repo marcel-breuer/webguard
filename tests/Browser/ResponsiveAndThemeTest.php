@@ -6,7 +6,8 @@ use App\Models\StatusPage;
 use Tests\Support\BrowserGateway;
 use Tests\Support\BrowserWorld;
 
-define('NO_HORIZONTAL_OVERFLOW', 'document.documentElement.scrollWidth <= document.documentElement.clientWidth');
+// Same measure as the SvelteKit topology smoke test: content must not widen the page beyond the viewport.
+define('NO_HORIZONTAL_OVERFLOW', 'document.body.scrollWidth <= document.documentElement.clientWidth');
 
 it('renders a public status page without a session', function (): void {
     $owner = BrowserWorld::user();
