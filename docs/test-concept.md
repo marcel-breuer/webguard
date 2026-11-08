@@ -60,6 +60,38 @@ Browser tests should cover:
 
 Relevant location: `tests/Browser`.
 
+The browser suite uses the Pest Browser Plugin with Playwright Chromium. The UI is
+SvelteKit behind the same-origin gateway, so `tests/Support/BrowserGateway.php`
+starts the built SvelteKit server (`frontend/build`) and an nginx instance that
+reuses the routing rules of `docker/gateway/nginx.conf`. The plugin's in-process
+Laravel server (SQLite in memory, factories, no external network) sits behind that
+gateway, so the browser exercises the same topology as production while tests keep
+full control of the data.
+
+Covered flows: login and failed login, registration with first-run onboarding to the
+first monitoring, creating, editing, and deleting an HTTP monitoring, notification
+channel settings, the public status page, the mobile navigation, and the dark theme.
+
+Browser tests are not part of the default `composer test` run (`phpunit.xml` only
+lists the Unit and Feature suites). Run them explicitly with `composer test:browser`
+after `bun run frontend:build`. Locally with Docker:
+
+```bash
+docker run --rm -v "$PWD:/app" -w /app oven/bun:1 sh -c 'bun install --frozen-lockfile && bun run frontend:build'
+docker build --target ci -t webguard-browser-tests .
+docker run --rm -v "$PWD:/var/www/html" -w /var/www/html webguard-browser-tests sh -c \
+  'apt-get update && apt-get install -y --no-install-recommends nginx \
+   && ./node_modules/.bin/playwright install --with-deps chromium \
+   && composer install --no-interaction && composer test:browser'
+```
+
+Mount the working tree writable; failure screenshots land in
+`tests/Browser/Screenshots`. In CI the `Browser` job in `.github/workflows/ci.yml`
+runs the same steps on the runner and uploads screenshots and gateway logs as the
+`browser-failure-artifacts` artifact when it fails. The plugin has no per-test retry;
+waits poll explicit conditions (hydration marker, DOM state, persisted data) instead
+of fixed sleeps, so a failing run points at a real regression.
+
 ## Test Environment
 
 The default PHP test environment is configured in `phpunit.xml` and `.env.testing`:

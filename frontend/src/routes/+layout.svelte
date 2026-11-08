@@ -1,5 +1,6 @@
 <script lang="ts">
     import "../app.css";
+    import { onMount, tick } from "svelte";
     import { localize } from "#lib/i18n/localize.ts";
     import type { TranslationMessages } from "#lib/i18n/localize.ts";
 
@@ -12,6 +13,12 @@
     }
 
     let { data, children }: Props = $props();
+
+    // Signals that client-side hydration has settled, so browser tests do not type into server-rendered markup that is about to be replaced.
+    onMount(async () => {
+        await tick();
+        document.documentElement.dataset.hydrated = "true";
+    });
 </script>
 
 <svelte:head>
