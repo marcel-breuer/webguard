@@ -397,20 +397,8 @@ parameters:
 			path: app/Http/Requests/MaintenanceRequest.php
 
 		-
-			message: '#^Method App\\Http\\Requests\\MonitoringRequest\:\:normalizeHttpHeaders\(\) should return array\<string, mixed\>\|string\|null but returns mixed\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Http/Requests/MonitoringRequest.php
-
-		-
 			message: '#^Method App\\Http\\Requests\\MonitoringRequest\:\:rules\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
-			count: 1
-			path: app/Http/Requests/MonitoringRequest.php
-
-		-
-			message: '#^Method App\\Http\\Requests\\MonitoringRequest\:\:targetRules\(\) should return array\<int, \(callable\(\)\: mixed\)\|Illuminate\\Contracts\\Validation\\ValidationRule\|string\> but returns array\{Illuminate\\Validation\\Rules\\RequiredIf, ''nullable'', ''string'', ''max\:255'', Closure\(mixed, mixed, mixed\)\: void\}\.$#'
-			identifier: return.type
 			count: 1
 			path: app/Http/Requests/MonitoringRequest.php
 
@@ -1081,12 +1069,6 @@ parameters:
 			path: app/Services/MobileStatusPageWorkspaceService.php
 
 		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$created_at\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Services/MonitoringAvailabilityService.php
-
-		-
 			message: '#^Anonymous function never returns null so it can be removed from the return type\.$#'
 			identifier: return.unusedType
 			count: 1
@@ -1099,63 +1081,15 @@ parameters:
 			path: app/Services/MonitoringAvailabilityService.php
 
 		-
-			message: '#^Cannot access property \$date on App\\Models\\MonitoringDailyResult\|null\.$#'
-			identifier: property.nonObject
-			count: 1
-			path: app/Services/MonitoringAvailabilityService.php
-
-		-
-			message: '#^Cannot access property \$downtime_minutes on App\\Models\\MonitoringDailyResult\|null\.$#'
-			identifier: property.nonObject
-			count: 1
-			path: app/Services/MonitoringAvailabilityService.php
-
-		-
-			message: '#^Cannot access property \$downtime_total on App\\Models\\MonitoringDailyResult\|null\.$#'
-			identifier: property.nonObject
-			count: 1
-			path: app/Services/MonitoringAvailabilityService.php
-
-		-
-			message: '#^Cannot access property \$unknown_minutes on App\\Models\\MonitoringDailyResult\|null\.$#'
-			identifier: property.nonObject
-			count: 1
-			path: app/Services/MonitoringAvailabilityService.php
-
-		-
-			message: '#^Cannot access property \$unknown_total on App\\Models\\MonitoringDailyResult\|null\.$#'
-			identifier: property.nonObject
-			count: 1
-			path: app/Services/MonitoringAvailabilityService.php
-
-		-
-			message: '#^Cannot access property \$uptime_minutes on App\\Models\\MonitoringDailyResult\|null\.$#'
-			identifier: property.nonObject
-			count: 1
-			path: app/Services/MonitoringAvailabilityService.php
-
-		-
-			message: '#^Cannot access property \$uptime_total on App\\Models\\MonitoringDailyResult\|null\.$#'
-			identifier: property.nonObject
-			count: 1
-			path: app/Services/MonitoringAvailabilityService.php
-
-		-
 			message: '#^Cannot call method diffInDays\(\) on Carbon\\Carbon\|null\.$#'
 			identifier: method.nonObject
 			count: 2
 			path: app/Services/MonitoringAvailabilityService.php
 
 		-
-			message: '#^Cannot call method toDateString\(\) on string\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: app/Services/MonitoringAvailabilityService.php
-
-		-
 			message: '#^Method App\\Services\\MonitoringAvailabilityService\:\:getUptimeDowntimesForRanges\(\) should return array\<string, App\\Data\\MonitoringAvailabilityPayload\> but returns array\<int, App\\Data\\MonitoringAvailabilityPayload\>\.$#'
 			identifier: return.type
-			count: 3
+			count: 1
 			path: app/Services/MonitoringAvailabilityService.php
 
 		-
@@ -1649,3 +1583,15 @@ parameters:
 			identifier: argument.type
 			count: 1
 			path: routes/web.php
+
+		-
+			message: '#^Cannot call method toDateString\(\) on string\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: app/Services/Availability/RollingRangeAvailabilityCalculator.php
+
+		-
+			message: '#^Method App\\Services\\Availability\\RollingRangeAvailabilityCalculator\:\:calculate\(\) should return array\<string, App\\Data\\MonitoringAvailabilityPayload\> but returns array\<int, App\\Data\\MonitoringAvailabilityPayload\>\.$#'
+			identifier: return.type
+			count: 2
+			path: app/Services/Availability/RollingRangeAvailabilityCalculator.php

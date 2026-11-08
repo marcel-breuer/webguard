@@ -173,6 +173,62 @@ class MonitoringRelatedModelsTest extends TestCase
         $this->assertSame($incident->id, $incidentUpdate->incident->id);
     }
 
+    public function test_monitoring_maintenance_windows_state_scope_route_binding_and_global_scope(): void
+    {
+        $owner = User::factory()->create();
+        $other = User::factory()->create();
+
+        $upcoming = Monitoring::factory()->for($owner)->create([
+            'maintenance_from' => now()->addHour(),
+            'maintenance_until' => now()->addHours(2),
+        ]);
+        $ended = Monitoring::factory()->for($owner)->create([
+            'maintenance_from' => now()->subHours(3),
+            'maintenance_until' => now()->subHours(2),
+        ]);
+        $open = Monitoring::factory()->for($owner)->create([
+            'maintenance_from' => now()->subHour(),
+            'maintenance_until' => null,
+        ]);
+        $plain = Monitoring::factory()->for($owner)->create();
+        $plain->maintenanceWindows()->create([
+            'starts_at' => now()->subMinutes(5),
+            'duration_minutes' => 60,
+            'recurrence' => 'weekly',
+            'timezone' => 'UTC',
+            'enabled' => true,
+        ]);
+
+        $this->assertFalse($upcoming->isUnderMaintenance());
+        $this->assertTrue($upcoming->hasUpcomingMaintenance());
+        $this->assertFalse($upcoming->currentOrUpcomingMaintenanceWindow()['active']);
+        $this->assertFalse($upcoming->currentOrUpcomingMaintenanceWindow()['recurring']);
+        $this->assertFalse($ended->isUnderMaintenance());
+        $this->assertNull($ended->currentOrUpcomingMaintenanceWindow());
+        $this->assertFalse($ended->hasUpcomingMaintenance());
+        $this->assertTrue($open->isUnderMaintenance());
+        $this->assertNull($open->currentOrUpcomingMaintenanceWindow()['ends_at']);
+        $this->assertTrue($open->currentOrUpcomingMaintenanceWindow()['active']);
+        $this->assertFalse($open->hasUpcomingMaintenance());
+        $this->assertTrue($plain->isUnderMaintenance());
+        $this->assertTrue($plain->currentOrUpcomingMaintenanceWindow()['recurring'] ?? false);
+
+        $flags = Monitoring::query()->withoutGlobalScope('user')->withMaintenanceWindowState()
+            ->whereIn('id', [$plain->id, $open->id])
+            ->get()
+            ->mapWithKeys(fn (Monitoring $monitoring): array => [$monitoring->id => $monitoring->has_enabled_maintenance_windows]);
+        $this->assertTrue($flags[$plain->id]);
+        $this->assertNull($flags[$open->id]);
+
+        $this->actingAs($owner);
+        $bound = (new Monitoring)->resolveRouteBindingQuery(Monitoring::query(), $plain->id)->first();
+        $this->assertTrue($bound->has_enabled_maintenance_windows);
+        $this->assertCount(4, Monitoring::query()->get());
+
+        $this->actingAs($other);
+        $this->assertCount(0, Monitoring::query()->get());
+    }
+
     public function test_monitoring_ownership_visibility_maintenance_locations_scopes_and_activity_options(): void
     {
         $owner = User::factory()->create();
