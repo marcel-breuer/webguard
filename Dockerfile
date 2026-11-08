@@ -42,7 +42,7 @@ ARG GROUP_ID
 # Switch to root so we can set the user ID and group ID
 USER root
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends nodejs && \
+    apt-get install -y --no-install-recommends git nodejs && \
     rm -rf /var/lib/apt/lists/* && \
     install-php-extensions sockets && \
     docker-php-serversideup-set-id www-data $USER_ID:$GROUP_ID && \
@@ -58,7 +58,7 @@ FROM base AS ci
 USER root
 COPY --from=oven/bun:1.3.11 /usr/local/bin/bun /usr/local/bin/bun
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends nodejs && \
+    apt-get install -y --no-install-recommends git nodejs && \
     rm -rf /var/lib/apt/lists/* && \
     install-php-extensions bz2 curl gmp intl ldap mbstring opcache pdo_mysql pdo_sqlite pspell redis snmp sockets sqlite3 tidy xdebug zip
 
