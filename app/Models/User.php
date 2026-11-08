@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use Database\Factories\UserFactory;
 use App\Enums\TeamRole;
 use App\Enums\UserRole;
+use Database\Factories\UserFactory;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
@@ -97,8 +97,10 @@ use Spatie\Activitylog\Support\LogOptions;
 class User extends Authenticatable implements MustVerifyEmail
 {
     use HasApiTokens;
+
     /** @use HasFactory<UserFactory> */
     use HasFactory;
+
     use HasUlids;
     use LogsActivity;
     use Notifiable;

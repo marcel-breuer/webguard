@@ -37,6 +37,7 @@ class Package extends Model
 {
     /** @use HasFactory<PackageFactory> */
     use HasFactory;
+
     use HasUlids;
 
     protected $keyType = 'string';

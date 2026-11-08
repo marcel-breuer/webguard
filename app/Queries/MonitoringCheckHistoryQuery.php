@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\Queries;
 
-use stdClass;
 use Carbon\Carbon;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
+use stdClass;
 
 final class MonitoringCheckHistoryQuery
 {

@@ -55,6 +55,7 @@ class MobilePushDevice extends Model
 {
     /** @use HasFactory<MobilePushDeviceFactory> */
     use HasFactory;
+
     use HasUlids;
 
     /**

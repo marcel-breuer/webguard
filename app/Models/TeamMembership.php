@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use Database\Factories\TeamMembershipFactory;
 use App\Enums\TeamRole;
+use Database\Factories\TeamMembershipFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Table;
 use Illuminate\Database\Eloquent\Attributes\WithoutIncrementing;
@@ -25,6 +25,7 @@ class TeamMembership extends Model
 {
     /** @use HasFactory<TeamMembershipFactory> */
     use HasFactory;
+
     use HasUlids;
 
     /**

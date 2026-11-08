@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use Illuminate\Support\Carbon;
-use Illuminate\Database\Eloquent\Factories\Factory;
 use App\Enums\NotificationType;
 use App\Models\Scopes\UserScope;
 use Illuminate\Database\Eloquent\Attributes\Appends;
@@ -16,10 +14,12 @@ use Illuminate\Database\Eloquent\Attributes\WithoutIncrementing;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
+use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Carbon;
 
 /**
  * @property Carbon|null $user_read_at
@@ -41,6 +41,7 @@ class MonitoringNotification extends Model
 {
     /** @use HasFactory<Factory<self>> */
     use HasFactory;
+
     use HasUlids;
 
     public static function extractStatusChangeIdentifierFromMessage(string $message): string

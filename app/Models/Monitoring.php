@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use Database\Factories\MonitoringFactory;
 use App\Enums\HttpMethod;
 use App\Enums\MonitoringLifecycleStatus;
 use App\Enums\MonitoringType;
 use App\Enums\TeamRole;
 use App\Services\MaintenanceWindowService;
 use Carbon\CarbonInterface;
+use Database\Factories\MonitoringFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Attributes\Table;
@@ -90,6 +90,7 @@ class Monitoring extends Model
 {
     /** @use HasFactory<MonitoringFactory> */
     use HasFactory;
+
     use HasUlids;
     use LogsActivity;
     use SoftDeletes;

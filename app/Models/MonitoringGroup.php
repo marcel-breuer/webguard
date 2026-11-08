@@ -28,6 +28,7 @@ class MonitoringGroup extends Model
 {
     /** @use HasFactory<MonitoringGroupFactory> */
     use HasFactory;
+
     use HasUlids;
 
     /**

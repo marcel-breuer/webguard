@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use Database\Factories\TeamFactory;
 use App\Enums\TeamRole;
+use Database\Factories\TeamFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Attributes\Table;
@@ -29,6 +29,7 @@ class Team extends Model
 {
     /** @use HasFactory<TeamFactory> */
     use HasFactory;
+
     use HasUlids;
 
     /**
