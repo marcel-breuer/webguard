@@ -6,6 +6,7 @@ namespace Tests\Unit\Services;
 
 use App\Data\MonitoringAvailabilityPayload;
 use App\Enums\MonitoringStatus;
+use App\Enums\MonitoringType;
 use App\Models\Incident;
 use App\Models\Monitoring;
 use App\Models\MonitoringDailyResult;
@@ -35,9 +36,9 @@ class MonitoringAvailabilityServiceCharacterizationTest extends TestCase
         $service = resolve(MonitoringAvailabilityService::class);
         $now = Date::now();
 
-        $monitoring = Monitoring::factory()->for($user)->create(['created_at' => $now->copy()->subDays(40)]);
-        $empty = Monitoring::factory()->for($user)->create(['created_at' => $now->copy()->subDays(40)]);
-        $young = Monitoring::factory()->for($user)->create(['created_at' => $now->copy()->subHours(5)]);
+        $monitoring = Monitoring::factory()->for($user)->create(['type' => MonitoringType::HTTP, 'target' => 'https://example.test', 'expected_http_statuses' => '200-299', 'created_at' => $now->copy()->subDays(40)]);
+        $empty = Monitoring::factory()->for($user)->create(['type' => MonitoringType::HTTP, 'target' => 'https://example.test', 'expected_http_statuses' => '200-299', 'created_at' => $now->copy()->subDays(40)]);
+        $young = Monitoring::factory()->for($user)->create(['type' => MonitoringType::HTTP, 'target' => 'https://example.test', 'expected_http_statuses' => '200-299', 'created_at' => $now->copy()->subHours(5)]);
 
         foreach (range(2, 20) as $daysAgo) {
             $this->dailyResult($monitoring, $now->copy()->subDays($daysAgo)->toDateString(), $daysAgo);
