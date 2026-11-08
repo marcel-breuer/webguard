@@ -133,6 +133,7 @@ return [
         'teams' => 'Microsoft Teams',
         'webhook' => 'Webhook',
         'mobile_push' => 'Mobile Push',
+        'email' => 'E-Mail',
     ],
     'events' => [
         'incident' => 'Vorfall',

@@ -7,6 +7,8 @@ export interface NotificationChannelConfig {
     bot_token?: string;
     chat_id?: string;
     url?: string;
+    address?: string;
+    verified?: boolean;
 }
 
 export interface NotificationSettings {

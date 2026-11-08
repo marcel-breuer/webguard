@@ -119,6 +119,11 @@ return [
                 'title' => 'Mobile Push',
                 'help' => 'Send alerts to registered iOS and Android devices.',
             ],
+            'email' => [
+                'title' => 'Email',
+                'help' => 'Send alerts to your verified account email address.',
+                'unverified' => 'Verify your account email address before enabling email alerts.',
+            ],
         ],
     ],
     'update_password' => [

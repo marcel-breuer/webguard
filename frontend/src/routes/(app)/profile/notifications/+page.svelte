@@ -8,6 +8,7 @@
     import Input from "#lib/components/Input.svelte";
     import MutationForm from "#lib/components/MutationForm.svelte";
     import Select from "#lib/components/Select.svelte";
+    import { notificationChannelLabel } from "#lib/notification-channels.ts";
     import { appRoutes } from "#lib/routes.ts";
     import type { NotificationSettings } from "./+page.server";
 
@@ -29,7 +30,7 @@
 
         try {
             const result = await requestFirstPartyApi<TestResult>(`/api/profile/notification-settings/${channel}/test`, { method: "POST" });
-            testMessage = `${channelLabels[result.data.channel]} test notification sent.`;
+            testMessage = `${notificationChannelLabel(result.data.channel)} test notification sent.`;
             await invalidateAll();
         } catch (error) {
             testError = error instanceof FirstPartyApiError ? error.message : "The test notification could not be sent.";
@@ -38,13 +39,7 @@
         }
     }
 
-    const channelLabels: Record<string, string> = {
-        slack: "Slack",
-        telegram: "Telegram",
-        discord: "Discord",
-        teams: "Microsoft Teams",
-        webhook: "Webhook",
-    };
+    const emailChannel = $derived(data.settings.notification_channels.email ?? { enabled: false, verified: false });
 </script>
 
 <svelte:head><title>Notification settings | WebGuard</title></svelte:head>
@@ -61,6 +56,19 @@
         <div class="grid gap-6">
             <Card title="Alert channels" description="Enable a channel and add its delivery details. You can send a test without enabling it.">
                 <div class="grid gap-4">
+                    <section class="rounded-xl border border-wg-border bg-wg-surface-muted p-4">
+                        <input type="hidden" name="notification_channels[email][enabled]" value="0" />
+                        <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"><div><h2 class="text-base font-bold">Email</h2><p class="mt-1 text-sm leading-5 text-wg-text-muted">Send alerts to your verified account email address.</p></div><label class="flex items-center gap-2 text-sm font-bold"><Checkbox name="notification_channels[email][enabled]" value="1" checked={emailChannel.enabled} disabled={!emailChannel.verified} /> Enabled</label></div>
+                        <div class="mt-4 grid gap-4 sm:grid-cols-[1fr_auto] sm:items-end">
+                            <div>
+                                <p class="text-sm font-bold">Recipient</p>
+                                <p class="mt-1 text-sm break-all">{emailChannel.address ?? ""}</p>
+                                {#if !emailChannel.verified}<p class="mt-2 text-sm text-wg-text-muted">Verify your account email address before enabling email alerts. <a class="font-bold text-wg-accent" href={appRoutes.profile}>Profile settings</a></p>{/if}
+                            </div>
+                            <Button type="button" variant="secondary" loading={testingChannel === "email"} disabled={!emailChannel.verified} onclick={() => testChannel("email")}>Send test</Button>
+                        </div>
+                    </section>
+
                     <section class="rounded-xl border border-wg-border bg-wg-surface-muted p-4">
                         <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"><div><h2 class="text-base font-bold">Slack</h2><p class="mt-1 text-sm leading-5 text-wg-text-muted">Use a Slack Incoming Webhook URL.</p></div><label class="flex items-center gap-2 text-sm font-bold"><Checkbox name="notification_channels[slack][enabled]" value="1" checked={data.settings.notification_channels.slack.enabled} /> Enabled</label></div>
                         <div class="mt-4 grid gap-4 sm:grid-cols-[1fr_auto]"><Field label="Webhook URL"><Input name="notification_channels[slack][webhook_url]" type="url" value={data.settings.notification_channels.slack.webhook_url ?? ""} placeholder="https://hooks.slack.com/services/..." /></Field><Button type="button" variant="secondary" loading={testingChannel === "slack"} onclick={() => testChannel("slack")}>Send test</Button></div>
