@@ -5,7 +5,7 @@
 .editorconfig
 .env
 .env.*
-node_modules
+**/node_modules
 vendor
 tests
 docs

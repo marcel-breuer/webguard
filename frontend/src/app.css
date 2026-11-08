@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @source "./";
+@custom-variant dark (&:where(.dark, .dark *));
 
 @theme inline {
     --font-sans: var(--wg-font-sans);
@@ -32,6 +33,12 @@
     --wg-danger: #dc2626;
     --wg-focus: #7e22ce;
     --wg-shadow: 0 14px 34px rgb(15 23 42 / 12%);
+    --wg-glass-opacity: 88%;
+    --wg-glass-overlay-opacity: 97%;
+    --wg-glass-edge: rgb(255 255 255 / 90%);
+    --wg-glass-shadow: 0 8px 24px rgb(15 23 42 / 6%);
+    --wg-navigation: var(--color-purple-950);
+    --wg-navigation-edge: rgb(233 213 255 / 18%);
 }
 
 :root.dark {
@@ -48,6 +55,10 @@
     --wg-danger: #f87171;
     --wg-focus: #d8b4fe;
     --wg-shadow: 0 14px 34px rgb(0 0 0 / 30%);
+    --wg-glass-opacity: 92%;
+    --wg-glass-overlay-opacity: 98%;
+    --wg-glass-edge: rgb(248 250 252 / 8%);
+    --wg-glass-shadow: 0 8px 24px rgb(0 0 0 / 16%);
 }
 
 html {
@@ -73,6 +84,59 @@ body {
     background: var(--wg-canvas);
     color: var(--wg-text);
     font-family: var(--wg-font-sans);
+    background-image: linear-gradient(125deg, color-mix(in srgb, var(--wg-accent) 5%, var(--wg-canvas)), var(--wg-canvas) 48%, var(--wg-surface-muted));
+    background-attachment: fixed;
+}
+
+/* Solid surfaces are the baseline for browsers without transparency support. */
+.wg-glass-panel {
+    background-color: var(--wg-surface);
+    box-shadow: inset 0 1px var(--wg-glass-edge), var(--wg-glass-shadow);
+}
+
+.wg-glass-navigation {
+    background-color: var(--wg-navigation);
+    box-shadow: inset -1px 0 var(--wg-navigation-edge);
+}
+
+@supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) and (background: color-mix(in srgb, white, transparent)) {
+    .wg-glass-panel {
+        background-color: color-mix(in srgb, var(--wg-surface) var(--wg-glass-opacity), transparent);
+    }
+
+    /* Keep blur off content panels: filters create containing blocks for menus. */
+    .wg-glass-overlay {
+        background-color: color-mix(in srgb, var(--wg-surface) var(--wg-glass-overlay-opacity), transparent);
+        -webkit-backdrop-filter: blur(16px);
+        backdrop-filter: blur(16px);
+    }
+
+    .wg-glass-navigation {
+        background-color: color-mix(in srgb, var(--wg-navigation) 96%, transparent);
+        -webkit-backdrop-filter: blur(16px);
+        backdrop-filter: blur(16px);
+    }
+}
+
+@media (prefers-reduced-transparency: reduce), (prefers-contrast: more), (forced-colors: active) {
+    body {
+        background-image: none;
+    }
+
+    .wg-glass-panel,
+    .wg-glass-navigation {
+        -webkit-backdrop-filter: none;
+        backdrop-filter: none;
+        box-shadow: none;
+    }
+
+    .wg-glass-panel {
+        background-color: var(--wg-surface);
+    }
+
+    .wg-glass-navigation {
+        background-color: var(--wg-navigation);
+    }
 }
 
 button,

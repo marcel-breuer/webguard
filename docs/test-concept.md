@@ -104,6 +104,16 @@ docker run --rm --user "$(id -u):$(id -g)" -v "$PWD:/app" -w /app oven/bun:1 bun
 SvelteKit route-family releases also follow the measurable thresholds and
 evidence process in [SvelteKit quality gates](frontend/sveltekit-quality-gates.md).
 
+The glass surface browser smoke test runs against the development frontend:
+`SMOKE_BASE_URL=http://localhost:3000 bun frontend/scripts/smoke-glass-interface.mjs`.
+Run it in a container with the workspace dependencies and Playwright Chromium
+installed. It checks light/dark rendering at 1440, 390, and 320 pixels, dialog
+focus restoration, mobile navigation, and solid surfaces for reduced transparency,
+increased contrast, and forced colors. The `/_ui` preview stays unavailable in
+production. Ordinary content panels intentionally avoid backdrop filters so
+nested menus retain their existing positioning; navigation and overlays use
+restrained blur. Form controls and semantic status colors remain solid.
+
 Host execution is acceptable only when Docker is unavailable or the repository
 explicitly requires a host-specific check. Document that limitation in the final
 handoff or pull request.

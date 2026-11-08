@@ -74,7 +74,7 @@
 
 <details class="relative" name="webguard-preferences" bind:open ontoggle={handleToggle}>
     <summary class={`grid size-11 cursor-pointer list-none place-items-center rounded-[0.65rem] border [&::-webkit-details-marker]:hidden ${variant === "surface" ? "border-wg-border bg-wg-surface text-wg-text" : "border-purple-700 text-purple-100"}`} aria-label="Appearance" title="Appearance"><NavIcon name="sun" /></summary>
-    <div class={`absolute ${menuPlacement === "below" ? "top-[calc(100%+0.5rem)]" : "bottom-[calc(100%+0.5rem)]"} ${menuAlign === "right" ? "right-0" : "left-0"} z-30 w-48 rounded-xl border border-wg-border bg-wg-surface p-2 shadow-wg-surface`} aria-label="Appearance" aria-busy={saving}>
+    <div class={`absolute ${menuPlacement === "below" ? "top-[calc(100%+0.5rem)]" : "bottom-[calc(100%+0.5rem)]"} ${menuAlign === "right" ? "right-0" : "left-0"} z-30 w-48 rounded-xl border border-wg-border wg-glass-panel wg-glass-overlay p-2 shadow-wg-surface`} aria-label="Appearance" aria-busy={saving}>
         {@render optionsList()}
     </div>
 </details>
@@ -85,7 +85,7 @@
         {#each options as option}
             <button
                 type="button"
-                class={`grid min-h-10 place-items-center border-0 border-r border-wg-border bg-wg-surface text-wg-text-muted last:border-r-0 disabled:cursor-wait disabled:opacity-65 ${theme === option.value ? "bg-wg-accent text-wg-accent-contrast" : ""}`}
+                class={`grid min-h-10 place-items-center border-0 border-r border-wg-border last:border-r-0 disabled:cursor-wait disabled:opacity-65 ${theme === option.value ? "bg-wg-accent text-wg-accent-contrast" : "bg-wg-surface text-wg-text-muted"}`}
                 aria-pressed={theme === option.value}
                 aria-label={`Use ${option.label.toLowerCase()} appearance`}
                 title={option.label}

@@ -104,7 +104,7 @@
     <header class="mb-8 flex flex-col items-start justify-between gap-4 sm:flex-row"><div><p class="m-0 text-[0.8125rem] font-extrabold tracking-[0.1em] text-wg-accent uppercase">Administration</p><h1 class="mt-2 text-[clamp(2rem,6vw,3rem)] leading-[1.1] font-bold">{title}</h1><p class="mt-3 leading-6 text-wg-text-muted">{description}</p></div><Button onclick={openCreate}>Create {singular}</Button></header>
     {#if error}<p class="mb-5 text-sm font-bold text-wg-danger" role="alert">{error}</p>{/if}
 
-    <form class="mb-5 grid gap-4 rounded-2xl border border-wg-border bg-wg-surface p-5 shadow-wg-surface sm:grid-cols-[minmax(0,1fr)_11rem_8rem_auto] sm:items-end" method="GET">
+    <form class="mb-5 grid gap-4 rounded-2xl border border-wg-border wg-glass-panel p-5 shadow-wg-surface sm:grid-cols-[minmax(0,1fr)_11rem_8rem_auto] sm:items-end" method="GET">
         <label class="grid gap-2 text-sm font-bold"><span>Search</span><Input name="search" type="search" value={query.search} placeholder={`Search ${title.toLowerCase()}`} /></label>
         {#each tableFilters as filter}<label class="grid gap-2 text-sm font-bold"><span>{filter.label}</span><Select name={filter.name} value={filter.value}><option value="">All {filter.label.toLowerCase()}</option>{#each filter.options as option}<option value={option.value}>{option.label}</option>{/each}</Select></label>{/each}
         <label class="grid gap-2 text-sm font-bold"><span>Rows</span><Select name="per_page" value={String(query.perPage)}><option value="10">10</option><option value="25">25</option><option value="50">50</option><option value="100">100</option></Select></label>

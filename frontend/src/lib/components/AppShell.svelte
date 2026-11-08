@@ -125,7 +125,7 @@
 <a href="#main-content" class="sr-only fixed top-3 left-3 z-[60] rounded-md bg-wg-accent px-4 py-2 text-sm font-bold text-wg-accent-contrast no-underline focus:not-sr-only">Skip to main content</a>
 
 <div class={`min-h-screen transition-[padding] duration-150 ${collapsed ? "pl-[5.5rem] max-[54rem]:pl-0" : "pl-68 max-[54rem]:pl-0"}`}>
-    <aside id="app-navigation" inert={isMobileViewport && !mobileOpen} aria-hidden={isMobileViewport && !mobileOpen ? "true" : undefined} class={`fixed inset-y-0 left-0 z-20 flex flex-col border-r border-purple-900 bg-purple-950 text-purple-100 transition-[width,transform] duration-150 max-[54rem]:w-[min(18rem,calc(100vw_-_3.5rem))] max-[54rem]:-translate-x-full max-[54rem]:shadow-wg-surface ${collapsed ? "w-[5.5rem]" : "w-68"} ${mobileOpen ? "max-[54rem]:translate-x-0" : ""}`} aria-label="Application navigation">
+    <aside id="app-navigation" inert={isMobileViewport && !mobileOpen} aria-hidden={isMobileViewport && !mobileOpen ? "true" : undefined} class={`fixed inset-y-0 left-0 z-20 flex flex-col wg-glass-navigation border-r border-purple-900 text-purple-100 transition-[width,transform] duration-150 max-[54rem]:w-[min(18rem,calc(100vw_-_3.5rem))] max-[54rem]:-translate-x-full max-[54rem]:shadow-wg-surface ${collapsed ? "w-[5.5rem]" : "w-68"} ${mobileOpen ? "max-[54rem]:translate-x-0" : ""}`} aria-label="Application navigation">
         <div class={collapsed ? "flex min-h-18 items-center justify-center gap-1 px-1.5" : "flex min-h-18 items-center justify-between gap-2 px-3.5"}>
             <a class="flex min-w-0 items-center gap-3 font-extrabold tracking-tight no-underline" href={appRoutes.dashboard} aria-label="WebGuard dashboard">
                 <img class="size-9 shrink-0 rounded-[0.65rem] bg-white object-contain p-0.5" src="/brand/webguard-logo.png" alt="" />
@@ -169,7 +169,7 @@
         <button type="button" class="fixed inset-0 z-10 hidden bg-slate-950/45 max-[54rem]:block" aria-label="Close navigation" onclick={closeMobileNavigation}></button>
     {/if}
 
-    <header class="hidden min-h-16 items-center justify-between border-b border-wg-border bg-wg-surface px-4 max-[54rem]:flex">
+    <header class="hidden min-h-16 items-center justify-between border-b border-wg-border wg-glass-panel px-4 max-[54rem]:flex">
         <a class="flex items-center gap-3 font-extrabold tracking-tight no-underline" href={appRoutes.dashboard} aria-label="WebGuard dashboard"><img class="size-9 rounded-[0.65rem] bg-white object-contain p-0.5" src="/brand/webguard-logo.png" alt="" /><span>WebGuard</span></a>
         <button type="button" class="grid size-11 place-items-center rounded-[0.65rem] border border-wg-border bg-transparent text-xl text-wg-text" aria-controls="app-navigation" aria-expanded={mobileOpen} aria-label="Toggle navigation" onclick={toggleMobileNavigation}>☰</button>
     </header>
