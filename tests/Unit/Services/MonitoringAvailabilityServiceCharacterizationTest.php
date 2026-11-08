@@ -15,6 +15,7 @@ use App\Models\Package;
 use App\Models\User;
 use App\Services\MonitoringAvailabilityService;
 use Illuminate\Support\Facades\Date;
+use Illuminate\Support\Str;
 use Tests\TestCase;
 
 class MonitoringAvailabilityServiceCharacterizationTest extends TestCase
@@ -622,7 +623,7 @@ class MonitoringAvailabilityServiceCharacterizationTest extends TestCase
     private function archivedResponse(Monitoring $monitoring, MonitoringStatus $status, string $checkedAt): void
     {
         MonitoringResponseArchived::query()->forceCreate([
-            'id' => (string) \Illuminate\Support\Str::ulid(),
+            'id' => (string) Str::ulid(),
             'monitoring_id' => $monitoring->id,
             'status' => $status,
             'http_status_code' => 200,

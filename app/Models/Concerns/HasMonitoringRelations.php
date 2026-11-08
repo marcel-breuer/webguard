@@ -6,7 +6,6 @@ namespace App\Models\Concerns;
 
 use App\Models\Incident;
 use App\Models\MaintenanceWindow;
-use App\Models\Monitoring;
 use App\Models\MonitoringDailyResult;
 use App\Models\MonitoringDomainResult;
 use App\Models\MonitoringGroup;
@@ -28,8 +27,6 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 
 /**
  * Eloquent relationships of a monitoring.
- *
- * @mixin Monitoring
  */
 trait HasMonitoringRelations
 {
