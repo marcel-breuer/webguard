@@ -39,8 +39,9 @@ it('keeps the public status page usable on a mobile viewport', function (): void
     $page = BrowserWorld::open('/status/' . $statusPage->id);
     $page->resize(390, 844);
 
-    $page->assertSee('Acme Mobile Status')
-        ->assertScript(NO_HORIZONTAL_OVERFLOW);
+    // Layout settles after the viewport change, so poll instead of asserting once.
+    BrowserWorld::waitUntil($page, NO_HORIZONTAL_OVERFLOW);
+    $page->assertSee('Acme Mobile Status');
 });
 
 it('collapses the dashboard navigation behind a toggle on a mobile viewport', function (): void {
@@ -51,7 +52,7 @@ it('collapses the dashboard navigation behind a toggle on a mobile viewport', fu
     $page->resize(390, 844);
     BrowserWorld::waitUntil($page, 'document.getElementById("app-navigation")?.hasAttribute("inert") === true');
 
-    $page->assertScript(NO_HORIZONTAL_OVERFLOW);
+    BrowserWorld::waitUntil($page, NO_HORIZONTAL_OVERFLOW);
 
     $inner->locator('button[aria-label="Toggle navigation"]')->click();
     BrowserWorld::waitUntil($page, 'document.getElementById("app-navigation")?.hasAttribute("inert") === false');
