@@ -1,9 +1,16 @@
 name: Coverage
 
 on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
   schedule:
   - cron: '0 3 * * *'
   workflow_dispatch:
+
+concurrency:
+  group: coverage-${{ github.event.pull_request.number || github.ref_name }}
+  cancel-in-progress: true
 
 permissions:
   contents: read
@@ -13,6 +20,9 @@ env:
   PHP_OPCACHE_ENABLE: "1"
   PHP_MEMORY_LIMIT: "2048M"
   PHP_MAX_EXECUTION_TIME: "300"
+  # Keep COVERAGE_TOTAL_MIN in sync with --min in the composer test:coverage script.
+  COVERAGE_TOTAL_MIN: "85"
+  COVERAGE_PATCH_MIN: "80"
 
 jobs:
   coverage:
@@ -24,6 +34,8 @@ jobs:
 
     - name: Checkout code
       uses: actions/checkout@v6
+      with:
+        fetch-depth: 0
 
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
@@ -69,6 +81,30 @@ jobs:
           -w /var/www/html "${{ env.CI_IMAGE }}" \
           composer test:coverage -- --parallel --coverage-clover=coverage.xml
 
+    - name: Check total and patch coverage
+      if: always()
+      env:
+        BASE_SHA: ${{ github.event.pull_request.base.sha }}
+      run: |
+        status=0
+        docker run --rm --user "$(id -u):$(id -g)" \
+          -e BASE_SHA -e COVERAGE_TOTAL_MIN -e COVERAGE_PATCH_MIN \
+          -e GIT_CONFIG_COUNT=1 -e GIT_CONFIG_KEY_0=safe.directory -e GIT_CONFIG_VALUE_0=/var/www/html \
+          -v "${{ github.workspace }}:/var/www/html" \
+          -w /var/www/html "${{ env.CI_IMAGE }}" \
+          php .github/scripts/check-coverage.php \
+            --clover=coverage.xml \
+            --base="$BASE_SHA" \
+            --head=HEAD \
+            --path=app \
+            --total-min="$COVERAGE_TOTAL_MIN" \
+            --patch-min="$COVERAGE_PATCH_MIN" \
+            --summary=coverage-summary.md || status=$?
+        if [ -f coverage-summary.md ]; then
+          cat coverage-summary.md >> "$GITHUB_STEP_SUMMARY"
+        fi
+        exit "$status"
+
     - name: Upload coverage report
       if: always()
       uses: actions/upload-artifact@v4
@@ -83,7 +119,6 @@ jobs:
       run: |
         duration="$(( $(date +%s) - JOB_STARTED_AT ))"
         {
-          echo "## Coverage"
           echo
           echo "Completed in ${duration}s with Xdebug coverage instrumentation."
         } >> "$GITHUB_STEP_SUMMARY"
