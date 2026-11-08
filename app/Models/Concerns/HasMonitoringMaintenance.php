@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Models\Concerns;
 
 use App\Models\MaintenanceWindow;
-use App\Models\Monitoring;
 use App\Services\MaintenanceWindowService;
 use Carbon\CarbonInterface;
 use Illuminate\Database\Eloquent\Attributes\Scope;
@@ -69,8 +68,8 @@ trait HasMonitoringMaintenance
     /**
      * Add the recurring maintenance presence flag used by high-throughput payloads.
      *
-     * @param  Builder<Monitoring>  $builder
-     * @return Builder<Monitoring>
+     * @param  Builder<static>  $builder
+     * @return Builder<static>
      */
     #[Scope]
     protected function withMaintenanceWindowState(Builder $builder): Builder

@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Models\Concerns;
 
 use App\Enums\TeamRole;
-use App\Models\Monitoring;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Builder;
@@ -63,8 +62,8 @@ trait HasMonitoringOwnership
     }
 
     /**
-     * @param  Builder<Monitoring>  $builder
-     * @return Builder<Monitoring>
+     * @param  Builder<static>  $builder
+     * @return Builder<static>
      */
     #[Scope]
     protected function visibleTo(Builder $builder, User $user): Builder
@@ -78,8 +77,8 @@ trait HasMonitoringOwnership
     }
 
     /**
-     * @param  Builder<Monitoring>  $builder
-     * @return Builder<Monitoring>
+     * @param  Builder<static>  $builder
+     * @return Builder<static>
      */
     #[Scope]
     protected function manageableBy(Builder $builder, User $user): Builder
@@ -97,8 +96,8 @@ trait HasMonitoringOwnership
     }
 
     /**
-     * @param  Builder<Monitoring>  $builder
-     * @return Builder<Monitoring>
+     * @param  Builder<static>  $builder
+     * @return Builder<static>
      */
     #[Scope]
     protected function privateOwnedBy(Builder $builder, User $user): Builder
