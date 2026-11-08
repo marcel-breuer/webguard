@@ -269,3 +269,88 @@ jobs:
           echo
           echo "Completed in ${duration}s. Scope: ${{ needs.changes.outputs.reason }}."
         } >> "$GITHUB_STEP_SUMMARY"
+
+  browser:
+    name: Browser
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+    - name: Record job start
+      run: echo "JOB_STARTED_AT=$(date +%s)" >> "$GITHUB_ENV"
+
+    - name: Checkout code
+      uses: actions/checkout@v6
+      with:
+        ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.5'
+        extensions: redis, gd, sockets, intl, mbstring, pdo_sqlite, sqlite3, zip
+        coverage: none
+        tools: composer:v2
+
+    - name: Cache Composer dependencies
+      uses: actions/cache@v5
+      with:
+        path: ~/.cache/composer/files
+        key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-composer-
+
+    - name: Install PHP dependencies
+      run: composer install --no-interaction --prefer-dist --optimize-autoloader
+
+    - name: Setup Bun
+      uses: oven-sh/setup-bun@v2
+      with:
+        bun-version: '1.3.11'
+
+    - name: Install Bun workspace dependencies
+      run: bun install --frozen-lockfile
+
+    - name: Build frontend
+      run: bun run frontend:build
+
+    - name: Install gateway web server
+      run: |
+        sudo apt-get update
+        sudo apt-get install --yes --no-install-recommends nginx
+        sudo systemctl stop nginx
+
+    - name: Cache Playwright browsers
+      uses: actions/cache@v5
+      with:
+        path: ~/.cache/ms-playwright
+        key: ${{ runner.os }}-playwright-${{ hashFiles('bun.lock') }}
+
+    - name: Install Playwright Chromium
+      run: ./node_modules/.bin/playwright install --with-deps chromium
+
+    - name: Run browser tests
+      env:
+        XDEBUG_MODE: off
+      run: composer test:browser
+
+    - name: Upload browser failure artifacts
+      if: failure()
+      uses: actions/upload-artifact@v4
+      with:
+        name: browser-failure-artifacts
+        path: |
+          tests/Browser/Screenshots
+          storage/framework/testing/browser-gateway/*/*.log
+          storage/logs
+        if-no-files-found: ignore
+        retention-days: 7
+
+    - name: Summarize job duration
+      if: always()
+      run: |
+        duration="$(( $(date +%s) - JOB_STARTED_AT ))"
+        {
+          echo "## Browser"
+          echo
+          echo "Completed in ${duration}s. Chromium drives the built SvelteKit app behind the production gateway routing."
+        } >> "$GITHUB_STEP_SUMMARY"

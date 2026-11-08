@@ -368,6 +368,18 @@ Install frontend dependencies:
 docker run --rm --user "$(id -u):$(id -g)" -v "$PWD:/app" -w /app oven/bun:1 bun install --cwd frontend
 ```
 
+Run the browser end-to-end tests (needs the built frontend, nginx, and Playwright
+Chromium; see [Test Concept](test-concept.md) for details):
+
+```bash
+docker run --rm -v "$PWD:/app" -w /app oven/bun:1 sh -c 'bun install --frozen-lockfile && bun run frontend:build'
+docker build --target ci -t webguard-browser-tests .
+docker run --rm -v "$PWD:/var/www/html" -w /var/www/html webguard-browser-tests sh -c \
+  'apt-get update && apt-get install -y --no-install-recommends nginx \
+   && ./node_modules/.bin/playwright install --with-deps chromium \
+   && composer install --no-interaction && composer test:browser'
+```
+
 ## webguard-instance Integration With Local Docker
 
 The local stack uses the shared Docker network `webguard-network`.
