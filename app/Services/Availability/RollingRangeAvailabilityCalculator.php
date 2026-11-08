@@ -31,7 +31,7 @@ class RollingRangeAvailabilityCalculator
         Carbon $now,
         bool $includeIntradayRawData
     ): array {
-        $maxRangeDays = max(...$normalizedDays->all());
+        $maxRangeDays = $normalizedDays->max() ?? 0;
         $globalStartDate = $now->copy()->subDays($maxRangeDays)->startOfDay();
         $today = $now->copy()->startOfDay();
         $historicalEndDate = $today->copy()->subDay()->endOfDay();
