@@ -51,7 +51,7 @@
     </header>
 
     <ol class="mt-5 grid list-none gap-3 p-0 md:grid-cols-2">
-        <li class="rounded-xl border border-wg-border bg-wg-surface p-4">
+        <li class="rounded-xl border border-wg-border wg-glass-panel p-4">
             <div class="flex items-start justify-between gap-3">
                 <div>
                     <h3 class="m-0 text-sm font-bold">1. Add your first website</h3>
@@ -69,7 +69,7 @@
             {/if}
         </li>
 
-        <li class="rounded-xl border border-wg-border bg-wg-surface p-4">
+        <li class="rounded-xl border border-wg-border wg-glass-panel p-4">
             <div class="flex items-start justify-between gap-3">
                 <div>
                     <h3 class="m-0 text-sm font-bold">2. Set up and test alerts</h3>

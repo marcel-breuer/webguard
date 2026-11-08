@@ -127,7 +127,7 @@
             aria-modal="true"
             role="dialog"
             tabindex="-1"
-            class={`relative z-10 grid max-h-[calc(100dvh-1rem)] w-full grid-rows-[auto_minmax(0,1fr)] overflow-hidden rounded-lg border border-wg-border bg-wg-surface text-wg-text shadow-wg-surface outline-none sm:max-h-[calc(100dvh-2rem)] ${size === "wide" ? "max-w-5xl" : "max-w-2xl"}`}
+            class={`relative z-10 grid max-h-[calc(100dvh-1rem)] w-full grid-rows-[auto_minmax(0,1fr)] overflow-hidden rounded-2xl border border-wg-border wg-glass-panel wg-glass-overlay text-wg-text shadow-wg-surface outline-none sm:max-h-[calc(100dvh-2rem)] ${size === "wide" ? "max-w-5xl" : "max-w-2xl"}`}
             onkeydown={handleKeydown}
             onfocusin={keepFocusedControlVisible}
         >

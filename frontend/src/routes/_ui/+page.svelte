@@ -53,7 +53,7 @@
         <span class="mt-4 block text-base leading-[1.6] text-wg-text-muted">Dark-aware, keyboard-accessible and ready for the SvelteKit workspace.</span>
     </header>
 
-    <section aria-labelledby="buttons-heading" class="mt-5 rounded-2xl border border-wg-border bg-wg-surface p-[1.125rem] shadow-wg-surface sm:p-6">
+    <section aria-labelledby="buttons-heading" class="mt-5 rounded-2xl border border-wg-border wg-glass-panel p-[1.125rem] shadow-wg-surface sm:p-6">
         <h2 id="buttons-heading" class="mb-4 mt-0 text-base">Actions</h2>
         <div class="flex flex-wrap gap-3">
             <Button>Save changes</Button>
@@ -63,7 +63,7 @@
         </div>
     </section>
 
-    <section aria-labelledby="form-heading" class="mt-5 rounded-2xl border border-wg-border bg-wg-surface p-[1.125rem] shadow-wg-surface sm:p-6">
+    <section aria-labelledby="form-heading" class="mt-5 rounded-2xl border border-wg-border wg-glass-panel p-[1.125rem] shadow-wg-surface sm:p-6">
         <h2 id="form-heading" class="mb-4 mt-0 text-base">Fields</h2>
         <div class="grid gap-4 md:grid-cols-2">
             <Field label="Monitoring name" required hint="Visible to your team.">
@@ -84,7 +84,7 @@
         </div>
     </section>
 
-    <section aria-labelledby="dialog-heading" class="mt-5 rounded-2xl border border-wg-border bg-wg-surface p-[1.125rem] shadow-wg-surface sm:p-6">
+    <section aria-labelledby="dialog-heading" class="mt-5 rounded-2xl border border-wg-border wg-glass-panel p-[1.125rem] shadow-wg-surface sm:p-6">
         <h2 id="dialog-heading" class="mb-4 mt-0 text-base">Dialog</h2>
         <Button onclick={() => (dialogOpen = true)}>Open confirmation</Button>
     </section>
@@ -98,7 +98,7 @@
         <div class="mt-4"><Pagination page={2} pages={4} href={(page) => `?page=${page}`} /></div>
     </Card>
 
-    <section aria-label="Feedback states" class="mt-5 grid gap-5 rounded-2xl border border-wg-border bg-wg-surface p-[1.125rem] shadow-wg-surface sm:p-6">
+    <section aria-label="Feedback states" class="mt-5 grid gap-5 rounded-2xl border border-wg-border wg-glass-panel p-[1.125rem] shadow-wg-surface sm:p-6">
         <LoadingState label="Loading monitoring results" />
         <EmptyState title="No maintenance windows" description="Planned maintenance will appear here once it is scheduled." />
     </section>

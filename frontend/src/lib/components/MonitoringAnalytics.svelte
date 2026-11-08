@@ -376,7 +376,7 @@
     {#if calendarMonths.length > 0}
         <div class="mt-3 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
             {#each calendarMonths as [month, value]}
-                <article class="w-full rounded-[1.125rem] border border-wg-border bg-wg-surface p-6 shadow-sm">
+                <article class="w-full rounded-[1.125rem] border border-wg-border wg-glass-panel p-6 shadow-sm">
                     <div class="flex items-baseline gap-2"><h3 class="text-lg font-extrabold">{formatMonthYear(new Date(`${month}-01T00:00:00`))}</h3><span class="text-xs font-bold text-wg-text-muted">({value.monthly_average_uptime === null ? "—" : formatPercentage(value.monthly_average_uptime)})</span></div>
                     <div class="mt-4 grid grid-cols-7 gap-1.5 text-center text-[0.625rem] text-wg-text-muted" aria-hidden="true"><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span></div>
                     <div class="mt-2 grid grid-cols-7 gap-1.5" aria-label={`Availability for ${month}`}>
@@ -404,18 +404,18 @@
         </div>
     {:else}<p class="mt-3 text-sm leading-6 text-wg-text-muted">Daily availability will appear after a full monitoring day.</p>{/if}
     {#if uptimeCalendarError}<p class="mt-3 text-sm font-bold text-wg-danger" role="alert">{uptimeCalendarError}</p>{/if}
-    <article class="mt-4 rounded-[0.8rem] border border-wg-border bg-wg-surface px-4 py-4 shadow-sm sm:px-6"><div class="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-xs text-wg-text-muted"><span class="inline-flex items-center gap-2"><span class="size-3 rounded-sm bg-emerald-500"></span>≥ 97.5 %</span><span class="inline-flex items-center gap-2"><span class="size-3 rounded-sm bg-amber-400"></span>≥ 90 % and &lt; 97.5 %</span><span class="inline-flex items-center gap-2"><span class="size-3 rounded-sm bg-red-500"></span>&lt; 90 %</span><span class="inline-flex items-center gap-2"><span class="size-3 rounded-sm bg-wg-surface-muted"></span>N/A</span></div></article>
+    <article class="mt-4 rounded-[0.8rem] border border-wg-border wg-glass-panel px-4 py-4 shadow-sm sm:px-6"><div class="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-xs text-wg-text-muted"><span class="inline-flex items-center gap-2"><span class="size-3 rounded-sm bg-emerald-500"></span>≥ 97.5 %</span><span class="inline-flex items-center gap-2"><span class="size-3 rounded-sm bg-amber-400"></span>≥ 90 % and &lt; 97.5 %</span><span class="inline-flex items-center gap-2"><span class="size-3 rounded-sm bg-red-500"></span>&lt; 90 %</span><span class="inline-flex items-center gap-2"><span class="size-3 rounded-sm bg-wg-surface-muted"></span>N/A</span></div></article>
 </section>
 
 <section class="mt-7" aria-labelledby="response-time-heading">
     <div class="flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between"><h2 id="response-time-heading" class="shrink-0 text-2xl font-extrabold">Response Time</h2><Select width="compact" density="compact" value={String(responseTimeDays)} onchange={changeResponseTimePeriod} disabled={loadingResponseTimes} class="font-semibold text-wg-text-muted" aria-label="Response time period"><option value="1">Daily</option><option value="7">Weekly</option><option value="30">Monthly</option></Select></div>
-    <article class="mt-3 rounded-[0.8rem] border border-wg-border bg-wg-surface p-4 shadow-sm sm:p-6">
+    <article class="mt-3 rounded-[0.8rem] border border-wg-border wg-glass-panel p-4 shadow-sm sm:p-6">
         {#if points.length > 0}
             <div class="h-64 sm:h-96" role="img" aria-label="Response time line chart in milliseconds"><canvas bind:this={responseTimeCanvas}></canvas></div>
         {:else}<p class="text-sm leading-6 text-wg-text-muted">{loadingResponseTimes ? "Loading response-time data…" : "Response-time data will appear after the monitoring collects results."}</p>{/if}
     </article>
     {#if responseTimesError}<p class="mt-3 text-sm font-bold text-wg-danger" role="alert">{responseTimesError}</p>{/if}
-    {#if points.length > 0}<dl class="mt-4 grid gap-4 text-center sm:grid-cols-3"><div class="rounded-[0.8rem] border border-wg-border bg-wg-surface p-5 shadow-sm"><dt class="text-sm text-wg-text-muted">Minimum</dt><dd class="mt-1 text-lg font-extrabold">{formatNumber(Math.round(responseTimes.aggregated.min ?? 0))} ms</dd></div><div class="rounded-[0.8rem] border border-wg-border bg-wg-surface p-5 shadow-sm"><dt class="text-sm text-wg-text-muted">Average</dt><dd class="mt-1 text-lg font-extrabold">{formatNumber(Math.round(responseTimes.aggregated.avg ?? 0))} ms</dd></div><div class="rounded-[0.8rem] border border-wg-border bg-wg-surface p-5 shadow-sm"><dt class="text-sm text-wg-text-muted">Maximum</dt><dd class="mt-1 text-lg font-extrabold">{formatNumber(Math.round(responseTimes.aggregated.max ?? 0))} ms</dd></div></dl>{/if}
+    {#if points.length > 0}<dl class="mt-4 grid gap-4 text-center sm:grid-cols-3"><div class="rounded-[0.8rem] border border-wg-border wg-glass-panel p-5 shadow-sm"><dt class="text-sm text-wg-text-muted">Minimum</dt><dd class="mt-1 text-lg font-extrabold">{formatNumber(Math.round(responseTimes.aggregated.min ?? 0))} ms</dd></div><div class="rounded-[0.8rem] border border-wg-border wg-glass-panel p-5 shadow-sm"><dt class="text-sm text-wg-text-muted">Average</dt><dd class="mt-1 text-lg font-extrabold">{formatNumber(Math.round(responseTimes.aggregated.avg ?? 0))} ms</dd></div><div class="rounded-[0.8rem] border border-wg-border wg-glass-panel p-5 shadow-sm"><dt class="text-sm text-wg-text-muted">Maximum</dt><dd class="mt-1 text-lg font-extrabold">{formatNumber(Math.round(responseTimes.aggregated.max ?? 0))} ms</dd></div></dl>{/if}
 </section>
 
 <section class="mt-7" aria-labelledby="incidents-heading">
@@ -423,7 +423,7 @@
     {#if incidents.length > 0}
         <ul class="mt-3 grid gap-3 p-0">
             {#each incidents as incident}
-                <li class="list-none rounded-[0.8rem] border border-wg-border bg-wg-surface p-4 shadow-sm">
+                <li class="list-none rounded-[0.8rem] border border-wg-border wg-glass-panel p-4 shadow-sm">
                     <p class="font-bold">{incident.up_at ? "Resolved incident" : "Open incident"}</p>
                     <p class="mt-1 text-sm text-wg-text-muted">{timestamp(incident.down_at)} · {duration(incident)}</p>
                     {#if incident.consensus_snapshot}
@@ -460,7 +460,7 @@
 
 {#if detail.current_check.regional_consensus}
     {@const consensus = detail.current_check.regional_consensus}
-    <section class="mt-7 rounded-[0.8rem] border border-wg-border bg-wg-surface p-4 shadow-sm sm:p-6" aria-labelledby="regional-consensus-heading">
+    <section class="mt-7 rounded-[0.8rem] border border-wg-border wg-glass-panel p-4 shadow-sm sm:p-6" aria-labelledby="regional-consensus-heading">
         <h2 id="regional-consensus-heading" class="text-2xl font-extrabold">Current regional consensus</h2>
         <p class="mt-2 text-sm leading-6 text-wg-text-muted">{consensusExplanation(consensus)}</p>
         <p class="mt-3 text-sm"><span class="font-semibold">Failed locations:</span> {consensus.affected_locations.join(", ") || "None"}</p>
@@ -476,7 +476,7 @@
 <section class="mt-7" aria-labelledby="recent-checks-heading">
     <div><h2 id="recent-checks-heading" class="text-2xl font-extrabold">Recent Checks</h2><p class="mt-1 text-sm text-wg-text-muted">{formatNumber(checks.length)} loaded checks · Live and archived data</p></div>
     {#if checks.length > 0}
-        <div class="relative mt-3 overflow-hidden rounded-[0.8rem] border border-wg-border bg-wg-surface shadow-sm">
+        <div class="relative mt-3 overflow-hidden rounded-[0.8rem] border border-wg-border wg-glass-panel shadow-sm">
             {#each checks as check, index (check.id)}
                 <article class="relative z-10 grid grid-cols-[1.25rem_minmax(0,1fr)] gap-x-3 gap-y-3 px-4 py-4 transition-colors hover:bg-wg-surface-muted/50 sm:grid-cols-[1.5rem_minmax(11rem,0.9fr)_minmax(0,1.6fr)_auto] sm:items-center sm:gap-4 sm:px-5 sm:py-5">
                     {#if index < checks.length - 1}<span class={`pointer-events-none absolute top-[1.625rem] bottom-[-1.625rem] left-[1.625rem] z-[-1] w-px sm:left-8 ${timelineConnectorTone(check.status)}`} aria-hidden="true"></span>{/if}

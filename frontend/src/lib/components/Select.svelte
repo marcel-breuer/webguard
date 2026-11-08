@@ -242,7 +242,7 @@
         {/if}
 
         {#if open}
-            <div id={id ? `${id}-options` : undefined} class="absolute z-30 mt-1 w-full overflow-hidden rounded-md border border-violet-200 bg-wg-surface py-1 shadow-lg dark:border-violet-800" role="listbox" aria-multiselectable={multiple || undefined}>
+            <div id={id ? `${id}-options` : undefined} class="absolute z-30 mt-1 w-full overflow-hidden rounded-md border border-violet-200 wg-glass-panel wg-glass-overlay py-1 shadow-lg dark:border-violet-800" role="listbox" aria-multiselectable={multiple || undefined}>
                 {#if searchable}
                     <div class="border-b border-violet-100 p-2 dark:border-violet-900"><input bind:this={searchInput} bind:value={query} aria-label={searchPlaceholder} class="min-h-9 w-full rounded border border-violet-200 bg-violet-50/40 px-2.5 text-sm text-wg-text outline-none placeholder:text-wg-text-muted focus:border-wg-accent focus:ring-2 focus:ring-wg-focus/40 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-wg-focus dark:border-violet-800 dark:bg-violet-950/30" placeholder={searchPlaceholder} onkeydown={handleSearchKeydown} /></div>
                 {/if}

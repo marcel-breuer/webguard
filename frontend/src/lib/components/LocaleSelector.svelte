@@ -64,7 +64,7 @@
     <summary class={`grid size-11 cursor-pointer list-none place-items-center rounded-[0.65rem] border [&::-webkit-details-marker]:hidden ${variant === "surface" ? "border-wg-border bg-wg-surface text-wg-text" : "border-purple-700 text-purple-100"}`} aria-label="Language" title="Language">
         <NavIcon name="globe" />
     </summary>
-    <div class={`absolute ${menuPlacement === "below" ? "top-[calc(100%+0.5rem)]" : "bottom-[calc(100%+0.5rem)]"} ${menuAlign === "right" ? "right-0" : "left-0"} z-30 w-48 rounded-xl border border-wg-border bg-wg-surface p-2 shadow-wg-surface`} aria-label="Language" aria-busy={saving}>
+    <div class={`absolute ${menuPlacement === "below" ? "top-[calc(100%+0.5rem)]" : "bottom-[calc(100%+0.5rem)]"} ${menuAlign === "right" ? "right-0" : "left-0"} z-30 w-48 rounded-xl border border-wg-border wg-glass-panel wg-glass-overlay p-2 shadow-wg-surface`} aria-label="Language" aria-busy={saving}>
         <p class="mb-2 px-1 text-sm font-bold text-wg-text">Language</p>
         <div class="grid gap-1">
             {#each options as option}
