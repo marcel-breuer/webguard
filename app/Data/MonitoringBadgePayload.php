@@ -19,7 +19,7 @@ final readonly class MonitoringBadgePayload implements JsonSerializable
         public ?string $checkedAtHuman,
         public MonitoringBadgeUptimePayload $uptime,
         public string $publicUrl,
-        /** @var array{30_days: int, 90_days: int, 365_days: int} */
+        /** @var array{'30_days': int, '90_days': int, '365_days': int} */
         public array $incidents,
         /** @var array{valid: bool|null, expires_at: string|null} */
         public array $ssl,

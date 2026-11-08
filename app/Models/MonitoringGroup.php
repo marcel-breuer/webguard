@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use Database\Factories\MonitoringGroupFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Table;
 use Illuminate\Database\Eloquent\Attributes\WithoutIncrementing;
@@ -25,7 +26,9 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 #[WithoutIncrementing]
 class MonitoringGroup extends Model
 {
+    /** @use HasFactory<MonitoringGroupFactory> */
     use HasFactory;
+
     use HasUlids;
 
     /**

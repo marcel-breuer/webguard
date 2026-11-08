@@ -8,8 +8,14 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Scope;
 
+/**
+ * @implements Scope<Model>
+ */
 class UserScope implements Scope
 {
+    /**
+     * @param  Builder<Model>  $builder
+     */
     public function apply(Builder $builder, Model $model)
     {
         if (auth()->check()) {

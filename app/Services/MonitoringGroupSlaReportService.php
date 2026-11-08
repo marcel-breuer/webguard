@@ -101,6 +101,9 @@ final class MonitoringGroupSlaReportService
         ];
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function previousCalendarMonth(MonitoringGroup $monitoringGroup, ?CarbonInterface $asOf = null): array
     {
         $asOf = Date::instance($asOf ?? Date::now());

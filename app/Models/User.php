@@ -6,6 +6,7 @@ namespace App\Models;
 
 use App\Enums\TeamRole;
 use App\Enums\UserRole;
+use Database\Factories\UserFactory;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
@@ -63,9 +64,9 @@ use Spatie\Activitylog\Support\LogOptions;
  * @property-read int|null $api_logs_count
  * @property-read Package|null $package
  *
- * @method static Builder|static newModelQuery()
- * @method static Builder|static newQuery()
- * @method static Builder|static query()
+ * @method static Builder<static> newModelQuery()
+ * @method static Builder<static> newQuery()
+ * @method static Builder<static> query()
  */
 #[Fillable([
     'name',
@@ -96,7 +97,10 @@ use Spatie\Activitylog\Support\LogOptions;
 class User extends Authenticatable implements MustVerifyEmail
 {
     use HasApiTokens;
+
+    /** @use HasFactory<UserFactory> */
     use HasFactory;
+
     use HasUlids;
     use LogsActivity;
     use Notifiable;

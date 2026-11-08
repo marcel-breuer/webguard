@@ -40,7 +40,7 @@ final readonly class MonitoringDateRange
             return false;
         }
 
-        return $monitoring->created_at->diffInDays($this->resolvedAt) >= 1;
+        return ($monitoring->created_at?->diffInDays($this->resolvedAt) ?? 0) >= 1;
     }
 
     public function shouldUseResponseTimeAggregates(): bool

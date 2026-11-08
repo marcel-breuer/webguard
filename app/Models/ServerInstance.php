@@ -12,12 +12,16 @@ use Illuminate\Database\Eloquent\Attributes\WithoutIncrementing;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
+use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\Hash;
 
+/**
+ * @property string $api_key_hash
+ */
 #[Fillable([
     'code',
     'display_name',
@@ -36,7 +40,9 @@ use Illuminate\Support\Facades\Hash;
 #[WithoutIncrementing]
 class ServerInstance extends Model
 {
+    /** @use HasFactory<Factory<self>> */
     use HasFactory;
+
     use HasUlids;
 
     protected $keyType = 'string';
@@ -88,6 +94,9 @@ class ServerInstance extends Model
 
     /**
      * Scope a query to active server instances.
+     *
+     * @param  Builder<ServerInstance>  $builder
+     * @return Builder<ServerInstance>
      */
     #[Scope]
     protected function active(Builder $builder): Builder
@@ -97,6 +106,8 @@ class ServerInstance extends Model
 
     /**
      * Hash plain-text API keys before persisting.
+     *
+     * @return Attribute<mixed, string>
      */
     protected function apiKeyHash(): Attribute
     {

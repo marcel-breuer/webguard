@@ -8,11 +8,15 @@ use App\Models\MonitoringResponse;
 use App\Models\MonitoringResponseArchived;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
 
 final class MonitoringResponseHistory
 {
+    /**
+     * @return Builder<Model>
+     */
     public static function queryForEndDate(Carbon $endDate): Builder
     {
         if ($endDate->lt(Date::now()->subWeek()->startOfDay())) {

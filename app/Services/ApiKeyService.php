@@ -41,6 +41,9 @@ class ApiKeyService
         return $user->createToken(self::storedName($displayName), $abilities);
     }
 
+    /**
+     * @return LengthAwarePaginator<int, \Laravel\Sanctum\PersonalAccessToken>
+     */
     public function paginate(User $user, int $perPage, ?string $state): LengthAwarePaginator
     {
         return $user->tokens()

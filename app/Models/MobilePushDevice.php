@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use Database\Factories\MobilePushDeviceFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Attributes\WithoutIncrementing;
@@ -52,7 +53,9 @@ use Illuminate\Support\Carbon;
 #[WithoutIncrementing]
 class MobilePushDevice extends Model
 {
+    /** @use HasFactory<MobilePushDeviceFactory> */
     use HasFactory;
+
     use HasUlids;
 
     /**
@@ -63,6 +66,10 @@ class MobilePushDevice extends Model
         return $this->belongsTo(User::class);
     }
 
+    /**
+     * @param  Builder<MobilePushDevice>  $builder
+     * @return Builder<MobilePushDevice>
+     */
     #[Scope]
     protected function active(Builder $builder): Builder
     {

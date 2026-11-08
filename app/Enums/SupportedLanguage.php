@@ -9,6 +9,9 @@ enum SupportedLanguage: string
     case EN = 'en';
     case DE = 'de';
 
+    /**
+     * @return list<string>
+     */
     public static function values(): array
     {
         return array_column(self::cases(), 'value');
@@ -19,6 +22,9 @@ enum SupportedLanguage: string
         return self::EN;
     }
 
+    /**
+     * @return array<string, string>
+     */
     public static function toArray(): array
     {
         return array_reduce(self::cases(), function ($carry, $item) {

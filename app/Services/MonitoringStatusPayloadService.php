@@ -46,6 +46,10 @@ class MonitoringStatusPayloadService
         );
     }
 
+    /**
+     * @param  array<string, mixed>  $snapshot
+     * @return array<string, mixed>
+     */
     private function serializeConsensus(array $snapshot): array
     {
         $snapshot['status'] = $snapshot['status']->value;

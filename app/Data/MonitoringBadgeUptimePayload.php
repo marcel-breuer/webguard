@@ -16,7 +16,7 @@ final readonly class MonitoringBadgeUptimePayload implements JsonSerializable
     ) {}
 
     /**
-     * @return array{7_days: float|int|null, 30_days: float|int|null, 90_days: float|int|null, 365_days: float|int|null}
+     * @return array{'7_days': float|int|null, '30_days': float|int|null, '90_days': float|int|null, '365_days': float|int|null}
      */
     public function toArray(): array
     {
@@ -29,7 +29,7 @@ final readonly class MonitoringBadgeUptimePayload implements JsonSerializable
     }
 
     /**
-     * @return array{7_days: float|int|null, 30_days: float|int|null, 90_days: float|int|null, 365_days: float|int|null}
+     * @return array{'7_days': float|int|null, '30_days': float|int|null, '90_days': float|int|null, '365_days': float|int|null}
      */
     public function jsonSerialize(): array
     {

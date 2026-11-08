@@ -19,6 +19,7 @@ final readonly class MonitoringStatusPayload implements JsonSerializable
         public ?string $statusChangedAt,
         public string $statusIdentifier,
         public string $statusKey,
+        /** @var array<string, mixed>|null */
         public ?array $regionalConsensus = null,
         public ?MonitoringSummaryPayload $monitoring = null
     ) {}

@@ -47,3 +47,14 @@ Contributions are welcome. Please keep changes focused, tested, and easy to revi
 - Keep existing tests passing.
 - Prefer small pull requests with clear scope.
 - Document user-facing behavior changes in the relevant docs file.
+
+## Static analysis
+
+PHPStan with Larastan runs at level 8 over `app`, `config`, and `routes` (`composer analyse`). CI fails the quality job on any error.
+
+Legacy findings that predate level 8 are recorded in `phpstan-baseline.neon`, which `phpstan.neon` includes. The baseline policy is:
+
+- New and changed code must pass without adding baseline entries. Fix the type, docblock, or null-safety issue instead of ignoring it.
+- Do not add inline `@phpstan-ignore` comments or `ignoreErrors` rules to bypass a finding.
+- Regenerate the baseline only to remove entries after fixing them: run `composer analyse -- --generate-baseline=phpstan-baseline.neon` and confirm the diff only deletes entries or lowers `count` values.
+- Fixing code that is covered by baseline entries should remove those entries in the same pull request. PHPStan reports entries that no longer match.

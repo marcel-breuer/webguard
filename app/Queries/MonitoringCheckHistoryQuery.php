@@ -9,6 +9,7 @@ use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
+use stdClass;
 
 final class MonitoringCheckHistoryQuery
 {
@@ -17,7 +18,7 @@ final class MonitoringCheckHistoryQuery
     private const ARCHIVED_TABLE = 'monitoring_response_archived';
 
     /**
-     * @return Collection<int, object>
+     * @return Collection<int, stdClass>
      */
     public function for(string $monitoringId, ?Carbon $startDate, Carbon $endDate, int $offset, int $limit): Collection
     {
@@ -59,7 +60,7 @@ final class MonitoringCheckHistoryQuery
     }
 
     /**
-     * @return Collection<int, object>
+     * @return Collection<int, stdClass>
      */
     public function forRange(string $monitoringId, Carbon $startDate, Carbon $endDate): Collection
     {

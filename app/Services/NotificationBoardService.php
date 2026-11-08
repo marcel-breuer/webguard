@@ -323,6 +323,10 @@ class NotificationBoardService
             ->map(fn (int|string $total): int => (int) $total);
     }
 
+    /**
+     * @param  Builder<MonitoringNotification>  $builder
+     * @return Builder<MonitoringNotification>
+     */
     private function filterMobileEntriesByEventType(Builder $builder, string $eventType, User $user): Builder
     {
         return match ($eventType) {

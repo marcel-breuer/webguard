@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Attributes\Table;
 use Illuminate\Database\Eloquent\Attributes\WithoutIncrementing;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
+use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -26,7 +27,9 @@ use Illuminate\Support\Facades\Date;
 #[WithoutIncrementing]
 class StatusPageSubscription extends Model
 {
+    /** @use HasFactory<Factory<self>> */
     use HasFactory;
+
     use HasUlids;
 
     public static function hashToken(string $token): string
@@ -55,6 +58,10 @@ class StatusPageSubscription extends Model
         return $this->verified_at !== null;
     }
 
+    /**
+     * @param  Builder<StatusPageSubscription>  $builder
+     * @return Builder<StatusPageSubscription>
+     */
     #[Scope]
     protected function verified(Builder $builder): Builder
     {

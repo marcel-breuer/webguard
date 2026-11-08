@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Enums\TeamRole;
+use Database\Factories\TeamFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Attributes\Table;
@@ -26,7 +27,9 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 #[WithoutIncrementing]
 class Team extends Model
 {
+    /** @use HasFactory<TeamFactory> */
     use HasFactory;
+
     use HasUlids;
 
     /**
@@ -93,6 +96,10 @@ class Team extends Model
             ->count();
     }
 
+    /**
+     * @param  Builder<Team>  $builder
+     * @return Builder<Team>
+     */
     #[Scope]
     protected function visibleTo(Builder $builder, User $user): Builder
     {
@@ -101,6 +108,10 @@ class Team extends Model
         });
     }
 
+    /**
+     * @param  Builder<Team>  $builder
+     * @return Builder<Team>
+     */
     #[Scope]
     protected function administeredBy(Builder $builder, User $user): Builder
     {

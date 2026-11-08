@@ -10,6 +10,7 @@ use App\Enums\MonitoringType;
 use App\Enums\TeamRole;
 use App\Services\MaintenanceWindowService;
 use Carbon\CarbonInterface;
+use Database\Factories\MonitoringFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Attributes\Table;
@@ -34,6 +35,7 @@ use Spatie\Activitylog\Support\LogOptions;
  * Represents a monitoring instance with type, target, keyword or port,
  * associated with a user and having many results.
  *
+ * @property bool|null $has_enabled_maintenance_windows
  **/
 #[Fillable([
     'user_id',
@@ -86,7 +88,9 @@ use Spatie\Activitylog\Support\LogOptions;
 #[WithoutIncrementing]
 class Monitoring extends Model
 {
+    /** @use HasFactory<MonitoringFactory> */
     use HasFactory;
+
     use HasUlids;
     use LogsActivity;
     use SoftDeletes;
@@ -477,6 +481,9 @@ class Monitoring extends Model
 
     /**
      * Add the recurring maintenance presence flag used by high-throughput payloads.
+     *
+     * @param  Builder<Monitoring>  $builder
+     * @return Builder<Monitoring>
      */
     #[Scope]
     protected function withMaintenanceWindowState(Builder $builder): Builder
@@ -508,6 +515,9 @@ class Monitoring extends Model
 
     /**
      * Scope a query to only include active monitorings.
+     *
+     * @param  Builder<Monitoring>  $builder
+     * @return Builder<Monitoring>
      */
     #[Scope]
     protected function active(Builder $builder): Builder
@@ -517,6 +527,9 @@ class Monitoring extends Model
 
     /**
      * Scope a query to only include paused monitorings.
+     *
+     * @param  Builder<Monitoring>  $builder
+     * @return Builder<Monitoring>
      */
     #[Scope]
     protected function paused(Builder $builder): Builder
@@ -524,6 +537,10 @@ class Monitoring extends Model
         return $builder->where('status', MonitoringLifecycleStatus::PAUSED);
     }
 
+    /**
+     * @param  Builder<Monitoring>  $builder
+     * @return Builder<Monitoring>
+     */
     #[Scope]
     protected function visibleTo(Builder $builder, User $user): Builder
     {
@@ -535,6 +552,10 @@ class Monitoring extends Model
         });
     }
 
+    /**
+     * @param  Builder<Monitoring>  $builder
+     * @return Builder<Monitoring>
+     */
     #[Scope]
     protected function manageableBy(Builder $builder, User $user): Builder
     {
@@ -550,6 +571,10 @@ class Monitoring extends Model
         });
     }
 
+    /**
+     * @param  Builder<Monitoring>  $builder
+     * @return Builder<Monitoring>
+     */
     #[Scope]
     protected function privateOwnedBy(Builder $builder, User $user): Builder
     {
@@ -559,6 +584,9 @@ class Monitoring extends Model
 
     /**
      * Scope a query to monitorings assigned to the given server instance code.
+     *
+     * @param  Builder<Monitoring>  $builder
+     * @return Builder<Monitoring>
      */
     #[Scope]
     protected function assignedToLocation(Builder $builder, string $location): Builder
