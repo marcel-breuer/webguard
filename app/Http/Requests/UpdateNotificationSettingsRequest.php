@@ -62,6 +62,15 @@ final class UpdateNotificationSettingsRequest extends FormRequest
                 $validator->errors()->add('notification_channels.webhook.url', __('validation.required'));
             }
 
+            $user = $this->user();
+
+            if (
+                $this->boolean('notification_channels.email.enabled')
+                && (! $user instanceof User || ! $user->hasVerifiedEmail())
+            ) {
+                $validator->errors()->add('notification_channels.email.enabled', __('profile.notification_settings.channels.email.unverified'));
+            }
+
             if ($this->boolean('notification_channels.telegram.enabled')) {
                 foreach (['bot_token', 'chat_id'] as $field) {
                     $key = 'notification_channels.telegram.' . $field;

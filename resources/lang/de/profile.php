@@ -119,6 +119,11 @@ return [
                 'title' => 'Mobile Push',
                 'help' => 'Sendet Alarme an registrierte iOS- und Android-Geräte.',
             ],
+            'email' => [
+                'title' => 'E-Mail',
+                'help' => 'Sendet Alarme an Ihre bestätigte Konto-E-Mail-Adresse.',
+                'unverified' => 'Bestätigen Sie Ihre Konto-E-Mail-Adresse, bevor Sie E-Mail-Alarme aktivieren.',
+            ],
         ],
     ],
     'update_password' => [

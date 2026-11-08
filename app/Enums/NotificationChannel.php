@@ -12,6 +12,7 @@ enum NotificationChannel: string
     case TEAMS = 'teams';
     case WEBHOOK = 'webhook';
     case MOBILE_PUSH = 'mobile_push';
+    case EMAIL = 'email';
 
     /**
      * @return array<int, string>

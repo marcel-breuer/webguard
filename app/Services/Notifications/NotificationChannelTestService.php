@@ -8,6 +8,7 @@ use App\Enums\NotificationChannel;
 use App\Enums\NotificationEventType;
 use App\Models\User;
 use App\Services\Notifications\Channels\DiscordChannelDriver;
+use App\Services\Notifications\Channels\EmailChannelDriver;
 use App\Services\Notifications\Channels\MobilePushChannelDriver;
 use App\Services\Notifications\Channels\NotificationChannelDriver;
 use App\Services\Notifications\Channels\SlackChannelDriver;
@@ -29,7 +30,8 @@ class NotificationChannelTestService
         DiscordChannelDriver $discordChannelDriver,
         TeamsChannelDriver $teamsChannelDriver,
         WebhookChannelDriver $webhookChannelDriver,
-        MobilePushChannelDriver $mobilePushChannelDriver
+        MobilePushChannelDriver $mobilePushChannelDriver,
+        EmailChannelDriver $emailChannelDriver
     ) {
         $this->drivers = [
             $slackChannelDriver->channel() => $slackChannelDriver,
@@ -38,6 +40,7 @@ class NotificationChannelTestService
             $teamsChannelDriver->channel() => $teamsChannelDriver,
             $webhookChannelDriver->channel() => $webhookChannelDriver,
             $mobilePushChannelDriver->channel() => $mobilePushChannelDriver,
+            $emailChannelDriver->channel() => $emailChannelDriver,
         ];
     }
 

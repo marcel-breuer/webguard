@@ -37,6 +37,7 @@ WebGuard helps teams observe public websites, operational tasks, certificates, d
 
 ## Notifications
 
-- **Flexible notifications:** receive notifications for status changes, SSL expiry, and domain expiry through in-app notifications and configurable Slack, Telegram, Discord, Microsoft Teams, and webhook channels. Multi-location incident messages include the classification, failed and reporting counts, required threshold, and structured event-time evidence.
+- **Flexible notifications:** receive notifications for status changes, SSL expiry, and domain expiry through in-app notifications and configurable email, Slack, Telegram, Discord, Microsoft Teams, webhook, and mobile push channels. Multi-location incident messages include the classification, failed and reporting counts, required threshold, and structured event-time evidence.
+- **Email alerts:** send incident, recovery, performance, SSL, and domain expiry alerts for your own and team monitorings as queued, localized emails to your verified account email address. The channel cannot be enabled or tested until the account email is verified, the recipient always follows the current account email, alerts include multi-location classification and per-location evidence, and every attempt is tracked as a channel delivery.
 - **Per-user team notifications:** each team member keeps their own notification channel choices and read state for shared team monitorings.
 - **Weekly monitoring digest:** email weekly uptime, incident, downtime, SSL, and domain expiry summaries to active users.

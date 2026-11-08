@@ -85,8 +85,8 @@ administrator role.
 | `PUT` | `/profile/password` | Update password through Laravel validation |
 | `GET`, `POST`, `DELETE` | `/profile/api-keys[/{apiKey}]` | List, create once, and revoke personal API keys |
 | `DELETE` | `/profile/account` | Schedule account deletion after password confirmation |
-| `GET`, `PATCH` | `/profile/notification-settings` | Read and persist notification-channel settings |
-| `POST` | `/profile/notification-settings/{channel}/test` | Test a configured channel |
+| `GET`, `PATCH` | `/profile/notification-settings` | Read and persist notification-channel settings. `notification_channels.email` returns the derived, read-only `address` and `verified` fields; only `enabled` is persisted, and enabling requires a verified account email. Omitting `email` or `mobile_push` keeps the stored state. |
+| `POST` | `/profile/notification-settings/{channel}/test` | Test a configured channel (`email` queues a test message to the verified account email) |
 
 ## Verified member workspace
 

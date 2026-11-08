@@ -48,8 +48,11 @@ final class NotificationSettingsService
         $normalized = [];
 
         foreach (NotificationChannel::values() as $channel) {
-            if ($channel === NotificationChannel::MOBILE_PUSH->value && ! $request->has('notification_channels.mobile_push')) {
-                $existingConfig = data_get($request->user()?->notification_channels, 'mobile_push', []);
+            if (
+                in_array($channel, [NotificationChannel::MOBILE_PUSH->value, NotificationChannel::EMAIL->value], true)
+                && ! $request->has('notification_channels.' . $channel)
+            ) {
+                $existingConfig = data_get($request->user()?->notification_channels, $channel, []);
                 $normalized[$channel] = is_array($existingConfig) ? $existingConfig : ['enabled' => false];
 
                 continue;
@@ -94,6 +97,14 @@ final class NotificationSettingsService
             $channels[$channel] = is_array($config) ? $config : [];
             $channels[$channel]['enabled'] = (bool) ($channels[$channel]['enabled'] ?? false);
         }
+
+        // The recipient is always derived from the account, never stored, so a changed or
+        // unverified account email cannot leave alerts pointing at a stale address.
+        $channels[NotificationChannel::EMAIL->value] = [
+            'enabled' => $channels[NotificationChannel::EMAIL->value]['enabled'],
+            'address' => $user->email,
+            'verified' => $user->hasVerifiedEmail(),
+        ];
 
         return $channels;
     }
