@@ -190,7 +190,7 @@ If you use Coolify, Traefik, or another reverse proxy in front of the deployment
 
 ### Health Check
 
-Docker Compose defines a health check for each runtime service so Coolify can report each container's health. Laravel checks its framework health route at `http://127.0.0.1:8080/status`; the frontend checks `/_health/frontend`; and the gateway checks its own endpoint plus the frontend and Laravel routes it serves. The scheduler verifies that Laravel can load its schedule, and the queue worker uses `healthcheck-queue`. MySQL and Redis have service-level checks when the optional `internal-services` profile is enabled. Coolify's standard application Healthcheck page does not apply to Git-based Compose applications; keep these checks in the Compose definition. The `gateway` service remains the only public entry point.
+Docker Compose defines a health check for each runtime service so Coolify can report each container's health. Laravel checks its framework health route at `http://127.0.0.1:8080/status`; the frontend checks `/_health/frontend`; and the gateway checks its own endpoint plus the frontend and Laravel routes it serves. The scheduler runs `php artisan schedule:work`, which evaluates the schedule at the start of every minute without drifting; its health check verifies that Laravel can load the schedule. The queue worker uses `healthcheck-queue`. MySQL and Redis have service-level checks when the optional `internal-services` profile is enabled. Coolify's standard application Healthcheck page does not apply to Git-based Compose applications; keep these checks in the Compose definition. The `gateway` service remains the only public entry point.
 
 ## Docker Local Development
 
