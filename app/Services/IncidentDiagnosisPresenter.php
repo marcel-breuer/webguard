@@ -7,6 +7,8 @@ namespace App\Services;
 use App\Enums\IncidentDiagnosisCategory;
 use App\Enums\IncidentDiagnosisConfidence;
 use App\Models\Incident;
+use App\Models\Monitoring;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Date;
 use Throwable;
@@ -25,7 +27,7 @@ final class IncidentDiagnosisPresenter
         return [
             'id' => (string) $incident->getKey(),
             'monitoring_id' => (string) $incident->monitoring_id,
-            'monitoring_name' => $incident->relationLoaded('monitoring') ? $incident->monitoring?->name : null,
+            'monitoring_name' => $this->loadedMonitoring($incident)?->name,
             'status' => $incident->up_at === null ? 'open' : 'resolved',
             'down_at' => Date::parse($incident->down_at)->toIso8601String(),
             'up_at' => $incident->up_at !== null ? Date::parse($incident->up_at)->toIso8601String() : null,
@@ -149,9 +151,19 @@ final class IncidentDiagnosisPresenter
         }
 
         try {
-            return Date::parse($value)->locale(App::getLocale())->isoFormat('lll');
+            $carbon = new Carbon($value);
+            $carbon->locale(App::getLocale());
+
+            return $carbon->isoFormat('lll');
         } catch (Throwable) {
             return $value;
         }
+    }
+
+    private function loadedMonitoring(Incident $incident): ?Monitoring
+    {
+        $monitoring = $incident->relationLoaded('monitoring') ? $incident->getRelation('monitoring') : null;
+
+        return $monitoring instanceof Monitoring ? $monitoring : null;
     }
 }

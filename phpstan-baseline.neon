@@ -1279,12 +1279,6 @@ parameters:
 			path: app/Services/MonitoringHeatmapService.php
 
 		-
-			message: '#^Method App\\Services\\MonitoringIncidentService\:\:getIncidentPage\(\) should return array\{data\: list\<array\{down_at\: string, up_at\: string\|null\}\>, has_more\: bool, next_offset\: int\|null\} but returns array\{data\: array\<int, array\{down_at\: string, up_at\: string\|null, consensus_snapshot\: array\<string, mixed\>\|null\}\>, has_more\: bool, next_offset\: int\|null\}\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Services/MonitoringIncidentService.php
-
-		-
 			message: '#^Cannot call method isoFormat\(\) on Illuminate\\Support\\Carbon\|string\.$#'
 			identifier: method.nonObject
 			count: 1
