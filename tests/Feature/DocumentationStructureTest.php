@@ -91,7 +91,7 @@ class DocumentationStructureTest extends TestCase
 
     public function test_public_badge_api_docs_include_all_uptime_ranges(): void
     {
-        $apiController = file_get_contents(app_path('Http/Controllers/ApiController.php'));
+        $apiController = file_get_contents(app_path('Http/Controllers/Api/Monitoring/PublicMonitoringBadgeController.php'));
 
         $this->assertIsString($apiController);
         $this->assertStringContainsString('"7_days": 100', $apiController);

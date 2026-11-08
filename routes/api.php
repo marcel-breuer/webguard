@@ -8,17 +8,18 @@ use App\Http\Controllers\Api\External\PublicMonitoringLocationController;
 use App\Http\Controllers\Api\FrontendTranslationController;
 use App\Http\Controllers\Api\McpController;
 use App\Http\Controllers\Api\Mobile\MobileAuthController;
+use App\Http\Controllers\Api\Monitoring\MonitoringAvailabilityController;
+use App\Http\Controllers\Api\Monitoring\PublicMonitoringBadgeController;
 use App\Http\Controllers\Api\PublicStatusPayloadController;
 use App\Http\Controllers\Api\PublicStatusSubscriptionController;
 use App\Http\Controllers\Api\ServerHealthReportController;
-use App\Http\Controllers\ApiController;
 use App\Http\Controllers\PublicStatusPageUptimeCalendarController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/public/monitorings/{monitoring}/badge', [ApiController::class, 'badge'])
+Route::get('/public/monitorings/{monitoring}/badge', PublicMonitoringBadgeController::class)
     ->middleware('throttle:60,1')
     ->name('public.monitorings.badge');
-Route::get('/public/monitorings/{monitoring}/uptime-calendar', [ApiController::class, 'uptimeCalendar'])
+Route::get('/public/monitorings/{monitoring}/uptime-calendar', [MonitoringAvailabilityController::class, 'uptimeCalendar'])
     ->name('public.monitorings.uptime-calendar');
 Route::get('/public/status-pages/{statusPage}/uptime-calendar', PublicStatusPageUptimeCalendarController::class)
     ->name('public.status-pages.uptime-calendar');
