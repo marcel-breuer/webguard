@@ -22,7 +22,7 @@
     const variants: Record<Variant, string> = {
         primary: "border-wg-accent bg-wg-accent text-wg-accent-contrast shadow-sm enabled:hover:bg-wg-accent-strong enabled:hover:shadow-md",
         secondary: "border-wg-accent bg-transparent text-wg-accent enabled:hover:bg-violet-50 dark:enabled:hover:bg-violet-950/40",
-        danger: "border-wg-danger bg-wg-danger text-white enabled:hover:brightness-95",
+        danger: "border-wg-danger bg-wg-danger text-white dark:text-slate-950 enabled:hover:brightness-95",
         quiet: "text-wg-text enabled:hover:border-wg-focus enabled:hover:bg-wg-surface-muted",
     };
 </script>

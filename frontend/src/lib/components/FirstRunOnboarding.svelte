@@ -40,7 +40,7 @@
     }
 </script>
 
-<section class="mb-6 rounded-2xl border border-violet-200 bg-violet-50 p-5 shadow-wg-surface dark:border-violet-800 dark:bg-violet-950/40 sm:p-6" aria-labelledby="first-run-onboarding-title">
+<section class="mb-6 wg-glass-panel p-5 sm:p-6" aria-labelledby="first-run-onboarding-title">
     <header class="flex flex-wrap items-start justify-between gap-4">
         <div>
             <p class="m-0 text-xs font-extrabold tracking-[0.12em] text-wg-accent uppercase">Getting started</p>
@@ -51,7 +51,7 @@
     </header>
 
     <ol class="mt-5 grid list-none gap-3 p-0 md:grid-cols-2">
-        <li class="rounded-xl border border-wg-border wg-glass-panel p-4">
+        <li class="wg-glass-inset p-4">
             <div class="flex items-start justify-between gap-3">
                 <div>
                     <h3 class="m-0 text-sm font-bold">1. Add your first website</h3>
@@ -69,7 +69,7 @@
             {/if}
         </li>
 
-        <li class="rounded-xl border border-wg-border wg-glass-panel p-4">
+        <li class="wg-glass-inset p-4">
             <div class="flex items-start justify-between gap-3">
                 <div>
                     <h3 class="m-0 text-sm font-bold">2. Set up and test alerts</h3>

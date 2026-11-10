@@ -87,7 +87,7 @@
         <p class="mt-3 leading-6 text-wg-text-muted">Keep system health, monitoring groups, status pages, and incident patterns in one operational view.</p>
     </header>
 
-    <section class="rounded-2xl border border-wg-border wg-glass-panel p-5 shadow-wg-surface sm:p-7" aria-labelledby="health-heading">
+    <section class="wg-glass-panel p-5 sm:p-7" aria-labelledby="health-heading">
         <div class="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
             <div><div class="flex items-center gap-3"><StatusBadge tone={stateTone(analytics.overview.overall_state)} label={stateLabel(analytics.overview.overall_state)} /><h2 id="health-heading" class="text-xl font-bold">Service health</h2></div><p class="mt-2 text-sm text-wg-text-muted">Updated with the latest monitoring results.</p></div>
             <dl class="grid grid-cols-2 gap-x-7 gap-y-3 text-sm sm:grid-cols-3 lg:grid-cols-6">
