@@ -264,7 +264,7 @@
     {/if}
 
     {#if message}<p class="text-sm font-bold text-wg-danger" role="alert">{message}</p>{/if}
-    <div class={`flex flex-wrap justify-end gap-3 ${presentation === "edit-modal" ? "sticky bottom-0 z-10 -mx-4 -mb-4 border-t border-wg-border wg-glass-panel wg-glass-overlay px-4 py-4 sm:-mx-6 sm:-mb-6 sm:px-6" : ""}`}>
+    <div class={`flex flex-wrap justify-end gap-3 ${presentation === "edit-modal" ? "sticky bottom-0 z-10 -mx-4 -mb-4 border-t wg-glass-bar px-4 py-4 sm:-mx-6 sm:-mb-6 sm:px-6" : ""}`}>
         {#if onCancel}
             <Button variant="secondary" type="button" onclick={onCancel}>Cancel</Button>
         {:else}

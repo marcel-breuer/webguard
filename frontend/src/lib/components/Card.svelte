@@ -12,7 +12,7 @@
     let { title, titleId, description, actions, children }: Props = $props();
 </script>
 
-<section class="overflow-hidden rounded-2xl border border-wg-border wg-glass-panel shadow-wg-surface">
+<section class="overflow-hidden wg-glass-panel">
     {#if title || description || actions}
         <header class="flex flex-col items-start justify-between gap-4 border-b border-wg-border px-[1.125rem] py-[1.125rem] sm:flex-row sm:px-6 sm:py-5">
             <div>

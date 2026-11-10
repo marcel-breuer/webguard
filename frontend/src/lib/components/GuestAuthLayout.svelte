@@ -17,7 +17,7 @@
 </script>
 
 <main class="mx-auto flex min-h-screen w-[min(36rem,calc(100%_-_2rem))] items-center py-8 sm:py-12">
-    <section class="w-full rounded-3xl border border-wg-border wg-glass-panel wg-glass-overlay p-6 shadow-wg-surface sm:p-10">
+    <section class="w-full wg-glass-panel wg-glass-overlay wg-glass-dialog p-6 sm:p-10">
         <div class="flex items-center justify-between gap-4">
             <a class="inline-flex items-center gap-3 text-wg-text no-underline" href="/login" aria-label="WebGuard login">
                 <img class="size-10 rounded-xl bg-white object-contain p-0.5" src="/brand/webguard-logo.png" alt="" />

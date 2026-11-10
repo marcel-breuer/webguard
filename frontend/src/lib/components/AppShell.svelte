@@ -169,7 +169,7 @@
         <button type="button" class="fixed inset-0 z-10 hidden bg-slate-950/45 max-[54rem]:block" aria-label="Close navigation" onclick={closeMobileNavigation}></button>
     {/if}
 
-    <header class="hidden min-h-16 items-center justify-between border-b border-wg-border wg-glass-panel px-4 max-[54rem]:flex">
+    <header class="hidden min-h-16 items-center justify-between border-b wg-glass-bar px-4 max-[54rem]:flex">
         <a class="flex items-center gap-3 font-extrabold tracking-tight no-underline" href={appRoutes.dashboard} aria-label="WebGuard dashboard"><img class="size-9 rounded-[0.65rem] bg-white object-contain p-0.5" src="/brand/webguard-logo.png" alt="" /><span>WebGuard</span></a>
         <button type="button" class="grid size-11 place-items-center rounded-[0.65rem] border border-wg-border bg-transparent text-xl text-wg-text" aria-controls="app-navigation" aria-expanded={mobileOpen} aria-label="Toggle navigation" onclick={toggleMobileNavigation}>☰</button>
     </header>

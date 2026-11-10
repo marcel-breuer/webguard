@@ -25,18 +25,29 @@
     --wg-surface: #ffffff;
     --wg-surface-muted: #f1f5f9;
     --wg-text: #172033;
-    --wg-text-muted: #64748b;
+    --wg-text-muted: #526077;
     --wg-border: #d9e0ea;
     --wg-accent: #7e22ce;
     --wg-accent-strong: #6b21a8;
     --wg-accent-contrast: #ffffff;
-    --wg-danger: #dc2626;
+    --wg-danger: #b91c1c;
     --wg-focus: #7e22ce;
     --wg-shadow: 0 14px 34px rgb(15 23 42 / 12%);
-    --wg-glass-opacity: 88%;
-    --wg-glass-overlay-opacity: 97%;
+    /* Glass tokens. Brand: purple (--wg-accent). Solid values are the fallback surfaces. */
+    --wg-glass-solid: #ffffff;
+    --wg-glass-tint: #f5f0fc;
+    --wg-glass-fill: var(--wg-glass-solid);
+    --wg-glass-raised-fill: var(--wg-glass-solid);
+    --wg-glass-inset-fill: var(--wg-glass-tint);
+    --wg-glass-blur: none;
     --wg-glass-edge: rgb(255 255 255 / 90%);
-    --wg-glass-shadow: 0 8px 24px rgb(15 23 42 / 6%);
+    --wg-glass-rim: rgb(255 255 255 / 50%);
+    --wg-glass-shadow: 0 8px 32px rgb(88 28 135 / 10%);
+    --wg-glass-radius: 1.25rem;
+    --wg-glass-radius-inset: 1rem;
+    --wg-glass-radius-dialog: 1.5rem;
+    --wg-glass-radius-control: 0.625rem;
+    --wg-glass-ease: 180ms ease-out;
     --wg-navigation: var(--color-purple-950);
     --wg-navigation-edge: rgb(233 213 255 / 18%);
 }
@@ -52,13 +63,14 @@
     --wg-accent: #c084fc;
     --wg-accent-strong: #a855f7;
     --wg-accent-contrast: #1f0a35;
-    --wg-danger: #f87171;
+    --wg-danger: #fca5a5;
     --wg-focus: #d8b4fe;
     --wg-shadow: 0 14px 34px rgb(0 0 0 / 30%);
-    --wg-glass-opacity: 92%;
-    --wg-glass-overlay-opacity: 98%;
-    --wg-glass-edge: rgb(248 250 252 / 8%);
-    --wg-glass-shadow: 0 8px 24px rgb(0 0 0 / 16%);
+    --wg-glass-solid: #0f172a;
+    --wg-glass-tint: #0b1224;
+    --wg-glass-edge: rgb(255 255 255 / 22%);
+    --wg-glass-rim: rgb(255 255 255 / 8%);
+    --wg-glass-shadow: 0 8px 32px rgb(0 0 0 / 35%);
 }
 
 html {
@@ -81,61 +93,136 @@ html[data-mobile-navigation-open] body {
 body {
     min-width: 20rem;
     margin: 0;
-    background: var(--wg-canvas);
+    background-color: var(--wg-canvas);
     color: var(--wg-text);
     font-family: var(--wg-font-sans);
-    background-image: linear-gradient(125deg, color-mix(in srgb, var(--wg-accent) 5%, var(--wg-canvas)), var(--wg-canvas) 48%, var(--wg-surface-muted));
+    /* Soft, fixed brand colour field for the glass to blur. */
+    background-image:
+        radial-gradient(60rem 40rem at 12% 8%, color-mix(in srgb, var(--color-purple-300) 38%, transparent), transparent 70%),
+        radial-gradient(52rem 38rem at 92% 28%, color-mix(in srgb, var(--color-purple-200) 46%, transparent), transparent 70%),
+        radial-gradient(56rem 40rem at 30% 92%, color-mix(in srgb, var(--color-purple-400) 26%, transparent), transparent 70%);
     background-attachment: fixed;
 }
 
-/* Solid surfaces are the baseline for browsers without transparency support. */
-.wg-glass-panel {
-    background-color: var(--wg-surface);
-    box-shadow: inset 0 1px var(--wg-glass-edge), var(--wg-glass-shadow);
+:root.dark body {
+    background-image:
+        radial-gradient(60rem 40rem at 12% 8%, color-mix(in srgb, var(--color-purple-700) 42%, transparent), transparent 70%),
+        radial-gradient(52rem 38rem at 92% 28%, color-mix(in srgb, var(--color-purple-800) 46%, transparent), transparent 70%),
+        radial-gradient(56rem 40rem at 30% 92%, color-mix(in srgb, var(--color-purple-600) 26%, transparent), transparent 70%);
 }
 
-.wg-glass-navigation {
-    background-color: var(--wg-navigation);
-    box-shadow: inset -1px 0 var(--wg-navigation-edge);
-}
-
-@supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) and (background: color-mix(in srgb, white, transparent)) {
-    .wg-glass-panel {
-        background-color: color-mix(in srgb, var(--wg-surface) var(--wg-glass-opacity), transparent);
+/*
+ * Glass: one shared definition. Surfaces are translucent, blur what is behind
+ * them and carry a bright specular edge and rim. Solid surfaces are the
+ * baseline; transparency is a progressive enhancement.
+ * Levels: chrome (navigation, bars), panel (cards, menus, dialogs), inset.
+ */
+@layer components {
+    .wg-glass-panel,
+    .wg-glass-inset,
+    .wg-glass-bar,
+    .wg-glass-navigation {
+        background-color: var(--wg-glass-fill);
+        -webkit-backdrop-filter: var(--wg-glass-blur);
+        backdrop-filter: var(--wg-glass-blur);
     }
 
-    /* Keep blur off content panels: filters create containing blocks for menus. */
-    .wg-glass-overlay {
-        background-color: color-mix(in srgb, var(--wg-surface) var(--wg-glass-overlay-opacity), transparent);
-        -webkit-backdrop-filter: blur(16px);
-        backdrop-filter: blur(16px);
+    .wg-glass-panel {
+        border: 1px solid var(--wg-glass-rim);
+        border-radius: var(--wg-glass-radius);
+        box-shadow: inset 0 1px 0 var(--wg-glass-edge), inset 0 0 0 1px var(--wg-glass-rim), var(--wg-glass-shadow);
+    }
+
+    /* Nested level: no blur of its own, so glass never stacks three deep. */
+    .wg-glass-inset {
+        border: 1px solid var(--wg-glass-rim);
+        border-radius: var(--wg-glass-radius-inset);
+        background-color: var(--wg-glass-inset-fill);
+        -webkit-backdrop-filter: none;
+        backdrop-filter: none;
+        box-shadow: inset 0 1px 0 var(--wg-glass-edge);
+    }
+
+    /* Chrome bars (toolbars, sticky footers): edge-to-edge, hairline only. */
+    .wg-glass-bar {
+        border-color: var(--wg-glass-rim);
+        box-shadow: inset 0 1px 0 var(--wg-glass-edge);
     }
 
     .wg-glass-navigation {
-        background-color: color-mix(in srgb, var(--wg-navigation) 96%, transparent);
-        -webkit-backdrop-filter: blur(16px);
-        backdrop-filter: blur(16px);
+        background-color: var(--wg-navigation);
+        box-shadow: inset -1px 0 var(--wg-navigation-edge), inset 0 1px 0 var(--wg-glass-edge);
+    }
+
+    .wg-glass-overlay {
+        background-color: var(--wg-glass-raised-fill);
+    }
+
+    .wg-glass-dialog {
+        border-radius: var(--wg-glass-radius-dialog);
+    }
+
+    /* Boxed form controls keep a visible 3:1 boundary and use the inset fill. */
+    .wg-glass-control {
+        border-radius: var(--wg-glass-radius-control);
+        background-color: var(--wg-glass-inset-fill);
+        box-shadow: inset 0 1px 0 var(--wg-glass-edge);
+    }
+
+    .wg-glass-lift {
+        transition: transform var(--wg-glass-ease);
+    }
+
+    .wg-glass-lift:hover {
+        transform: translateY(-2px);
     }
 }
 
-@media (prefers-reduced-transparency: reduce), (prefers-contrast: more), (forced-colors: active) {
+@supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) and (background: color-mix(in srgb, white, transparent)) {
+    :root {
+        --wg-glass-fill: color-mix(in srgb, var(--wg-glass-solid) 52%, transparent);
+        --wg-glass-raised-fill: color-mix(in srgb, var(--wg-glass-solid) 84%, transparent);
+        --wg-glass-inset-fill: color-mix(in srgb, var(--wg-glass-solid) 38%, transparent);
+        --wg-glass-blur: blur(28px) saturate(180%);
+        --wg-navigation-fill: color-mix(in srgb, var(--wg-navigation) 76%, transparent);
+    }
+
+    :root.dark {
+        --wg-glass-fill: rgb(255 255 255 / 7%);
+        --wg-glass-raised-fill: color-mix(in srgb, var(--wg-glass-solid) 82%, transparent);
+        --wg-glass-inset-fill: rgb(255 255 255 / 5%);
+    }
+
+    @layer components {
+        .wg-glass-navigation {
+            background-color: var(--wg-navigation-fill);
+        }
+    }
+}
+
+@media (prefers-reduced-transparency: reduce), (prefers-contrast: more), (forced-colors: active), print {
+    :root,
+    :root.dark {
+        --wg-glass-fill: var(--wg-glass-solid);
+        --wg-glass-raised-fill: var(--wg-glass-solid);
+        --wg-glass-inset-fill: var(--wg-glass-tint);
+        --wg-glass-blur: none;
+        --wg-glass-rim: var(--wg-border);
+        --wg-glass-shadow: none;
+        --wg-navigation-fill: var(--wg-navigation);
+    }
+
     body {
         background-image: none;
     }
 
     .wg-glass-panel,
+    .wg-glass-inset,
+    .wg-glass-bar,
     .wg-glass-navigation {
         -webkit-backdrop-filter: none;
         backdrop-filter: none;
         box-shadow: none;
-    }
-
-    .wg-glass-panel {
-        background-color: var(--wg-surface);
-    }
-
-    .wg-glass-navigation {
-        background-color: var(--wg-navigation);
     }
 }
 

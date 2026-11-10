@@ -74,7 +74,7 @@
         <p class="mt-3 leading-6 text-wg-text-muted">Review recent authenticated API usage without exposing credentials.</p>
     </header>
 
-    <form class="mb-5 grid gap-4 rounded-2xl border border-wg-border wg-glass-panel p-5 shadow-wg-surface sm:grid-cols-[minmax(0,1fr)_14rem_8rem_auto] sm:items-end" method="GET">
+    <form class="mb-5 grid gap-4 wg-glass-panel p-5 sm:grid-cols-[minmax(0,1fr)_14rem_8rem_auto] sm:items-end" method="GET">
         <label class="grid gap-2 text-sm font-bold"><span>Search</span><Input name="search" type="search" value={filters.search} placeholder="Search route or user email" /></label>
         <label class="grid gap-2 text-sm font-bold"><span>User</span><Select name="user_id" value={filters.userId}><option value="">All users</option>{#each data.logs.options.users as user}<option value={user.id}>{user.email}</option>{/each}</Select></label>
         <label class="grid gap-2 text-sm font-bold"><span>Rows</span><Select name="per_page" value={String(filters.perPage)}><option value="10">10</option><option value="25">25</option><option value="50">50</option><option value="100">100</option></Select></label>
@@ -83,7 +83,7 @@
     </form>
 
     {#if logs.items.length === 0}
-        <p class="rounded-2xl border border-wg-border wg-glass-panel p-6 text-wg-text-muted">No API activity matches the selected filters.</p>
+        <p class="wg-glass-panel p-6 text-wg-text-muted">No API activity matches the selected filters.</p>
     {:else}
         <DataTable caption="API usage">
             <thead><tr><th><a class="font-bold text-wg-text-muted no-underline hover:text-wg-accent" href={sortHref("created_at")}>Time{sortLabel("created_at")}</a></th><th><a class="font-bold text-wg-text-muted no-underline hover:text-wg-accent" href={sortHref("user_email")}>User{sortLabel("user_email")}</a></th><th><a class="font-bold text-wg-text-muted no-underline hover:text-wg-accent" href={sortHref("route")}>Endpoint{sortLabel("route")}</a></th></tr></thead>

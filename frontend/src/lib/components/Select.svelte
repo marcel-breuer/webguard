@@ -61,7 +61,7 @@
     const hasSelection = $derived(selectedValues.length > 0);
     const widthClass = $derived(width === "full" ? "w-full" : "w-32");
     const densityClass = $derived(density === "default" ? "min-h-11 px-3 py-2 text-sm" : "min-h-8 px-2.5 py-1 text-xs");
-    const controlClass = $derived(`rounded-md border border-violet-200 bg-violet-50/40 text-wg-text shadow-xs transition-colors hover:border-violet-300 focus:border-wg-accent focus:ring-2 focus:ring-wg-focus/40 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-wg-focus disabled:cursor-not-allowed disabled:bg-wg-surface-muted disabled:text-wg-text-muted dark:border-violet-800 dark:bg-violet-950/30 dark:hover:border-violet-700 ${densityClass} ${className}`);
+    const controlClass = $derived(`wg-glass-control border border-wg-border text-wg-text transition-colors hover:border-wg-text-muted focus:border-wg-accent focus:ring-2 focus:ring-wg-focus/40 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-wg-focus disabled:cursor-not-allowed disabled:bg-wg-surface-muted disabled:text-wg-text-muted ${densityClass} ${className}`);
 
     function close(): void {
         open = false;
@@ -242,7 +242,7 @@
         {/if}
 
         {#if open}
-            <div id={id ? `${id}-options` : undefined} class="absolute z-30 mt-1 w-full overflow-hidden rounded-md border border-violet-200 wg-glass-panel wg-glass-overlay py-1 shadow-lg dark:border-violet-800" role="listbox" aria-multiselectable={multiple || undefined}>
+            <div id={id ? `${id}-options` : undefined} class="absolute z-30 mt-1 w-full overflow-hidden wg-glass-panel wg-glass-overlay py-1" role="listbox" aria-multiselectable={multiple || undefined}>
                 {#if searchable}
                     <div class="border-b border-violet-100 p-2 dark:border-violet-900"><input bind:this={searchInput} bind:value={query} aria-label={searchPlaceholder} class="min-h-9 w-full rounded border border-violet-200 bg-violet-50/40 px-2.5 text-sm text-wg-text outline-none placeholder:text-wg-text-muted focus:border-wg-accent focus:ring-2 focus:ring-wg-focus/40 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-wg-focus dark:border-violet-800 dark:bg-violet-950/30" placeholder={searchPlaceholder} onkeydown={handleSearchKeydown} /></div>
                 {/if}
