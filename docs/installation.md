@@ -144,7 +144,7 @@ Scribe generation remains optional and is unrelated to public search indexing.
 ### Bundled Database and Redis
 
 Every Compose deployment creates MariaDB and Redis with persistent named volumes.
-Application services always connect to `mysql:3306` and `redis:6379`; external
+Application services always connect to `webguard-mariadb:3306` and `webguard-redis:6379`; external
 host overrides and infrastructure profiles are no longer supported.
 The service name `mysql` and Laravel driver `mysql` remain for compatibility;
 the database image is MariaDB. Its new `mariadb_data` volume must be populated

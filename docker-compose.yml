@@ -21,7 +21,7 @@ x-app-environment: &app-environment
   MAIL_FROM_ADDRESS: "${MAIL_FROM_ADDRESS:-noreply@example.com}"
   MAIL_FROM_NAME: "${MAIL_FROM_NAME:-WebGuard}"
   DB_CONNECTION: "mysql"
-  DB_HOST: "mysql"
+  DB_HOST: "webguard-mariadb"
   DB_PORT: "3306"
   DB_DATABASE: "${DB_DATABASE:-webguard_core}"
   DB_USERNAME: "${DB_USERNAME:-webguard}"
@@ -29,7 +29,7 @@ x-app-environment: &app-environment
   CACHE_STORE: "redis"
   QUEUE_CONNECTION: "redis"
   REDIS_CLIENT: "phpredis"
-  REDIS_HOST: "redis"
+  REDIS_HOST: "webguard-redis"
   REDIS_USERNAME: "null"
   REDIS_PASSWORD: "${REDIS_PASSWORD:?REDIS_PASSWORD must be set for production deployments}"
   REDIS_PORT: "6379"
@@ -217,7 +217,9 @@ services:
       timeout: 5s
       retries: 5
     networks:
-      - data-network
+      data-network:
+        aliases:
+          - webguard-mariadb
 
   redis:
     container_name: webguard-redis
@@ -237,7 +239,9 @@ services:
     volumes:
       - redis_data:/data
     networks:
-      - data-network
+      data-network:
+        aliases:
+          - webguard-redis
 
 volumes:
   config:
