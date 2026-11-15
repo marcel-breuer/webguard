@@ -78,7 +78,7 @@ The standard deployment stack always contains:
 - `schedule`
 - `queue-default`
 
-The optional `internal-services` profile also adds bundled infrastructure:
+Every deployment also includes persistent infrastructure:
 
 - `mysql`
 - `redis`
@@ -98,7 +98,7 @@ DB_PORT=3306
 DB_DATABASE=webguard_core
 DB_USERNAME=webguard
 DB_PASSWORD=super-secret-password
-MYSQL_ROOT_PASSWORD=another-super-secret-password
+MARIADB_ROOT_PASSWORD=another-super-secret-password
 
 REDIS_HOST=redis
 REDIS_PORT=6379
@@ -114,10 +114,7 @@ MAIL_FROM_ADDRESS=noreply@example.com
 MAIL_FROM_NAME=WebGuard
 ```
 
-`DB_PASSWORD` and `REDIS_PASSWORD` are required production secrets.
-`MYSQL_ROOT_PASSWORD` is required only when the bundled `internal-services`
-MySQL profile is enabled. Leave it unset when using an external database;
-provide the database provider's credentials through `DB_PASSWORD` instead.
+`DB_PASSWORD`, `REDIS_PASSWORD`, and `MARIADB_ROOT_PASSWORD` are required production secrets.
 Never reuse the local development values from `docker-compose.override.yml`.
 
 For a non-Coolify Docker deployment, set `APP_URL` to the canonical public URL; Compose passes it to Laravel. SvelteKit derives the request origin from the gateway's forwarded host and protocol headers, with the gateway preserving an explicit host port. Set concrete values for SMTP as well, for example `SMTP_USERNAME=noreply@example.com` and `MAIL_FROM_NAME=WebGuard`. Do not use values such as `MAIL_USERNAME=${MAIL_FROM_ADDRESS}` because Docker Compose evaluates the env file during build and can warn or substitute empty strings before the container starts.
@@ -144,31 +141,95 @@ AUTORUN_LARAVEL_SCRIBE_GENERATE=false
 
 Scribe generation remains optional and is unrelated to public search indexing.
 
-### External Database and Redis
+### Bundled Database and Redis
 
-For production deployments such as Coolify, set `DB_HOST` and `REDIS_HOST` to the service names or hostnames of the database and Redis containers you want to use.
+Every Compose deployment creates MariaDB and Redis with persistent named volumes.
+Application services always connect to `webguard-mariadb:3306` and `webguard-redis:6379`; external
+host overrides and infrastructure profiles are no longer supported.
+The service name `mysql` and Laravel driver `mysql` remain for compatibility;
+the database image is MariaDB. Its new `mariadb_data` volume must be populated
+with a logical restore. Never attach an existing MySQL data directory.
+Keep the Compose project identity and volume mappings stable across deployments.
+The existing `WEBGUARD_NETWORK` must exist (usually `coolify` in Coolify).
+Keep secrets in Coolify runtime environment variables.
 
-Example with external services in the same Docker network:
+### Migrating existing Coolify services
 
-```env
-WEBGUARD_NETWORK=coolify
+Plan a maintenance window. Do not deploy the changed stack directly: PHP runs
+migrations automatically at startup. Perform these steps on the deployment server
+using the production Compose file only, never the development override.
 
-DB_HOST=my-production-mysql
-DB_PORT=3306
-DB_DATABASE=webguard_core
-DB_USERNAME=webguard
-DB_PASSWORD=...
+1. Record the old database engine/version, database name, Redis version, logical
+   database indexes, key prefix, passwords, container IDs, volume mappings and
+   Coolify settings. The target is MariaDB 12.1.2 and Redis 8.4. Test a logical restore
+   into an isolated target before the final migration;
+   never attach the old database volume to the new image.
+2. Keep the existing `APP_KEY`, application URL and database name. Back up private
+   application storage and other mounted files separately. Preserve the old
+   database and Redis resources and their volumes for rollback.
+3. Stop incoming writes: enable maintenance mode, block API/instance ingestion
+   at the proxy, stop the scheduler, then let active queue jobs finish and stop
+   all workers. Include other applications writing to the same database/Redis.
+   Maintenance mode alone does not stop background or external writers.
+4. Create a restricted backup directory (`umask 077`). Take a final logical
+   database dump using the source engine's tools, including triggers, routines,
+   events and binary-safe data. For MariaDB with transactional tables, for example:
+   `mariadb-dump --single-transaction --routines --events --triggers --hex-blob --no-tablespaces -u USER -p DATABASE > database.sql`.
+   Run the client inside the source container or a compatible client container;
+   use an interactive password prompt or protected client configuration.
+   Verify exit status, backup size and a test restore. Nontransactional tables
+   require an appropriate lock/backup strategy.
+5. Preserve Redis queues, delayed/reserved jobs and all configured logical
+   databases. With all writers stopped, create and validate a final RDB snapshot
+   using the source Redis backup procedure. Copy it off the source volume.
+   Do not use `FLUSHALL`, `queue:clear` or `optimize:clear` during migration.
+   For shared Redis, do not import unrelated applications' data blindly:
+   arrange an isolated, verified transfer of the required keys instead.
+6. In Coolify prepare the new Compose definition and strong `DB_PASSWORD`,
+   `MARIADB_ROOT_PASSWORD` and `REDIS_PASSWORD`. Remove obsolete external
+   `DB_HOST`, `DB_PORT`, `REDIS_HOST`, `REDIS_PORT`, `REDIS_USERNAME` and
+   `COMPOSE_PROFILES` overrides. Keep the old values in the rollback record.
+   Do not allow Coolify to start the full application yet.
+7. From the exact deployment checkout/environment, start only infrastructure:
+   `docker compose -f docker-compose.yml up -d mysql redis`.
+   Confirm these resolve to new, empty persistent volumes and both services
+   become healthy. Never run this in a different project by accident.
+8. Import the SQL dump into the new MariaDB service before starting PHP:
+   `docker compose -f docker-compose.yml exec -T mysql sh -c 'MYSQL_PWD="$MARIADB_PASSWORD" exec mariadb -u "$MARIADB_USER" "$MARIADB_DATABASE"' < database.sql`.
+   For privileged objects, use an appropriately privileged protected client
+   configuration. Check import errors and compare table counts and key records.
+9. Stop the new Redis service. Restore the verified RDB as `/data/dump.rdb` in
+   its new volume using a temporary container, with ownership matching the Redis
+   image. Preserve any original target files separately. Start Redis and confirm
+   snapshot loading, logical databases, key counts and queue keys. Rehearse this
+   restore with the actual source version before the maintenance window.
+10. Start PHP alone; its startup runs `php artisan migrate --force` inside the
+    container. Check migration status and logs. Then start frontend and gateway,
+    verify health, login, monitoring history and persisted files while writes
+    remain blocked. Start queue workers and scheduler, check both `default` and
+    `heartbeat` queues, then lift maintenance and reopen ingestion.
+11. Keep old resources stopped and backups retained until the new deployment has
+    passed application checks and a fresh backup/restore check. Remove old
+    resources only after explicit operational sign-off. Never use `down -v`.
 
-REDIS_HOST=my-production-redis
-REDIS_PORT=6379
-REDIS_PASSWORD=null
-```
+For a large database already running **exactly MariaDB 12.1.2**, a cold physical
+copy into a new volume is an alternative to steps 7–8. Stop all writers and shut
+down the source database cleanly; verify a successful exit. Stop the empty target,
+copy the complete source data directory with ownership and permissions preserved,
+and keep the source volume unchanged. Start the target with the same image version
+and compatible server configuration. Existing database users and passwords come
+from the copied data, so initialization environment variables do not reset them;
+reconcile the root credential with the configured secret and verify application
+login and the image healthcheck. Validate every table before opening traffic.
+Keep the original stopped database and the independently verified logical export.
+Do not use this procedure across database engines or versions.
 
-`WEBGUARD_NETWORK` must be the existing external Docker network shared by WebGuard, MySQL, Redis, and any webguard-instance containers. In Coolify this is usually `coolify`; use the actual shared network name from your server if it differs.
-
-The bundled `mysql` and `redis` services are behind the `internal-services` Compose profile. Leave `COMPOSE_PROFILES` empty in Coolify when you connect external services. Set `COMPOSE_PROFILES=internal-services` only when this Compose stack should also create the bundled MySQL and Redis containers.
-
-Coolify detects variables that are referenced in `docker-compose.yml` and exposes them in its UI. Keep production secrets as runtime variables in Coolify and override `DB_HOST`, `DB_PASSWORD`, `REDIS_HOST`, `REDIS_PASSWORD`, and mail credentials there.
+Rollback before reopening writes: stop all new application services, restore the
+previous Compose revision and Coolify connection settings, restart old services,
+and verify health before reopening traffic. After new writes have been accepted,
+rollback requires reconciliation or a fresh reverse migration; switching back
+would lose those writes. Do not run old application code against a schema changed
+by new migrations without checking compatibility.
 
 For Coolify routing, set `APP_URL=https://app.webguard.dev` explicitly. In **Domains for gateway**, set `https://app.webguard.dev:8080`; the `:8080` identifies the gateway's internal container port, while visitors still use normal HTTPS on port 443. This is the only domain to configure: `php` and `frontend` do not declare public Compose ports and are reached only through the gateway's internal Docker-network forwarding.
 
@@ -190,7 +251,7 @@ If you use Coolify, Traefik, or another reverse proxy in front of the deployment
 
 ### Health Check
 
-Docker Compose defines a health check for each runtime service so Coolify can report each container's health. Laravel checks its framework health route at `http://127.0.0.1:8080/status`; the frontend checks `/_health/frontend`; and the gateway checks its own endpoint plus the frontend and Laravel routes it serves. The scheduler runs `php artisan schedule:work`, which evaluates the schedule at the start of every minute without drifting; its health check verifies that Laravel can load the schedule. The queue worker uses `healthcheck-queue`. MySQL and Redis have service-level checks when the optional `internal-services` profile is enabled. Coolify's standard application Healthcheck page does not apply to Git-based Compose applications; keep these checks in the Compose definition. The `gateway` service remains the only public entry point.
+Docker Compose defines a health check for each runtime service so Coolify can report each container's health. Laravel checks its framework health route at `http://127.0.0.1:8080/status`; the frontend checks `/_health/frontend`; and the gateway checks its own endpoint plus the frontend and Laravel routes it serves. The scheduler runs `php artisan schedule:work`, which evaluates the schedule at the start of every minute without drifting; its health check verifies that Laravel can load the schedule. The queue worker uses `healthcheck-queue`. MariaDB and Redis always have service-level checks. Coolify's standard application Healthcheck page does not apply to Git-based Compose applications; keep these checks in the Compose definition. The `gateway` service remains the only public entry point.
 
 ## Docker Local Development
 
@@ -199,7 +260,7 @@ The local override adds everything that should only exist during development:
 - Traefik
 - built SvelteKit server for browser-stable local testing
 - Gateway
-- MySQL
+- MariaDB
 - Redis
 - Mailpit
 - bind mounts for the application code
@@ -306,7 +367,6 @@ DOCKER_MAILPIT_SMTP_PORT=1025
 DOCKER_MAILPIT_UI_PORT=8025
 DOCKER_SSL_MODE=off
 WEBGUARD_NETWORK=webguard-network
-COMPOSE_PROFILES=internal-services
 AUTORUN_LARAVEL_SCRIBE_GENERATE=false
 ```
 

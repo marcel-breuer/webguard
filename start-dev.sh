@@ -4,9 +4,8 @@ set -euo pipefail
 SERVICE="php"
 USER_ID=$(id -u)
 GROUP_ID=$(id -g)
-COMPOSE_PROFILES="${COMPOSE_PROFILES:-internal-services}"
 WEBGUARD_NETWORK="${WEBGUARD_NETWORK:-webguard-network}"
-export USER_ID GROUP_ID COMPOSE_PROFILES WEBGUARD_NETWORK
+export USER_ID GROUP_ID WEBGUARD_NETWORK
 
 compose() {
   docker compose -f docker-compose.yml -f docker-compose.override.yml "$@"

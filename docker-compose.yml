@@ -21,18 +21,18 @@ x-app-environment: &app-environment
   MAIL_FROM_ADDRESS: "${MAIL_FROM_ADDRESS:-noreply@example.com}"
   MAIL_FROM_NAME: "${MAIL_FROM_NAME:-WebGuard}"
   DB_CONNECTION: "mysql"
-  DB_HOST: "${DB_HOST:-mysql}"
-  DB_PORT: "${DB_PORT:-3306}"
+  DB_HOST: "webguard-mariadb"
+  DB_PORT: "3306"
   DB_DATABASE: "${DB_DATABASE:-webguard_core}"
   DB_USERNAME: "${DB_USERNAME:-webguard}"
   DB_PASSWORD: "${DB_PASSWORD:?DB_PASSWORD must be set for production deployments}"
   CACHE_STORE: "redis"
   QUEUE_CONNECTION: "redis"
   REDIS_CLIENT: "phpredis"
-  REDIS_HOST: "${REDIS_HOST:-redis}"
-  REDIS_USERNAME: "${REDIS_USERNAME:-null}"
+  REDIS_HOST: "webguard-redis"
+  REDIS_USERNAME: "null"
   REDIS_PASSWORD: "${REDIS_PASSWORD:?REDIS_PASSWORD must be set for production deployments}"
-  REDIS_PORT: "${REDIS_PORT:-6379}"
+  REDIS_PORT: "6379"
   REDIS_QUEUE_CONNECTION: "default"
   REDIS_QUEUE: "default"
   HEARTBEAT_QUEUE: "heartbeat"
@@ -82,11 +82,10 @@ services:
     depends_on:
       mysql:
         condition: service_healthy
-        required: false
       redis:
         condition: service_healthy
-        required: false
     networks:
+      data-network: {}
       webguard-network:
         aliases:
           - webguard-core
@@ -167,11 +166,10 @@ services:
     depends_on:
       mysql:
         condition: service_healthy
-        required: false
       redis:
         condition: service_healthy
-        required: false
     networks:
+      - data-network
       - webguard-network
 
   queue-default:
@@ -193,41 +191,38 @@ services:
     depends_on:
       mysql:
         condition: service_healthy
-        required: false
       redis:
         condition: service_healthy
-        required: false
     healthcheck:
       test: ["CMD", "healthcheck-queue"]
       start_period: 10s
     networks:
+      - data-network
       - webguard-network
 
   mysql:
-    container_name: webguard-mysql
-    profiles:
-      - internal-services
-    image: mysql:8.4
+    container_name: webguard-mariadb
+    image: mariadb:12.1.2
     restart: unless-stopped
     environment:
-      MYSQL_ROOT_PASSWORD: "${MYSQL_ROOT_PASSWORD:-}"
-      MYSQL_DATABASE: "${DB_DATABASE:-webguard_core}"
-      MYSQL_USER: "${DB_USERNAME:-webguard}"
-      MYSQL_PASSWORD: "${DB_PASSWORD:?DB_PASSWORD must be set for production deployments}"
+      MARIADB_ROOT_PASSWORD: "${MARIADB_ROOT_PASSWORD:?MARIADB_ROOT_PASSWORD must be set for production deployments}"
+      MARIADB_DATABASE: "${DB_DATABASE:-webguard_core}"
+      MARIADB_USER: "${DB_USERNAME:-webguard}"
+      MARIADB_PASSWORD: "${DB_PASSWORD:?DB_PASSWORD must be set for production deployments}"
     volumes:
-      - mysql_data:/var/lib/mysql
+      - mariadb_data:/var/lib/mysql
     healthcheck:
-      test: ["CMD-SHELL", "mysqladmin ping -h localhost -uroot -p$$MYSQL_ROOT_PASSWORD"]
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
       interval: 10s
       timeout: 5s
       retries: 5
     networks:
-      - webguard-network
+      data-network:
+        aliases:
+          - webguard-mariadb
 
   redis:
     container_name: webguard-redis
-    profiles:
-      - internal-services
     image: redis:8.4-alpine
     restart: unless-stopped
     environment:
@@ -244,19 +239,23 @@ services:
     volumes:
       - redis_data:/data
     networks:
-      - webguard-network
+      data-network:
+        aliases:
+          - webguard-redis
 
 volumes:
   config:
     driver: local
   data:
     driver: local
-  mysql_data:
+  mariadb_data:
     driver: local
   redis_data:
     driver: local
 
 networks:
+  data-network:
+    internal: true
   webguard-network:
     name: "${WEBGUARD_NETWORK:-webguard-network}"
     external: true

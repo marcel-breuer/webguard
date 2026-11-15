@@ -4,7 +4,7 @@ set -eu
 
 project_name="${SMOKE_PROJECT_NAME:-webguard-sveltekit-smoke}"
 network_name="${WEBGUARD_NETWORK:-${project_name}-network}"
-compose="docker compose --project-name ${project_name} --profile internal-services -f docker-compose.yml"
+compose="docker compose --project-name ${project_name} -f docker-compose.yml"
 
 cleanup() {
     $compose logs --no-color || true
@@ -26,13 +26,10 @@ smoke_secret() {
 }
 export DB_PASSWORD="${DB_PASSWORD:-$(smoke_secret)}"
 export REDIS_PASSWORD="${REDIS_PASSWORD:-$(smoke_secret)}"
-mysql_root_password="${MYSQL_ROOT_PASSWORD:-$(smoke_secret)}"
-# Coolify parses every Compose service even when the internal-services profile is inactive.
-unset MYSQL_ROOT_PASSWORD
+export MARIADB_ROOT_PASSWORD="${MARIADB_ROOT_PASSWORD:-$(smoke_secret)}"
 $compose config --quiet
 
 $compose build php frontend gateway queue-default
-export MYSQL_ROOT_PASSWORD="$mysql_root_password"
 $compose up --no-build --detach --wait --wait-timeout 180 php frontend gateway schedule queue-default mysql redis
 
 assert_service_healthy() {
