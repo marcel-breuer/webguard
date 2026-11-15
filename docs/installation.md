@@ -212,6 +212,18 @@ using the production Compose file only, never the development override.
     passed application checks and a fresh backup/restore check. Remove old
     resources only after explicit operational sign-off. Never use `down -v`.
 
+For a large database already running **exactly MariaDB 12.1.2**, a cold physical
+copy into a new volume is an alternative to steps 7–8. Stop all writers and shut
+down the source database cleanly; verify a successful exit. Stop the empty target,
+copy the complete source data directory with ownership and permissions preserved,
+and keep the source volume unchanged. Start the target with the same image version
+and compatible server configuration. Existing database users and passwords come
+from the copied data, so initialization environment variables do not reset them;
+reconcile the root credential with the configured secret and verify application
+login and the image healthcheck. Validate every table before opening traffic.
+Keep the original stopped database and the independently verified logical export.
+Do not use this procedure across database engines or versions.
+
 Rollback before reopening writes: stop all new application services, restore the
 previous Compose revision and Coolify connection settings, restart old services,
 and verify health before reopening traffic. After new writes have been accepted,
