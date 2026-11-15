@@ -1,7 +1,4 @@
-<script lang="ts">
-    import { tick } from "svelte";
-    import type { Snippet } from "svelte";
-
+<script module lang="ts">
     let openDialogCount = 0;
 
     function lockBackgroundScroll(): () => void {
@@ -17,12 +14,20 @@
         };
     }
 
+</script>
+
+<script lang="ts">
+    import { tick } from "svelte";
+    import type { Snippet } from "svelte";
+
     interface Props {
         open?: boolean;
         title: string;
         description?: string;
         closeLabel?: string;
         size?: "default" | "wide";
+        initialFocus?: string;
+        layer?: "default" | "overlay";
         children?: Snippet;
         onclose?: () => void;
     }
@@ -33,6 +38,8 @@
         description,
         closeLabel = "Close dialog",
         size = "default",
+        initialFocus,
+        layer = "default",
         children,
         onclose,
     }: Props = $props();
@@ -48,7 +55,8 @@
         const unlockBackgroundScroll = lockBackgroundScroll();
 
         void tick().then(() => {
-            panel?.focus();
+            const target = initialFocus ? panel?.querySelector<HTMLElement>(initialFocus) : null;
+            (target ?? panel)?.focus();
         });
 
         return () => {
@@ -119,7 +127,7 @@
 </script>
 
 {#if open}
-    <div class="fixed inset-0 z-50 grid place-items-center p-2 sm:p-4">
+    <div class={`fixed inset-0 grid place-items-center p-2 sm:p-4 ${layer === "overlay" ? "z-[60]" : "z-50"}`}>
         <button type="button" tabindex="-1" class="absolute inset-0 z-0 cursor-default bg-slate-900/65" aria-hidden="true" onclick={close}></button>
         <div
             bind:this={panel}

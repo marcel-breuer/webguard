@@ -15,6 +15,7 @@ use App\Http\Controllers\Api\Internal\Ui\MonitoringGroupSlaReportController;
 use App\Http\Controllers\Api\Internal\Ui\MonitoringIndexController;
 use App\Http\Controllers\Api\Internal\Ui\MonitoringManagementController;
 use App\Http\Controllers\Api\Internal\Ui\MonitoringOwnershipController;
+use App\Http\Controllers\Api\Internal\Ui\MonitoringSearchController;
 use App\Http\Controllers\Api\Internal\Ui\MonitoringShowController;
 use App\Http\Controllers\Api\Internal\Ui\NotificationInboxController;
 use App\Http\Controllers\Api\Internal\Ui\NotificationSettingsController;
@@ -156,6 +157,7 @@ Route::middleware(MeasureInternalUiRequest::class)->group(function (): void {
         Route::get('/incidents/{incident}/diagnosis', [IncidentDiagnosisController::class, 'show'])->name('incidents.diagnosis.show');
         Route::post('/incidents/{incident}/diagnosis', [IncidentDiagnosisController::class, 'recompute'])->name('incidents.diagnosis.recompute');
         Route::get('/monitorings', MonitoringIndexController::class)->name('monitorings.index');
+        Route::get('/monitorings/search', MonitoringSearchController::class)->name('monitorings.search');
         Route::get('/monitorings/form-options', [MonitoringFormOptionsController::class, 'create'])->name('monitorings.form-options');
         Route::post('/monitorings', [MonitoringManagementController::class, 'store'])->name('monitorings.store');
         Route::get('/monitorings/cards', MonitoringCardsController::class)->name('monitorings.cards');
