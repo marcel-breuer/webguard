@@ -4,6 +4,12 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Services;
 
+use App\Enums\MonitoringStatus;
+use App\Models\Monitoring;
+use App\Models\MonitoringResponse;
+use App\Models\Package;
+use App\Models\Team;
+use App\Models\TeamMembership;
 use App\Models\User;
 use App\Services\OperationsOverviewCache;
 use Illuminate\Cache\TaggableStore;
@@ -93,6 +99,45 @@ class OperationsOverviewCacheTest extends TestCase
         $this->assertSame(1, $operationsOverviewCache->remember($user, 1, $payloadFactory)['data']['summary']['total']);
         $this->assertSame(1, $operationsOverviewCache->remember($user, 1, $payloadFactory)['data']['summary']['total']);
         $this->assertSame(1, $buildCount);
+    }
+
+    public function test_measurements_invalidate_only_the_owner_and_team_members(): void
+    {
+        Package::factory()->create();
+        $owner = User::factory()->create();
+        $member = User::factory()->create();
+        $unrelatedUser = User::factory()->create();
+        $team = Team::factory()->create();
+        TeamMembership::factory()->for($team)->for($member)->create();
+        $monitoring = Monitoring::factory()->for($owner)->for($team)->create();
+        $cache = resolve(OperationsOverviewCache::class);
+        $builds = 0;
+        $factory = function () use (&$builds): array {
+            $builds++;
+
+            return [
+                'data' => [],
+                'service_pagination' => ['current_page' => 1, 'last_page' => 1, 'total' => 0, 'from' => null, 'to' => null],
+            ];
+        };
+
+        foreach ([$owner, $member, $unrelatedUser] as $user) {
+            $cache->remember($user, 1, $factory);
+            $cache->remember($user, 2, $factory);
+        }
+        $this->assertSame(6, $builds);
+
+        MonitoringResponse::query()->create([
+            'monitoring_id' => $monitoring->id,
+            'status' => MonitoringStatus::UP,
+            'response_time' => 120,
+        ]);
+
+        foreach ([$owner, $member, $unrelatedUser] as $user) {
+            $cache->remember($user, 1, $factory);
+            $cache->remember($user, 2, $factory);
+        }
+        $this->assertSame(10, $builds);
     }
 
     public function test_it_flushes_all_cached_overviews_after_domain_changes(): void

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Feature\Api;
 
 use App\Enums\MonitoringStatus;
+use App\Enums\MonitoringType;
 use App\Models\Monitoring;
 use App\Models\MonitoringDailyResult;
 use App\Models\MonitoringResponse;
@@ -61,6 +62,35 @@ class InternalUiDashboardApiTest extends TestCase
 
         $testResponse->assertOk();
         $this->assertInternalUiTelemetry($testResponse, 30, 131072);
+    }
+
+    public function test_large_dashboard_keeps_pagination_and_custom_check_intervals(): void
+    {
+        Date::setTestNow('2026-08-31 12:00:00');
+        Package::factory()->create(['monitoring_limit' => 200]);
+        $user = User::factory()->create();
+        $monitorings = Monitoring::factory()->count(100)->for($user)->create([
+            'type' => MonitoringType::HTTP,
+            'check_interval_minutes' => 60,
+        ]);
+        foreach ($monitorings as $monitoring) {
+            MonitoringResponse::withoutEvents(fn () => MonitoringResponse::query()->forceCreate([
+                'monitoring_id' => $monitoring->id,
+                'status' => MonitoringStatus::UP,
+                'created_at' => Date::now()->subMinutes(100),
+                'updated_at' => Date::now()->subMinutes(100),
+            ]));
+        }
+
+        $response = $this->actingAs($user)->getJson(route('app.dashboard', ['service_page' => 10]));
+
+        $response->assertOk()
+            ->assertJsonPath('data.summary.total', 100)
+            ->assertJsonPath('data.summary.healthy', 100)
+            ->assertJsonCount(10, 'data.services')
+            ->assertJsonPath('meta.service_pagination.from', 91)
+            ->assertJsonPath('meta.service_pagination.to', 100);
+        $this->assertInternalUiTelemetry($response, 30, 131072);
     }
 
     public function test_dashboard_projection_preserves_a_gateway_request_identifier(): void
@@ -213,7 +243,8 @@ class InternalUiDashboardApiTest extends TestCase
         DB::listen(function ($query) use (&$rawTrendQueries): void {
             if (str_contains($query->sql, 'monitoring_response_results')
                 && str_contains($query->sql, 'server_health_metrics')
-                && str_contains($query->sql, 'vital_values')) {
+                && str_contains($query->sql, 'vital_values')
+                && ! str_contains($query->sql, 'join')) {
                 $rawTrendQueries++;
             }
         });

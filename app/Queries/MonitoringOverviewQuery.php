@@ -67,6 +67,7 @@ final class MonitoringOverviewQuery
     private function query(User $user): Builder
     {
         return Monitoring::query()
+            ->select($this->columns())
             ->withMaintenanceWindowState()
             ->visibleTo($user)
             ->with([
@@ -74,6 +75,9 @@ final class MonitoringOverviewQuery
                     'monitoring_response_results.id',
                     'monitoring_response_results.monitoring_id',
                     'monitoring_response_results.status',
+                    'monitoring_response_results.http_status_code',
+                    'monitoring_response_results.server_health_metrics',
+                    'monitoring_response_results.vital_values',
                     'monitoring_response_results.response_time',
                     'monitoring_response_results.created_at',
                     'monitoring_response_results.updated_at',
@@ -96,9 +100,13 @@ final class MonitoringOverviewQuery
     {
         return [
             'id',
+            'user_id',
+            'team_id',
             'name',
             'target',
             'type',
+            'keyword',
+            'response_time_degradation_percent',
             'status',
             'expected_http_statuses',
             'dns_expected_values',
@@ -108,6 +116,7 @@ final class MonitoringOverviewQuery
             'server_health_load_threshold_per_cpu',
             'maintenance_from',
             'maintenance_until',
+            'check_interval_minutes',
             'heartbeat_interval_minutes',
             'heartbeat_grace_minutes',
         ];
