@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Feature\Api;
 
 use App\Enums\MonitoringStatus;
+use App\Enums\MonitoringType;
 use App\Models\Monitoring;
 use App\Models\MonitoringDailyResult;
 use App\Models\MonitoringResponse;
@@ -69,7 +70,7 @@ class InternalUiDashboardApiTest extends TestCase
         Package::factory()->create(['monitoring_limit' => 200]);
         $user = User::factory()->create();
         $monitorings = Monitoring::factory()->count(100)->for($user)->create([
-            'type' => \App\Enums\MonitoringType::HTTP,
+            'type' => MonitoringType::HTTP,
             'check_interval_minutes' => 60,
         ]);
         foreach ($monitorings as $monitoring) {
