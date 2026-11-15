@@ -267,11 +267,19 @@ class MonitoringOverviewService
             ? collect()
             : MonitoringDailyResult::query()
                 ->whereIn('monitoring_id', $eloquentCollection->modelKeys())
-                ->whereBetween('date', [$dates->last()->toDateString(), $dates->first()->toDateString()])
+                ->whereBetween('date', [$dates->first()->toDateString(), $dates->last()->toDateString()])
                 ->get(['date', 'uptime_minutes', 'downtime_minutes', 'unknown_minutes'])
                 ->groupBy(fn (MonitoringDailyResult $monitoringDailyResult): string => $monitoringDailyResult->date->toDateString());
         $today = Date::today();
-        $liveToday = $this->liveTodayTrend($eloquentCollection, $today, Date::now());
+        $todayHasAggregate = $eloquentCollection->isNotEmpty()
+            && MonitoringDailyResult::query()
+                ->whereIn('monitoring_id', $eloquentCollection->modelKeys())
+                ->whereDate('date', $today->toDateString())
+                ->whereRaw('(uptime_minutes + downtime_minutes + unknown_minutes) > 0')
+                ->exists();
+        $liveToday = $todayHasAggregate
+            ? ['uptime_minutes' => 0, 'downtime_minutes' => 0, 'unknown_minutes' => 0]
+            : $this->liveTodayTrend($eloquentCollection, $today, Date::now());
 
         return $dates->map(function (Carbon $date) use ($dailyResults, $liveToday, $today): array {
             $rows = $dailyResults->get($date->toDateString(), collect());
@@ -313,12 +321,13 @@ class MonitoringOverviewService
         }
 
         $monitoringsById = $eloquentCollection->keyBy('id');
-        $responsesByMonitoring = MonitoringResponse::query()
+        $responses = MonitoringResponse::query()
             ->whereIn('monitoring_id', $eloquentCollection->modelKeys())
             ->whereBetween('created_at', [$today, $now])
+            ->orderBy('monitoring_id')
             ->oldest('created_at')
             ->orderBy('id')
-            ->get([
+            ->select([
                 'id',
                 'monitoring_id',
                 'status',
@@ -327,36 +336,44 @@ class MonitoringOverviewService
                 'vital_values',
                 'created_at',
             ])
-            ->groupBy('monitoring_id');
+            ->cursor();
 
-        foreach ($responsesByMonitoring as $monitoringId => $responses) {
-            $monitoring = $monitoringsById->get($monitoringId);
+        $currentMonitoringId = null;
+        $cursor = null;
+        $status = null;
 
+        foreach ($responses as $response) {
+            if ($currentMonitoringId !== $response->monitoring_id) {
+                if ($cursor instanceof Carbon && $cursor->lt($now)) {
+                    $this->addTrendMinutes($status, (int) $cursor->diffInMinutes($now), $totals);
+                }
+
+                $currentMonitoringId = $response->monitoring_id;
+                $cursor = null;
+                $status = null;
+            }
+
+            $monitoring = $monitoringsById->get($currentMonitoringId);
             if (! $monitoring instanceof Monitoring) {
                 continue;
             }
 
-            $cursor = null;
-            $status = null;
+            $responseAt = Date::parse($response->created_at);
 
-            foreach ($responses as $response) {
-                $responseAt = Date::parse($response->created_at);
-
-                if ($cursor instanceof Carbon && $responseAt->gt($cursor)) {
-                    $this->addTrendMinutes(
-                        $status,
-                        (int) $cursor->diffInMinutes($responseAt),
-                        $totals,
-                    );
-                }
-
-                $cursor = $responseAt;
-                $status = $this->monitoringHealthEvaluator->availabilityFor($monitoring, $response)->value;
+            if ($cursor instanceof Carbon && $responseAt->gt($cursor)) {
+                $this->addTrendMinutes(
+                    $status,
+                    (int) $cursor->diffInMinutes($responseAt),
+                    $totals,
+                );
             }
 
-            if ($cursor instanceof Carbon && $cursor->lt($now)) {
-                $this->addTrendMinutes($status, (int) $cursor->diffInMinutes($now), $totals);
-            }
+            $cursor = $responseAt;
+            $status = $this->monitoringHealthEvaluator->availabilityFor($monitoring, $response)->value;
+        }
+
+        if ($cursor instanceof Carbon && $cursor->lt($now)) {
+            $this->addTrendMinutes($status, (int) $cursor->diffInMinutes($now), $totals);
         }
 
         return $totals;
