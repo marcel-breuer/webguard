@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Models\Monitoring;
+use App\Models\TeamMembership;
 use App\Models\User;
 use Illuminate\Cache\TaggableStore;
 use Illuminate\Support\Facades\Cache;
@@ -35,6 +37,29 @@ final class OperationsOverviewCache
             );
         } catch (Throwable) {
             return $callback();
+        }
+    }
+
+    public function flushForMonitoring(Monitoring $monitoring): void
+    {
+        if (! $this->supportsTaggedCache()) {
+            return;
+        }
+
+        try {
+            $userIds = $monitoring->team_id === null
+                ? collect()
+                : TeamMembership::query()->where('team_id', $monitoring->team_id)->pluck('user_id');
+
+            if ($monitoring->user_id !== null) {
+                $userIds->push($monitoring->user_id);
+            }
+
+            foreach ($userIds->unique() as $userId) {
+                Cache::tags([self::TAG . ':user:' . $userId])->flush();
+            }
+        } catch (Throwable) {
+            // The bounded TTL keeps the projection fresh when the cache is unavailable.
         }
     }
 

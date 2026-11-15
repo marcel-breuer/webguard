@@ -20,9 +20,8 @@ class MonitoringResponseObserver
      */
     public function created(MonitoringResponse $monitoringResponse): void
     {
-        resolve(OperationsOverviewCache::class)->flush();
-
         $monitoring = $monitoringResponse->monitoring;
+        resolve(OperationsOverviewCache::class)->flushForMonitoring($monitoring);
         resolve(MonitoringStatsCache::class)->flush($monitoring);
         $monitoringHealthEvaluator = resolve(MonitoringHealthEvaluator::class);
         $monitoringStatus = $monitoringHealthEvaluator->availabilityFor($monitoring, $monitoringResponse);

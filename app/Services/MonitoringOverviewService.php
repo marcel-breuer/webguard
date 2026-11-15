@@ -81,24 +81,24 @@ class MonitoringOverviewService
         $attentionItems = $this->attentionItems(
             $monitorings,
             $failedDeliveryCount,
-            $this->statusPagesByMonitoringId($user)
+            $summary['down'] > 0 ? $this->statusPagesByMonitoringId($user) : collect(),
+            $statuses,
         );
         $overallState = $this->overallState($summary);
-        $serviceReadModels = $monitorings->map(
+        $serviceReadModels = $monitorings->forPage(max(1, $servicePage), 10)->map(
             fn (Monitoring $monitoring): MonitoringServiceReadModel => MonitoringServiceReadModel::fromMonitoring(
                 $monitoring,
                 (string) $statuses->get($monitoring->getKey(), MonitoringStatus::UNKNOWN->value),
             )
         )->values();
-        $pagedServiceReadModels = $serviceReadModels->forPage(max(1, $servicePage), 10)->values();
-        $serviceCount = $serviceReadModels->count();
+        $serviceCount = $monitorings->count();
         $lastPage = max(1, (int) ceil($serviceCount / 10));
-        $firstItem = $pagedServiceReadModels->isEmpty() ? null : (($servicePage - 1) * 10) + 1;
-        $lastItem = $pagedServiceReadModels->isEmpty() ? null : min($servicePage * 10, $serviceCount);
+        $firstItem = $serviceReadModels->isEmpty() ? null : (($servicePage - 1) * 10) + 1;
+        $lastItem = $serviceReadModels->isEmpty() ? null : min($servicePage * 10, $serviceCount);
 
         return [
             'monitorings' => $monitorings,
-            'serviceReadModels' => $pagedServiceReadModels,
+            'serviceReadModels' => $serviceReadModels,
             'signalRoomPagination' => [
                 'current_page' => max(1, $servicePage),
                 'last_page' => $lastPage,
@@ -183,17 +183,19 @@ class MonitoringOverviewService
     /**
      * @param  EloquentCollection<int, Monitoring>  $eloquentCollection
      * @param  Collection<string, StatusPage>  $statusPagesByMonitoringId
+     * @param  Collection<string, string>  $statuses
      * @return Collection<int, array{type:string,monitoring:Monitoring|null,count:int|null,statusPage:StatusPage|null}>
      */
     private function attentionItems(
         EloquentCollection $eloquentCollection,
         int $failedDeliveryCount,
-        Collection $statusPagesByMonitoringId
+        Collection $statusPagesByMonitoringId,
+        Collection $statuses,
     ): Collection {
         $items = collect();
 
         $eloquentCollection
-            ->filter(fn (Monitoring $monitoring): bool => $this->monitoringStateResolver->status($monitoring) === MonitoringStatus::DOWN->value)
+            ->filter(fn (Monitoring $monitoring): bool => $statuses->get($monitoring->id) === MonitoringStatus::DOWN->value)
             ->take(5)
             ->each(function (Monitoring $monitoring) use ($items, $statusPagesByMonitoringId): void {
                 $isOpenIncident = $monitoring->latestIncident?->up_at === null
@@ -208,7 +210,7 @@ class MonitoringOverviewService
             });
 
         $eloquentCollection
-            ->filter(fn (Monitoring $monitoring): bool => $this->monitoringStateResolver->status($monitoring) === MonitoringStatus::UNKNOWN->value
+            ->filter(fn (Monitoring $monitoring): bool => $statuses->get($monitoring->id) === MonitoringStatus::UNKNOWN->value
                 && $monitoring->isActive())
             ->take(5)
             ->each(fn (Monitoring $monitoring) => $items->push([
