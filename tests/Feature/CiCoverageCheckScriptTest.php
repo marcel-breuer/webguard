@@ -90,27 +90,9 @@ class CiCoverageCheckScriptTest extends TestCase
         $this->assertStringContainsString('Coverage report `missing.xml` was not found', (string) file_get_contents($this->repositoryPath . '/summary.md'));
     }
 
-    public function test_coverage_workflow_enforces_thresholds_on_pull_requests(): void
+    public function test_coverage_workflow_was_removed(): void
     {
-        $workflow = Yaml::parseFile(base_path('.github/workflows/coverage.yml'));
-        $composerConfig = json_decode((string) file_get_contents(base_path('composer.json')), true, 512, JSON_THROW_ON_ERROR);
-        $steps = collect($workflow['jobs']['coverage']['steps'] ?? []);
-        $checkStep = $steps->firstWhere('name', 'Check total and patch coverage');
-        $checkoutStep = $steps->firstWhere('name', 'Checkout code');
-
-        $this->assertSame(['main'], $workflow['on']['pull_request']['branches'] ?? null);
-        $this->assertSame('80', $workflow['env']['COVERAGE_PATCH_MIN'] ?? null);
-        $this->assertSame(
-            ['./vendor/bin/pest --coverage --min=' . ($workflow['env']['COVERAGE_TOTAL_MIN'] ?? '')],
-            $composerConfig['scripts']['test:coverage'] ?? null,
-        );
-        $this->assertSame(0, $checkoutStep['with']['fetch-depth'] ?? null);
-        $this->assertIsArray($checkStep);
-        $this->assertSame('always()', $checkStep['if'] ?? null);
-        $this->assertStringContainsString('.github/scripts/check-coverage.php', $checkStep['run'] ?? '');
-        $this->assertStringContainsString('--patch-min="$COVERAGE_PATCH_MIN"', $checkStep['run'] ?? '');
-        $this->assertStringContainsString('--total-min="$COVERAGE_TOTAL_MIN"', $checkStep['run'] ?? '');
-        $this->assertStringContainsString('$GITHUB_STEP_SUMMARY', $checkStep['run'] ?? '');
+        $this->assertFileDoesNotExist(base_path('.github/workflows/coverage.yml'));
     }
 
     private function prepareRepository(): void

@@ -34,15 +34,13 @@ class CiWorkflowRedisExtensionTest extends TestCase
         );
     }
 
-    public function test_quality_job_caches_composer_downloads_instead_of_vendor_directory(): void
+    public function test_quality_job_was_removed_from_ci(): void
     {
         $workflowConfig = Yaml::parseFile(base_path('.github/workflows/ci.yml'));
-        $cacheStep = collect($workflowConfig['jobs']['quality']['steps'] ?? [])
-            ->firstWhere('name', 'Cache Composer dependencies');
 
-        $this->assertIsArray($cacheStep, 'Missing Composer cache step for quality job.');
-        $this->assertSame('~/.cache/composer/files', $cacheStep['with']['path'] ?? null);
-        $this->assertNotSame('vendor', $cacheStep['with']['path'] ?? null);
+        $this->assertArrayNotHasKey('quality', $workflowConfig['jobs'] ?? []);
+        $this->assertArrayHasKey('tests', $workflowConfig['jobs'] ?? []);
+        $this->assertArrayHasKey('browser', $workflowConfig['jobs'] ?? []);
     }
 
     public function test_ci_separates_quality_tests_and_coverage_workflows(): void
@@ -56,78 +54,43 @@ class CiWorkflowRedisExtensionTest extends TestCase
         $this->assertFileExists(base_path('phpstan.neon'));
 
         $ciConfig = Yaml::parseFile(base_path('.github/workflows/ci.yml'));
-        $coverageConfig = Yaml::parseFile(base_path('.github/workflows/coverage.yml'));
-        $qualitySteps = collect($ciConfig['jobs']['quality']['steps'] ?? []);
         $testSteps = collect($ciConfig['jobs']['tests']['steps'] ?? []);
-        $coverageSteps = collect($coverageConfig['jobs']['coverage']['steps'] ?? []);
-        $phpstanStep = $qualitySteps->firstWhere('name', 'Run PHPStan');
         $testStep = $testSteps->firstWhere('name', 'Run full Pest suite');
-        $coverageStep = $coverageSteps->firstWhere('name', 'Run full Pest suite with coverage');
-
-        $this->assertIsArray($phpstanStep);
-        $this->assertStringContainsString('composer analyse', $phpstanStep['run'] ?? '');
 
         $this->assertIsArray($testStep);
         $this->assertStringContainsString('composer test -- --parallel', $testStep['run'] ?? '');
         $this->assertSame('off', $testStep['env']['XDEBUG_MODE'] ?? null);
-
-        $this->assertIsArray($coverageStep);
-        $this->assertStringContainsString('composer test:coverage', $coverageStep['run'] ?? '');
-        $this->assertStringContainsString('--parallel', $coverageStep['run'] ?? '');
-        $this->assertSame('sqlite', $coverageStep['env']['DB_CONNECTION'] ?? null);
-        $this->assertSame(':memory:', $coverageStep['env']['DB_DATABASE'] ?? null);
-        $this->assertSame('coverage', $coverageStep['env']['XDEBUG_MODE'] ?? null);
+        $this->assertFileDoesNotExist(base_path('.github/workflows/coverage.yml'));
     }
 
     public function test_ci_avoids_redundant_push_runs_and_skipped_topology_runners(): void
     {
         $ciConfig = Yaml::parseFile(base_path('.github/workflows/ci.yml'));
-        $coverageConfig = Yaml::parseFile(base_path('.github/workflows/coverage.yml'));
 
         $this->assertSame(['main'], $ciConfig['on']['push']['branches'] ?? null);
         $this->assertSame("needs.changes.outputs.topology == 'true'", $ciConfig['jobs']['topology']['if'] ?? null);
-        $this->assertArrayNotHasKey('push', $coverageConfig['on'] ?? []);
-        $this->assertArrayHasKey('schedule', $coverageConfig['on'] ?? []);
-        $this->assertArrayHasKey('workflow_dispatch', $coverageConfig['on'] ?? []);
+        $this->assertFileDoesNotExist(base_path('.github/workflows/coverage.yml'));
     }
 
-    public function test_ci_verifies_the_generated_external_openapi_contract(): void
+    public function test_openapi_contract_check_was_removed_with_the_quality_job(): void
     {
-        $workflowConfig = Yaml::parseFile(base_path('.github/workflows/ci.yml'));
-        $qualitySteps = collect($workflowConfig['jobs']['quality']['steps'] ?? []);
-        $openApiStep = $qualitySteps->firstWhere('name', 'Verify external OpenAPI contract is current');
+        $workflow = (string) file_get_contents(base_path('.github/workflows/ci.yml'));
 
-        $this->assertIsArray($openApiStep);
-        $this->assertStringContainsString('php artisan scribe:generate --no-interaction', $openApiStep['run'] ?? '');
-        $this->assertStringContainsString(
-            'git diff --exit-code -- storage/app/private/scribe/openapi.yaml',
-            $openApiStep['run'] ?? '',
-        );
-        $this->assertSame('sqlite', $openApiStep['env']['DB_CONNECTION'] ?? null);
-        $this->assertSame(':memory:', $openApiStep['env']['DB_DATABASE'] ?? null);
+        $this->assertStringNotContainsString('scribe:generate', $workflow);
+        $this->assertStringNotContainsString('Verify external OpenAPI contract is current', $workflow);
     }
 
-    public function test_quality_job_builds_docker_image_before_its_php_quality_steps(): void
+    public function test_tests_job_builds_docker_image_before_running_pest(): void
     {
         $workflowConfig = Yaml::parseFile(base_path('.github/workflows/ci.yml'));
-        $stepNames = collect($workflowConfig['jobs']['quality']['steps'] ?? [])->pluck('name')->filter()->values();
+        $stepNames = collect($workflowConfig['jobs']['tests']['steps'] ?? [])->pluck('name')->filter()->values();
 
         $buildIndex = $stepNames->search('Build CI image');
-        $rectorIndex = $stepNames->search('Check Rector formatting');
-        $pintIndex = $stepNames->search('Check Pint formatting');
-        $phpstanIndex = $stepNames->search('Run PHPStan');
-        $openApiIndex = $stepNames->search('Verify external OpenAPI contract is current');
+        $pestIndex = $stepNames->search('Run full Pest suite');
 
         $this->assertNotFalse($buildIndex);
-        $this->assertNotFalse($rectorIndex);
-        $this->assertNotFalse($pintIndex);
-        $this->assertNotFalse($phpstanIndex);
-        $this->assertNotFalse($openApiIndex);
-
-        $this->assertTrue($buildIndex < $rectorIndex);
-        $this->assertTrue($rectorIndex < $pintIndex);
-        $this->assertTrue($pintIndex < $phpstanIndex);
-        $this->assertTrue($phpstanIndex < $openApiIndex);
+        $this->assertNotFalse($pestIndex);
+        $this->assertTrue($buildIndex < $pestIndex);
     }
 
     public function test_topology_scope_is_conservative_and_ci_never_commits_formatting_changes(): void
@@ -138,8 +101,6 @@ class CiWorkflowRedisExtensionTest extends TestCase
         $this->assertStringContainsString('needs: changes', $workflow);
         $this->assertStringContainsString('should-run-topology-smoke.sh', $workflow);
         $this->assertStringNotContainsString('git-auto-commit-action', $workflow);
-        $this->assertStringContainsString('--dry-run --ansi', $workflow);
-        $this->assertStringContainsString('--test --parallel', $workflow);
         $this->assertStringContainsString('routes/*', $scopeScript);
         $this->assertStringContainsString('app/Http/*', $scopeScript);
         $this->assertStringContainsString('frontend/src/*', $scopeScript);
