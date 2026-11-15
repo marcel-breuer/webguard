@@ -4,6 +4,8 @@ WebGuard helps teams observe public websites, operational tasks, certificates, d
 
 ## Monitoring
 
+- **Global monitoring search:** open search from any authenticated page with Option (⌥) + K on macOS or Alt + K on Windows/Linux, or use the sidebar/mobile search button. Enter at least two characters of a name or target URL to see up to ten accessible private/team monitorings. Click a result or use the arrow keys and Enter to open its details; Escape closes the dialog and restores focus. Searches load on demand and cancel outdated requests.
+
 - **Uptime monitoring:** keep a close eye on website availability with asynchronous uptime checks.
 - **Heartbeat and cron monitoring:** detect stalled cron jobs, workers, and background tasks with private heartbeat ping URLs.
 - **Server health monitoring:** accept pushed CPU, RAM, storage, load, uptime, and custom metric reports with configurable per-monitor usage thresholds.

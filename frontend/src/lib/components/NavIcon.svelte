@@ -18,6 +18,7 @@
         | "moon"
         | "package"
         | "pencil"
+        | "search"
         | "settings"
         | "sun"
         | "system"
@@ -36,6 +37,8 @@
 <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
     {#if name === "home"}
         <path d="m3 10 9-7 9 7" /><path d="M5 9.5V21h14V9.5M9 21v-6h6v6" />
+    {:else if name === "search"}
+        <circle cx="10.5" cy="10.5" r="6.5" /><path d="m16 16 5 5" />
     {:else if name === "arrow-left"}
         <path d="M19 12H5M11 18l-6-6 6-6" />
     {:else if name === "monitoring"}

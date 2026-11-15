@@ -23,6 +23,7 @@
         description?: string;
         closeLabel?: string;
         size?: "default" | "wide";
+        initialFocus?: string;
         children?: Snippet;
         onclose?: () => void;
     }
@@ -33,6 +34,7 @@
         description,
         closeLabel = "Close dialog",
         size = "default",
+        initialFocus,
         children,
         onclose,
     }: Props = $props();
@@ -48,7 +50,8 @@
         const unlockBackgroundScroll = lockBackgroundScroll();
 
         void tick().then(() => {
-            panel?.focus();
+            const target = initialFocus ? panel?.querySelector<HTMLElement>(initialFocus) : null;
+            (target ?? panel)?.focus();
         });
 
         return () => {

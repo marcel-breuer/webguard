@@ -3,6 +3,7 @@
     import { appRoutes } from "#lib/routes.ts";
     import { requestFirstPartyApi } from "#lib/api/client.ts";
     import { formatNumber } from "#lib/i18n/format.ts";
+    import MonitoringSearch from "#lib/components/MonitoringSearch.svelte";
     import AppearanceSelector from "#lib/components/AppearanceSelector.svelte";
     import LocaleSelector from "#lib/components/LocaleSelector.svelte";
     import NavIcon, { type NavIconName } from "#lib/components/NavIcon.svelte";
@@ -45,6 +46,8 @@
     let isMobileViewport = $state(false);
     let localeOpen = $state(false);
     let mobileOpen = $state(false);
+    let monitoringSearchOpen = $state(false);
+    let searchShortcut = $state("Alt+K");
     let unreadNotificationCount = $state(0);
 
     const collapseStorageKey = "webguard.sidebar.collapsed";
@@ -62,6 +65,7 @@
     }
 
     onMount(() => {
+        searchShortcut = /Mac|iPhone|iPad/.test(navigator.platform) ? "⌥K" : "Alt+K";
         void requestFirstPartyApi<unknown, { unread_count: number }>("/api/notifications?limit=1&show_read=0")
             .then((payload) => setUnreadNotificationCount(payload.meta?.unread_count))
             .catch(() => undefined);
@@ -121,6 +125,7 @@
 </script>
 
 <svelte:window onkeydown={handleWindowKeydown} />
+<MonitoringSearch bind:open={monitoringSearchOpen} />
 
 <a href="#main-content" class="sr-only fixed top-3 left-3 z-[60] rounded-md bg-wg-accent px-4 py-2 text-sm font-bold text-wg-accent-contrast no-underline focus:not-sr-only">Skip to main content</a>
 
@@ -138,6 +143,11 @@
         </div>
 
         <nav class="flex-1 overflow-y-auto px-3 py-4">
+            <button type="button" class={`flex min-h-11 w-full items-center rounded-[0.65rem] border border-purple-700 text-sm text-purple-100 hover:bg-purple-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-300 ${collapsed ? "justify-center px-0" : "gap-3 px-3"}`} aria-label="Search monitorings" aria-keyshortcuts="Alt+K" aria-haspopup="dialog" title="Search monitorings" onclick={() => { mobileOpen = false; monitoringSearchOpen = true; }}>
+                <NavIcon name="search" />
+                <span class={collapsed ? "sr-only" : "min-w-0 flex-1 text-left"}>Search</span>
+                {#if !collapsed}<kbd class="shrink-0 rounded border border-purple-700 px-1 text-xs text-purple-300" aria-hidden="true">{searchShortcut}</kbd>{/if}
+            </button>
             <a class={`mt-1 flex min-h-11 items-center rounded-[0.65rem] border text-sm font-semibold no-underline ${collapsed ? "justify-center px-0" : "gap-3 px-3"} ${isActive(appRoutes.dashboard) ? "border-purple-400 bg-purple-800 text-white" : "border-transparent text-purple-200 hover:border-purple-700 hover:bg-purple-900 hover:text-white"}`} href={appRoutes.dashboard} aria-current={isActive(appRoutes.dashboard) ? "page" : undefined} aria-label="Dashboard" title="Dashboard" onclick={closeMobileNavigation}>
                 <NavIcon name="home" /> <span class={collapsed ? "sr-only" : ""}>Dashboard</span>
             </a>
@@ -171,6 +181,7 @@
 
     <header class="hidden min-h-16 items-center justify-between border-b wg-glass-bar px-4 max-[54rem]:flex">
         <a class="flex items-center gap-3 font-extrabold tracking-tight no-underline" href={appRoutes.dashboard} aria-label="WebGuard dashboard"><img class="size-9 rounded-[0.65rem] bg-white object-contain p-0.5" src="/brand/webguard-logo.png" alt="" /><span>WebGuard</span></a>
+        <button type="button" class="ml-auto mr-2 grid size-11 place-items-center rounded-[0.65rem] border border-wg-border text-wg-text" aria-label="Search monitorings" aria-haspopup="dialog" onclick={() => (monitoringSearchOpen = true)}><NavIcon name="search" /></button>
         <button type="button" class="grid size-11 place-items-center rounded-[0.65rem] border border-wg-border bg-transparent text-xl text-wg-text" aria-controls="app-navigation" aria-expanded={mobileOpen} aria-label="Toggle navigation" onclick={toggleMobileNavigation}>☰</button>
     </header>
 
