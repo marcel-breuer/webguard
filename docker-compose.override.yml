@@ -108,10 +108,10 @@ services:
 
   mysql:
     environment:
-      MYSQL_ROOT_PASSWORD: "root"
-      MYSQL_DATABASE: "webguard_core"
-      MYSQL_USER: "webguard"
-      MYSQL_PASSWORD: "webguard"
+      MARIADB_ROOT_PASSWORD: "root"
+      MARIADB_DATABASE: "webguard_core"
+      MARIADB_USER: "webguard"
+      MARIADB_PASSWORD: "webguard"
     ports:
       - "${DOCKER_MYSQL_PORT:-3306}:3306"
 

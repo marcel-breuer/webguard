@@ -477,7 +477,10 @@ class SvelteKitQualityGateTest extends TestCase
 
         $this->assertIsString($script);
         $this->assertIsString($compose);
-        $this->assertStringContainsString('--profile internal-services', $script);
+        $this->assertStringNotContainsString('--profile internal-services', $script);
+        $this->assertStringContainsString('image: mariadb:12.1.2', $compose);
+        $this->assertStringNotContainsString('required: false', $compose);
+        $this->assertStringNotContainsString('profiles:', $compose);
         $this->assertStringContainsString('docker network create', $script);
         $this->assertStringContainsString('build php frontend gateway queue-default', $script);
         $this->assertStringContainsString('up --no-build --detach --wait', $script);
