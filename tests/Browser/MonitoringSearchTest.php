@@ -7,7 +7,7 @@ use App\Models\Monitoring;
 use Tests\Support\BrowserWorld;
 
 it('opens global search from another page and navigates to a monitoring by target', function (): void {
-    $user = BrowserWorld::user();
+    $user = BrowserWorld::user(['name' => 'Demo account', 'email' => 'demo@example.test']);
     $monitoring = Monitoring::factory()->for($user)->create([
         'type' => MonitoringType::HTTP,
         'name' => 'Search destination',
@@ -28,7 +28,7 @@ it('opens global search from another page and navigates to a monitoring by targe
 });
 
 it('handles the mac option key character and keyboard selection with focus restoration', function (): void {
-    $user = BrowserWorld::user();
+    $user = BrowserWorld::user(['name' => 'Demo account', 'email' => 'demo@example.test']);
     Monitoring::factory()->for($user)->create(['name' => 'Keyboard Alpha']);
     $second = Monitoring::factory()->for($user)->create(['name' => 'Keyboard Beta']);
     $page = BrowserWorld::signedInAt($user, '/dashboard');
@@ -48,7 +48,7 @@ it('handles the mac option key character and keyboard selection with focus resto
 });
 
 it('offers search on mobile with empty feedback and no horizontal overflow', function (): void {
-    $user = BrowserWorld::user();
+    $user = BrowserWorld::user(['name' => 'Demo account', 'email' => 'demo@example.test']);
     $page = BrowserWorld::signedInAt($user, '/dashboard');
     $page->resize(390, 844);
     $inner = $page->page();
@@ -61,7 +61,7 @@ it('offers search on mobile with empty feedback and no horizontal overflow', fun
 });
 
 it('ignores superseded responses and shows recoverable search errors', function (): void {
-    $user = BrowserWorld::user();
+    $user = BrowserWorld::user(['name' => 'Demo account', 'email' => 'demo@example.test']);
     $page = BrowserWorld::signedInAt($user, '/dashboard');
     $inner = $page->page();
     $page->script(<<<'JS'
@@ -95,4 +95,19 @@ it('ignores superseded responses and shows recoverable search errors', function 
     $inner->locator('#monitoring-search-input')->fill('New');
     BrowserWorld::waitForText($page, 'Fresh match');
     $page->assertNoJavaScriptErrors();
+});
+
+it('opens search above an existing form dialog and restores that dialog on Escape', function (): void {
+    $user = BrowserWorld::user(['name' => 'Demo account', 'email' => 'demo@example.test']);
+    $page = BrowserWorld::signedInAt($user, '/monitorings');
+    $inner = $page->page();
+    $inner->getByRole('button', ['name' => 'Create', 'exact' => true])->first()->click();
+    $inner->locator('[role="dialog"] input[name="name"]')->fill('Example service');
+    $inner->locator('[role="dialog"] input[name="name"]')->press('Alt+k');
+    BrowserWorld::waitUntil($page, 'document.activeElement?.id === "monitoring-search-input"');
+    $page->assertScript('document.querySelectorAll("[role=dialog]").length', 2);
+    $inner->locator('#monitoring-search-input')->press('Escape');
+    BrowserWorld::waitUntil($page, 'document.activeElement?.getAttribute("name") === "name"');
+    $page->assertScript('document.documentElement.dataset.dialogOpen', 'true');
+    $page->assertScript('document.querySelectorAll("[role=dialog]").length', 1);
 });

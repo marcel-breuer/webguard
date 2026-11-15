@@ -82,7 +82,7 @@
 
 <svelte:window onkeydown={handleShortcut} />
 
-<Dialog bind:open title="Search monitorings" description="Find a monitoring by name or target URL" initialFocus="#monitoring-search-input" onclose={close}>
+<Dialog bind:open title="Search monitorings" description="Find a monitoring by name or target URL" initialFocus="#monitoring-search-input" layer="overlay" onclose={close}>
     <label for="monitoring-search-input" class="sr-only">Search monitorings</label>
     <input
         id="monitoring-search-input"
