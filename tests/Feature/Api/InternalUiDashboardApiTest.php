@@ -6,10 +6,12 @@ namespace Tests\Feature\Api;
 
 use App\Enums\MonitoringStatus;
 use App\Models\Monitoring;
+use App\Models\MonitoringDailyResult;
 use App\Models\MonitoringResponse;
 use App\Models\Package;
 use App\Models\User;
 use Illuminate\Support\Facades\Date;
+use Illuminate\Support\Facades\DB;
 use Tests\Concerns\AssertsApiContracts;
 use Tests\TestCase;
 
@@ -148,12 +150,80 @@ class InternalUiDashboardApiTest extends TestCase
             'created_at' => $responseAt,
             'updated_at' => $responseAt,
         ]);
+        $downResponseAt = Date::now()->subHour();
+        MonitoringResponse::query()->forceCreate([
+            'monitoring_id' => $monitoring->id,
+            'status' => MonitoringStatus::DOWN,
+            'response_time' => 120,
+            'created_at' => $downResponseAt,
+            'updated_at' => $downResponseAt,
+        ]);
 
         $this->actingAs($user)
             ->getJson(route('app.dashboard'))
             ->assertOk()
             ->assertJsonPath('data.trend.6.date', '2026-08-31')
             ->assertJsonPath('data.trend.6.has_data', true)
-            ->assertJsonPath('data.trend.6.uptime_percentage', 100);
+            ->assertJsonPath('data.trend.6.uptime_percentage', 50);
+    }
+
+    public function test_dashboard_skips_raw_today_responses_when_daily_aggregation_exists(): void
+    {
+        Date::setTestNow('2026-08-31 12:00:00');
+
+        Package::factory()->create(['monitoring_limit' => 10]);
+        $user = User::factory()->create();
+        $monitoring = Monitoring::factory()->for($user)->create(['name' => 'Aggregated trend API']);
+        MonitoringDailyResult::query()->create([
+            'monitoring_id' => $monitoring->id,
+            'date' => Date::yesterday()->toDateString(),
+            'uptime_total' => 1440,
+            'downtime_total' => 0,
+            'unknown_total' => 0,
+            'uptime_percentage' => 100,
+            'downtime_percentage' => 0,
+            'unknown_percentage' => 0,
+            'uptime_minutes' => 1440,
+            'downtime_minutes' => 0,
+            'unknown_minutes' => 0,
+            'incidents_count' => 0,
+        ]);
+        MonitoringDailyResult::query()->create([
+            'monitoring_id' => $monitoring->id,
+            'date' => Date::today()->toDateString(),
+            'uptime_total' => 360,
+            'downtime_total' => 0,
+            'unknown_total' => 0,
+            'uptime_percentage' => 100,
+            'downtime_percentage' => 0,
+            'unknown_percentage' => 0,
+            'uptime_minutes' => 360,
+            'downtime_minutes' => 0,
+            'unknown_minutes' => 0,
+            'incidents_count' => 0,
+        ]);
+        $this->assertSame(
+            1,
+            MonitoringDailyResult::query()
+                ->where('monitoring_id', $monitoring->id)
+                ->whereDate('date', Date::today())
+                ->count(),
+        );
+        $rawTrendQueries = 0;
+        DB::listen(function ($query) use (&$rawTrendQueries): void {
+            if (str_contains($query->sql, 'monitoring_response_results')
+                && str_contains($query->sql, 'server_health_metrics')
+                && str_contains($query->sql, 'vital_values')) {
+                $rawTrendQueries++;
+            }
+        });
+
+        $this->actingAs($user)
+            ->getJson(route('app.dashboard'))
+            ->assertOk()
+            ->assertJsonPath('data.trend.5.date', '2026-08-30')
+            ->assertJsonPath('data.trend.5.uptime_percentage', 100);
+
+        $this->assertSame(0, $rawTrendQueries);
     }
 }
