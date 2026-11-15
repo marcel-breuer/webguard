@@ -26,7 +26,7 @@
     afterNavigate(close);
 
     function handleShortcut(event: KeyboardEvent): void {
-        if (event.altKey && !event.ctrlKey && !event.metaKey && !event.shiftKey
+        if (event.metaKey && !event.ctrlKey && !event.altKey && !event.shiftKey
             && !event.repeat && !event.isComposing && event.code === "KeyK") {
             event.preventDefault();
             if (!open) open = true;

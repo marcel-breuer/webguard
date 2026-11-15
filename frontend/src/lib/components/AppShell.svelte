@@ -47,7 +47,6 @@
     let localeOpen = $state(false);
     let mobileOpen = $state(false);
     let monitoringSearchOpen = $state(false);
-    let searchShortcut = $state("Alt+K");
     let unreadNotificationCount = $state(0);
 
     const collapseStorageKey = "webguard.sidebar.collapsed";
@@ -65,7 +64,6 @@
     }
 
     onMount(() => {
-        searchShortcut = /Mac|iPhone|iPad/.test(navigator.platform) ? "⌥K" : "Alt+K";
         void requestFirstPartyApi<unknown, { unread_count: number }>("/api/notifications?limit=1&show_read=0")
             .then((payload) => setUnreadNotificationCount(payload.meta?.unread_count))
             .catch(() => undefined);
@@ -143,10 +141,10 @@
         </div>
 
         <nav class="flex-1 overflow-y-auto px-3 py-4">
-            <button type="button" class={`flex min-h-11 w-full items-center rounded-[0.65rem] border border-purple-700 text-sm text-purple-100 hover:bg-purple-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-300 ${collapsed ? "justify-center px-0" : "gap-3 px-3"}`} aria-label="Search monitorings" aria-keyshortcuts="Alt+K" aria-haspopup="dialog" title="Search monitorings" onclick={() => { mobileOpen = false; monitoringSearchOpen = true; }}>
+            <button type="button" class={`flex min-h-11 w-full items-center rounded-[0.65rem] border border-purple-700 text-sm text-purple-100 hover:bg-purple-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-300 ${collapsed ? "justify-center px-0" : "gap-3 px-3"}`} aria-label="Search monitorings" aria-keyshortcuts="Meta+K" aria-haspopup="dialog" title="Search monitorings" onclick={() => { mobileOpen = false; monitoringSearchOpen = true; }}>
                 <NavIcon name="search" />
                 <span class={collapsed ? "sr-only" : "min-w-0 flex-1 text-left"}>Search</span>
-                {#if !collapsed}<kbd class="shrink-0 rounded border border-purple-700 px-1 text-xs text-purple-300" aria-hidden="true">{searchShortcut}</kbd>{/if}
+                {#if !collapsed}<kbd class="shrink-0 rounded border border-purple-700 px-1 text-xs text-purple-300" aria-hidden="true">⌘K</kbd>{/if}
             </button>
             <a class={`mt-1 flex min-h-11 items-center rounded-[0.65rem] border text-sm font-semibold no-underline ${collapsed ? "justify-center px-0" : "gap-3 px-3"} ${isActive(appRoutes.dashboard) ? "border-purple-400 bg-purple-800 text-white" : "border-transparent text-purple-200 hover:border-purple-700 hover:bg-purple-900 hover:text-white"}`} href={appRoutes.dashboard} aria-current={isActive(appRoutes.dashboard) ? "page" : undefined} aria-label="Dashboard" title="Dashboard" onclick={closeMobileNavigation}>
                 <NavIcon name="home" /> <span class={collapsed ? "sr-only" : ""}>Dashboard</span>

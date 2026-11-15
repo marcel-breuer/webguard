@@ -16,7 +16,7 @@ it('opens global search from another page and navigates to a monitoring by targe
     Monitoring::factory()->create(['name' => 'Hidden shortcut', 'target' => 'https://shortcut.example.test']);
     $page = BrowserWorld::signedInAt($user, '/profile');
     $inner = $page->page();
-    $inner->locator('body')->press('Alt+k');
+    $inner->locator('body')->press('Meta+k');
     BrowserWorld::waitUntil($page, 'document.activeElement?.id === "monitoring-search-input"');
     $inner->locator('#monitoring-search-input')->fill('shortcut.example');
     $inner->locator('#monitoring-search-results [role="option"]')->first()->waitFor();
@@ -27,17 +27,19 @@ it('opens global search from another page and navigates to a monitoring by targe
     $page->assertSee('Search destination')->assertNoJavaScriptErrors();
 });
 
-it('handles the mac option key character and keyboard selection with focus restoration', function (): void {
+it('handles the command shortcut and keyboard selection with focus restoration', function (): void {
     $user = BrowserWorld::user(['name' => 'Demo account', 'email' => 'demo@example.test']);
     Monitoring::factory()->for($user)->create(['name' => 'Keyboard Alpha']);
     $second = Monitoring::factory()->for($user)->create(['name' => 'Keyboard Beta']);
     $page = BrowserWorld::signedInAt($user, '/dashboard');
     $inner = $page->page();
-    $page->script('function() { const button = document.querySelector("#app-navigation button[aria-label=\'Search monitorings\']"); button.focus(); window.dispatchEvent(new KeyboardEvent("keydown", { key: "˚", code: "KeyK", altKey: true, bubbles: true, cancelable: true })); return true; }');
+    $page->script('function() { window.dispatchEvent(new KeyboardEvent("keydown", { key: "k", code: "KeyK", altKey: true, bubbles: true, cancelable: true })); return true; }');
+    $page->assertScript('document.querySelector("#monitoring-search-input") === null', true);
+    $page->script('function() { const button = document.querySelector("#app-navigation button[aria-label=\'Search monitorings\']"); button.focus(); window.dispatchEvent(new KeyboardEvent("keydown", { key: "k", code: "KeyK", metaKey: true, bubbles: true, cancelable: true })); return true; }');
     BrowserWorld::waitUntil($page, 'document.activeElement?.id === "monitoring-search-input"');
     $inner->locator('#monitoring-search-input')->press('Escape');
     BrowserWorld::waitUntil($page, 'document.activeElement?.getAttribute("aria-label") === "Search monitorings"');
-    $inner->locator('body')->press('Alt+k');
+    $inner->locator('body')->press('Meta+k');
     BrowserWorld::waitUntil($page, 'document.activeElement?.id === "monitoring-search-input"');
     $inner->locator('#monitoring-search-input')->fill('Keyboard');
     $inner->locator('#monitoring-search-results [role="option"]')->first()->waitFor();
@@ -82,7 +84,7 @@ it('ignores superseded responses and shows recoverable search errors', function 
             return true;
         }
         JS);
-    $inner->locator('body')->press('Alt+k');
+    $inner->locator('body')->press('Meta+k');
     BrowserWorld::waitUntil($page, 'document.activeElement?.id === "monitoring-search-input"');
     $inner->locator('#monitoring-search-input')->fill('Old');
     BrowserWorld::waitUntil($page, 'window.__oldSearchStarted === true');
@@ -103,7 +105,7 @@ it('opens search above an existing form dialog and restores that dialog on Escap
     $inner = $page->page();
     $inner->getByRole('button', ['name' => 'Create', 'exact' => true])->first()->click();
     $inner->locator('[role="dialog"] input[name="name"]')->fill('Example service');
-    $inner->locator('[role="dialog"] input[name="name"]')->press('Alt+k');
+    $inner->locator('[role="dialog"] input[name="name"]')->press('Meta+k');
     BrowserWorld::waitUntil($page, 'document.activeElement?.id === "monitoring-search-input"');
     $page->assertScript('document.querySelectorAll("[role=dialog]").length', 2);
     $inner->locator('#monitoring-search-input')->press('Escape');
