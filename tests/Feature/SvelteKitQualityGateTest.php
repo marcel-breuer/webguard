@@ -463,9 +463,9 @@ class SvelteKitQualityGateTest extends TestCase
         $workflow = file_get_contents(base_path('.github/workflows/ci.yml'));
 
         $this->assertIsString($workflow);
-        $this->assertStringContainsString('bun run frontend:check', $workflow);
         $this->assertStringContainsString('bun run frontend:build', $workflow);
-        $this->assertStringContainsString('bun run --cwd frontend budget', $workflow);
+        $this->assertStringNotContainsString('bun run frontend:check', $workflow);
+        $this->assertStringNotContainsString('bun run --cwd frontend budget', $workflow);
         $this->assertStringContainsString('Run SvelteKit container topology smoke test', $workflow);
         $this->assertStringContainsString('.github/scripts/smoke-sveltekit-topology.sh', $workflow);
     }
