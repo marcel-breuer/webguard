@@ -297,3 +297,29 @@ A task is complete only when:
 - Documentation is updated where required.
 - No unintended files changed.
 - Assumptions and remaining risks are stated.
+
+## CI/CD Pipeline
+
+Status: 2026-11-15. The pipeline is intentionally minimal and covers only tests, releases and tags.
+
+Kept workflows:
+
+| Workflow / job | Purpose |
+| --- | --- |
+| `ci.yml` / `changes` | Decides whether the topology smoke test is needed for a pull request (`.github/scripts/should-run-topology-smoke.sh`). Feeds `topology`. |
+| `ci.yml` / `tests` | Full Pest unit and feature suite (`composer test`) in the CI Docker image. |
+| `ci.yml` / `topology` | SvelteKit container topology smoke test, only when runtime or infrastructure files change. |
+| `ci.yml` / `browser` | Browser tests (`composer test:browser`) with Chromium against the built frontend and nginx gateway. |
+| `tag.yml` | After a successful `CI` run on `main`, creates the next tag and publishes the GitHub release notes. Also supports manual backfill. |
+
+Removed workflows and jobs:
+
+| Removed | Reason |
+| --- | --- |
+| `ci.yml` / `quality` job | Only lint, format and static checks: Rector and Pint dry-runs, PHPStan, frontend check and bundle budget, and the OpenAPI (Scribe) freshness check. Not test or release work. |
+| `coverage.yml` | Coverage report (Pest coverage, patch-coverage gate) and a nightly scheduled run. Report-only. |
+| `dependabot-auto-merge.yml` | Automatic merge of Dependabot pull requests. Dependency automation, not a test or release step. |
+
+Dependency notes: `tag.yml` depends on the `CI` workflow name and the `main` branch through `workflow_run`. Keep the name `CI` and the branch trigger stable. The `quality` job was not a `needs` dependency of any remaining job. If branch protection requires the removed checks (`Quality`, `Coverage`), update the protection rules in GitHub settings. `.github/scripts/check-coverage.php` is now unused by any workflow and can be deleted in a follow-up.
+
+Rule: **Vor jedem PR lokal alle Pipeline-Schritte ausführen.** Run every remaining pipeline step locally before opening a pull request: the `tests` job (`composer test`), the `browser` job (`composer test:browser` after `bun run frontend:build`), the `topology` smoke test when its scope applies, and a syntax check of the workflow YAML files for `tag.yml` and `ci.yml`. Report any step that cannot run locally and why.
