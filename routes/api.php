@@ -76,7 +76,7 @@ Route::post('/mobile/login', [MobileAuthController::class, 'login'])
     ->middleware('throttle:5,1')
     ->name('mobile.login');
 
-Route::group(['prefix' => 'mobile', 'as' => 'mobile.', 'middleware' => ['auth:sanctum']], function (): void {
+Route::group(['prefix' => 'mobile', 'as' => 'mobile.', 'middleware' => ['auth:sanctum', 'api-key.deny']], function (): void {
     Route::get('/me', [MobileAuthController::class, 'me'])->name('me');
     Route::post('/logout', [MobileAuthController::class, 'logout'])->name('logout');
 

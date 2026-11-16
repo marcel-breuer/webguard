@@ -8,6 +8,8 @@ enum ApiKeyAbility: string
 {
     case SERVER_HEALTH_WRITE = 'server-health:write';
     case ANALYTICS_READ = 'analytics:read';
+    case MANAGEMENT_READ = 'management:read';
+    case MANAGEMENT_WRITE = 'management:write';
 
     /**
      * @return array<int, string>

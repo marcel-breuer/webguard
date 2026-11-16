@@ -24,6 +24,13 @@ class ApiControllerTest extends TestCase
 {
     use RefreshDatabase;
 
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        config(['external_api.rate_limit_per_minute' => 5]);
+    }
+
     public function test_returns_the_correct_interval_in_the_status_endpoint(): void
     {
         Package::factory()->create();

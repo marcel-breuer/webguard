@@ -35,8 +35,9 @@ response changes only additively; rate-limit errors use Laravel's standard
 
 ## Rate limits
 
-Non-mobile external tokens have a per-user limit of five requests per 60-second
-window. Responses include `X-RateLimit-Limit`, `X-RateLimit-Remaining`, and
+Non-mobile external tokens have a per-user limit of `EXTERNAL_API_RATE_LIMIT_PER_MINUTE`
+requests per 60-second window (default 60; earlier releases used a fixed five).
+Responses include `X-RateLimit-Limit`, `X-RateLimit-Remaining`, and
 `X-RateLimit-Reset` (Unix timestamp); a limited request returns `429`,
 `Retry-After`, and zero remaining requests.
 
@@ -83,12 +84,20 @@ creating another key or escalating its permissions.
 | `DELETE` | `/api/api-keys/{id}` | Immediately and idempotently revokes one owned key. |
 
 Creation requires a non-empty, unique-per-user `name` and a non-empty
-`abilities` array. The only new key abilities are:
+`abilities` array. The key abilities are:
 
 - `server-health:write`: may only send telemetry to the bearer Server Health
   endpoint for a monitoring the key owner may manage;
 - `analytics:read`: may only read the documented monitoring reporting routes
-  below; it cannot list or mutate monitorings, teams, devices, or API keys.
+  below; it cannot list or mutate monitorings, teams, devices, or API keys;
+- `management:read`: may call `GET` routes for monitorings, monitoring groups,
+  status pages, incidents, maintenance, teams, notifications, notification
+  settings, and the dashboard;
+- `management:write`: may call the mutating routes of the same resources. It
+  does not include read access.
+
+Scoped keys cannot reach account, session, API key, administration, or mobile
+routes. See [REST API guide](rest-api.md) for the full route table.
 
 Metadata includes the key ID, display name, abilities, non-secret Sanctum
 prefix, creation time, last-use time, and revocation state. It never includes a
@@ -102,10 +111,12 @@ All retain their existing ownership checks and response contracts.
 
 ## Model Context Protocol
 
-`POST /api/mcp` exposes monitoring queries through the MCP Streamable HTTP
-transport. Connect with a WebGuard API key that has the `analytics:read`
-ability, using `Authorization: Bearer <token>`. The endpoint uses the existing
-monitoring analytics read boundary and does not provide write tools. Legacy
+`POST /api/mcp` exposes monitoring queries and management operations through the
+MCP Streamable HTTP transport; see the [MCP guide](../mcp.md) for client setup,
+the tool catalogue, and the permission model. Connect with a WebGuard API key
+using `Authorization: Bearer <token>`: `analytics:read` for the monitoring
+analytics tools, `management:read` for read tools and resources, and
+`management:write` for write tools. Legacy
 personal-access tokens follow the `EXTERNAL_API_ENFORCE_TOKEN_ABILITIES`
 setting and require `external:read` when enforcement is enabled. Mobile-app
 tokens are not accepted.
@@ -123,6 +134,10 @@ The server exposes these tools:
 Incident diagnoses use the monitoring ownership rules of the other tools: only
 incidents on monitorings the key owner owns or shares through a team are
 returned. Public-label monitorings of other users are not included.
+
+These four analytics tools need `analytics:read` (or `management:read`). Keys with
+`management:read` and `management:write` also see the management tools, resources,
+and prompts described in the [MCP guide](../mcp.md).
 
 Create a key from the profile's API key settings and select **Read analytics**.
 Configure an MCP client to connect to `<APP_URL>/api/mcp` and pass the key as
@@ -165,8 +180,8 @@ only; values, targets, and credentials are never included.
 
 Native clients manage monitorings through `/api/mobile/monitorings`. These
 routes use mobile-token authentication and keep their mobile-specific payloads;
-the shared `/api/monitorings` family is reserved for browser sessions and
-standard personal-access tokens.
+the shared `/api/monitorings` family serves browser sessions, standard
+personal-access tokens, and scoped keys with `management:*` abilities.
 
 | Method | Path | Result |
 | --- | --- | --- |

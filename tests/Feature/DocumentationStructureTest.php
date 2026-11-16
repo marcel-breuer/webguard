@@ -21,6 +21,25 @@ class DocumentationStructureTest extends TestCase
         }
     }
 
+    public function test_docs_index_links_api_and_mcp_guides(): void
+    {
+        $index = file_get_contents(base_path('docs/README.md'));
+
+        $this->assertIsString($index);
+
+        foreach (['api/rest-api.md', 'api/openapi.json', 'mcp.md'] as $link) {
+            $this->assertStringContainsString("]({$link})", $index);
+            $this->assertFileExists(base_path('docs/' . $link));
+        }
+
+        $mcp = file_get_contents(base_path('docs/mcp.md'));
+        $this->assertIsString($mcp);
+
+        foreach (['Permission model', 'Client setup', 'Tool catalogue', 'management:write'] as $topic) {
+            $this->assertStringContainsString($topic, $mcp);
+        }
+    }
+
     public function test_docs_preserve_detailed_readme_topics(): void
     {
         $topicsByDocument = [
@@ -109,6 +128,8 @@ class DocumentationStructureTest extends TestCase
             'docs/features.md',
             'docs/architecture.md',
             'docs/installation.md',
+            'docs/api/rest-api.md',
+            'docs/mcp.md',
             'docs/test-concept.md',
             'docs/contributing.md',
             'docs/releases.md',
