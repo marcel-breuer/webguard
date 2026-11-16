@@ -38,6 +38,8 @@ Run tests with `php artisan test`.
 - [Architecture and technology stack](docs/architecture.md)
 - [Installation, Docker, and operations](docs/installation.md)
 - [SvelteKit production cutover](docs/operations/sveltekit-cutover.md)
+- [REST API guide](docs/api/rest-api.md) and [OpenAPI contract](docs/api/openapi.json)
+- [MCP server for AI agents](docs/mcp.md)
 - [Test concept](docs/test-concept.md)
 - [Contributing](docs/contributing.md)
 - [Releases and changelog](docs/releases.md)
