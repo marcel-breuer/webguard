@@ -30,6 +30,8 @@ return [
         'abilities' => [
             'server_health_write' => 'Server Health schreiben — nur Telemetrie senden',
             'analytics_read' => 'Analytics lesen — nur unterstützte Reporting-Endpunkte verwenden',
+            'management_read' => 'Verwaltung lesen — Monitorings, Statusseiten, Vorfälle, Wartung und Teams lesen',
+            'management_write' => 'Verwaltung schreiben — diese Ressourcen anlegen, ändern und löschen',
         ],
         'active' => 'Aktiv',
         'revoked' => 'Widerrufen',

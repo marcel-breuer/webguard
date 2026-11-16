@@ -30,6 +30,8 @@ return [
         'abilities' => [
             'server_health_write' => 'Server Health write — submit telemetry only',
             'analytics_read' => 'Analytics read — access supported reporting endpoints only',
+            'management_read' => 'Management read — read monitorings, status pages, incidents, maintenance and teams',
+            'management_write' => 'Management write — create, change and delete those resources',
         ],
         'active' => 'Active',
         'revoked' => 'Revoked',
