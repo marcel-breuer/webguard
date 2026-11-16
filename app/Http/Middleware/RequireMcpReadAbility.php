@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Http\Middleware;
 
-use App\Enums\ApiKeyAbility;
 use App\Models\PersonalAccessToken;
 use App\Services\ApiKeyService;
+use App\Services\Mcp\McpAccess;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -28,7 +28,7 @@ class RequireMcpReadAbility
         );
 
         if (ApiKeyService::isManagedKey($token)) {
-            abort_unless($token->can(ApiKeyAbility::ANALYTICS_READ->value), 403);
+            abort_unless(McpAccess::fromToken($token)->canUseMcp(), 403);
 
             return $next($request);
         }

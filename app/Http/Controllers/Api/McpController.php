@@ -43,7 +43,7 @@ final class McpController extends Controller
             ],
         );
 
-        $response = $mcpServerFactory->make($user)->run($streamableHttpTransport);
+        $response = $mcpServerFactory->make($user, $request)->run($streamableHttpTransport);
 
         return (new HttpFoundationFactory())->createResponse($response);
     }
