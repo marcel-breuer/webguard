@@ -15,8 +15,6 @@ use Symfony\Component\HttpFoundation\Response;
 
 class TrackApiUsage
 {
-    private const MAX_ATTEMPTS = 5;
-
     private const DECAY_SECONDS = 60;
 
     /**
@@ -41,13 +39,14 @@ class TrackApiUsage
                 }
 
                 $key = 'api:' . $user->getAuthIdentifier();
+                $maxAttempts = max(1, (int) config('external_api.rate_limit_per_minute'));
 
-                if (RateLimiter::tooManyAttempts($key, self::MAX_ATTEMPTS)) {
+                if (RateLimiter::tooManyAttempts($key, $maxAttempts)) {
                     return $this->withRequestId(response()->json([
                         'message' => 'Too many requests.',
                     ], 429)
                         ->header('Retry-After', (string) RateLimiter::availableIn($key))
-                        ->header('X-RateLimit-Limit', (string) self::MAX_ATTEMPTS)
+                        ->header('X-RateLimit-Limit', (string) $maxAttempts)
                         ->header('X-RateLimit-Remaining', '0')
                         ->header('X-RateLimit-Reset', (string) now()->addSeconds(RateLimiter::availableIn($key))->getTimestamp()), $requestId);
                 }
@@ -57,10 +56,10 @@ class TrackApiUsage
                 dispatch(new LogApiUsage((string) $user->getAuthIdentifier(), url()->current()));
 
                 $response = $next($request);
-                $response->headers->set('X-RateLimit-Limit', (string) self::MAX_ATTEMPTS);
+                $response->headers->set('X-RateLimit-Limit', (string) $maxAttempts);
                 $response->headers->set(
                     'X-RateLimit-Remaining',
-                    (string) max(0, self::MAX_ATTEMPTS - RateLimiter::attempts($key))
+                    (string) max(0, $maxAttempts - RateLimiter::attempts($key))
                 );
                 $response->headers->set(
                     'X-RateLimit-Reset',
