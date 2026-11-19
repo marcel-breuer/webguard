@@ -130,5 +130,5 @@ docker run --rm \
     --env SMOKE_CONFIRMATION_TOKEN="$confirmation_token" \
     --volume "$repository_path/frontend/scripts:/ms-playwright/smoke:ro" \
     --volume "$repository_path/node_modules:/ms-playwright/node_modules:ro" \
-    mcr.microsoft.com/playwright:v1.64.1-noble \
+    mcr.microsoft.com/playwright:v1.65.1-noble \
     node /ms-playwright/smoke/smoke-public-status.mjs
