@@ -8,7 +8,7 @@ use App\Models\User;
 use App\Services\IncidentDiagnosisAccessService;
 use App\Services\McpMonitoringQueryService;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Mcp\Exception\ToolCallException;
+use Mcp\Server\Exception\ToolCallException;
 
 final class McpMonitoringTools
 {

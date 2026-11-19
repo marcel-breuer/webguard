@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Services\Mcp;
 
 use Illuminate\Http\Request;
-use Mcp\Exception\ResourceReadException;
-use Mcp\Exception\ToolCallException;
+use Mcp\Server\Exception\ResourceReadException;
+use Mcp\Server\Exception\ToolCallException;
 use Mcp\Schema\Content\TextResourceContents;
 use Mcp\Server\ClientGateway;
 use Mcp\Server\Handler\ResourceHandlerInterface;
