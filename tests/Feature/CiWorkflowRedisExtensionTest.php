@@ -29,7 +29,7 @@ class CiWorkflowRedisExtensionTest extends TestCase
         $ciStage = mb_substr($dockerfile, (int) mb_strpos($dockerfile, 'AS ci'));
 
         $this->assertStringContainsString(
-            'COPY --from=oven/bun:1.3.11 /usr/local/bin/bun /usr/local/bin/bun',
+            'COPY --from=oven/bun:1.4.5 /usr/local/bin/bun /usr/local/bin/bun',
             $ciStage,
         );
     }
