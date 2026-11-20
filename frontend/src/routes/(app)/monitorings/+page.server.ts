@@ -1,4 +1,3 @@
-import { error } from "@sveltejs/kit";
 import type { DashboardResponse, MonitoringCardsResponse, MonitoringListResponse } from "#lib/api/monitoring.ts";
 
 const lifecycleStatuses = new Set(["active", "paused"]);
@@ -29,40 +28,46 @@ export async function load({ fetch, url }) {
 
     const query = params.size > 0 ? `?${params}` : "";
     const headers = { Accept: "application/json", "X-Requested-With": "XMLHttpRequest" };
-    const [response, dashboardResponse] = await Promise.all([
-        fetch(`/api/monitorings${query}`, { headers }),
-        fetch("/api/dashboard", { headers }),
-    ]);
+    const monitorings = fetch(`/api/monitorings${query}`, { headers })
+        .then(async (response) => {
+            if (!response.ok) return null;
 
-    if (!response.ok) {
-        error(response.status, "Monitorings could not be loaded.");
-    }
+            return await response.json() as MonitoringListResponse;
+        })
+        .catch(() => null);
+    const dashboard = fetch("/api/dashboard", { headers })
+        .then(async (dashboardResponse) => {
+            if (!dashboardResponse.ok) return null;
 
-    if (!dashboardResponse.ok) {
-        error(dashboardResponse.status, "Monitoring summary could not be loaded.");
-    }
+            return await dashboardResponse.json() as DashboardResponse;
+        })
+        .catch(() => null);
+    const cards = monitorings.then(async (monitoringList) => {
+        if (monitoringList === null || monitoringList.data.length === 0) {
+            return { data: {}, summary: { attention: 0, healthy: 0, paused: 0, maintenance: 0 } };
+        }
 
-    const monitorings = await response.json() as MonitoringListResponse;
-    const monitoringIds = monitorings.data.map((monitoring) => monitoring.id);
-    const cardParams = new URLSearchParams();
+        const cardParams = new URLSearchParams();
+        for (const monitoring of monitoringList.data) {
+            cardParams.append("ids[]", monitoring.id);
+        }
 
-    for (const monitoringId of monitoringIds) {
-        cardParams.append("ids[]", monitoringId);
-    }
+        try {
+            const cardsResponse = await fetch(`/api/monitorings/cards?${cardParams}`, { headers });
 
-    const cardsResponse = monitoringIds.length === 0
-        ? null
-        : await fetch(`/api/monitorings/cards?${cardParams}`, { headers });
+            return cardsResponse.ok
+                ? await cardsResponse.json() as MonitoringCardsResponse
+                : { data: {}, summary: { attention: 0, healthy: 0, paused: 0, maintenance: 0 } };
+        } catch {
+            return { data: {}, summary: { attention: 0, healthy: 0, paused: 0, maintenance: 0 } };
+        }
+    });
 
     return {
         filters: {
             lifecycleStatus: lifecycleStatus !== null && lifecycleStatuses.has(lifecycleStatus) ? lifecycleStatus : "",
             search,
         },
-        monitorings,
-        dashboard: await dashboardResponse.json() as DashboardResponse,
-        cards: cardsResponse?.ok
-            ? await cardsResponse.json() as MonitoringCardsResponse
-            : { data: {}, summary: { attention: 0, healthy: 0, paused: 0, maintenance: 0 } },
+        streamed: { monitorings, dashboard, cards },
     };
 }

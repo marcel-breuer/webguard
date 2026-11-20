@@ -10,15 +10,17 @@ export async function load({ fetch, url }) {
     }
 
     const query = params.size > 0 ? `?${params}` : "";
-    const response = await fetch(`/api/dashboard${query}`, {
+    const dashboard = fetch(`/api/dashboard${query}`, {
         headers: { Accept: "application/json", "X-Requested-With": "XMLHttpRequest" },
-    });
+    }).then(async (response) => {
+        if (!response.ok) {
+            error(response.status, "Dashboard data could not be loaded.");
+        }
 
-    if (!response.ok) {
-        error(response.status, "Dashboard data could not be loaded.");
-    }
+        return await response.json() as DashboardResponse;
+    }).catch(() => null);
 
     return {
-        dashboard: await response.json() as DashboardResponse,
+        streamed: { dashboard },
     };
 }

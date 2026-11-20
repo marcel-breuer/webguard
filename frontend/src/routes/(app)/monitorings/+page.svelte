@@ -20,13 +20,20 @@
     interface Props {
         data: {
             filters: { lifecycleStatus: string; search: string };
-            monitorings: MonitoringListResponse;
-            dashboard: DashboardResponse;
-            cards: MonitoringCardsResponse;
+            streamed: {
+                monitorings: Promise<MonitoringListResponse | null>;
+                dashboard: Promise<DashboardResponse | null>;
+                cards: Promise<MonitoringCardsResponse>;
+            };
         };
     }
 
     let { data }: Props = $props();
+    let monitorings = $state<MonitoringListResponse | null>(null);
+    let monitoringsLoadFailed = $state(false);
+    let dashboard = $state<DashboardResponse["data"] | null>(null);
+    let dashboardLoadFailed = $state(false);
+    let cards = $state<MonitoringCardsResponse["data"]>({});
     let quickView = $state<QuickView>("all");
     let selectedTypes = $state<string[]>([]);
     let selectedGroup = $state("");
@@ -36,26 +43,45 @@
     let createLoading = $state(false);
     let createError = $state("");
 
-    const dashboard = $derived(data.dashboard.data);
-    const cards = $derived(data.cards.data);
-    const allSystemsOperational = $derived(dashboard.overall_state === "healthy");
-    const openIncidents = $derived(dashboard.recent_incidents.filter((incident) => !incident.resolved));
+    const allSystemsOperational = $derived(dashboard?.overall_state === "healthy");
+    const openIncidents = $derived(dashboard?.recent_incidents.filter((incident) => !incident.resolved) ?? []);
     const monitoringTypes = [
         ["http", "HTTP"], ["ping", "Ping"], ["keyword", "Keyword"], ["port", "Port"],
         ["heartbeat", "Heartbeat"], ["server_health", "Server health"],
         ["domain_expiration", "Domain expiration"], ["dns_record", "DNS record"],
     ] as const;
     const groupOptions = $derived(
-        [...new Map(data.monitorings.data.flatMap((monitoring) => monitoring.groups.map((group) => [group.id, group]))).values()]
+        [...new Map((monitorings?.data ?? []).flatMap((monitoring) => monitoring.groups.map((group) => [group.id, group]))).values()]
             .sort((left, right) => left.name.localeCompare(right.name)),
     );
     const visibleMonitorings = $derived(
-        data.monitorings.data
+        (monitorings?.data ?? [])
             .filter((monitoring) => matchesQuickView(monitoring, quickView))
             .filter((monitoring) => selectedTypes.length === 0 || monitoring.type === null || selectedTypes.includes(monitoring.type))
             .filter((monitoring) => selectedGroup === "" || monitoring.groups.some((group) => group.id === selectedGroup))
             .sort((left, right) => sortOrder === "name_asc" ? left.name.localeCompare(right.name) : right.name.localeCompare(left.name)),
     );
+
+    $effect(() => {
+        let active = true;
+        void data.streamed.monitorings.then((response) => {
+            if (active) {
+                monitorings = response;
+                monitoringsLoadFailed = response === null;
+            }
+        });
+        void data.streamed.dashboard.then((response) => {
+            if (active) {
+                dashboard = response?.data ?? null;
+                dashboardLoadFailed = response === null;
+            }
+        });
+        void data.streamed.cards.then((response) => {
+            if (active) cards = response.data;
+        });
+
+        return () => { active = false; };
+    });
 
     function card(monitoring: MonitoringSummary) { return cards[monitoring.id]; }
     function monitoringStatus(monitoring: MonitoringSummary): "up" | "down" | "unknown" | null { return card(monitoring)?.status ?? monitoring.latest_check?.status ?? null; }
@@ -127,14 +153,19 @@
 <main class="mx-auto w-[min(76rem,calc(100%_-_2rem))] py-6 sm:py-10">
     <header class="mb-6 flex flex-col gap-4 border-b border-wg-border pb-6 sm:flex-row sm:items-end sm:justify-between">
         <div><p class="m-0 text-[0.8125rem] font-extrabold tracking-[0.1em] text-wg-accent uppercase">Service operations</p><h1 class="mt-2 text-[clamp(2rem,5vw,2.75rem)] leading-[1.1] font-bold">Monitorings</h1><p class="mt-3 max-w-2xl leading-6 text-wg-text-muted">Keep system health, monitoring groups, status pages, and incident patterns in one operational view.</p></div>
-        {#if dashboard.capabilities.can_create_monitoring}
+        {#if dashboard?.capabilities.can_create_monitoring}
             <Button class="tracking-[0.08em] uppercase" type="button" loading={createLoading} onclick={openCreateModal}>Create</Button>
         {/if}
     </header>
 
     {#if createError}<p class="mb-5 text-sm font-bold text-wg-danger" role="alert">{createError}</p>{/if}
 
-    <section class="mb-4 wg-glass-panel px-5 py-5 sm:px-7" aria-label="Monitoring total"><p class="text-base font-bold">Total monitorings: {formatNumber(data.monitorings.meta.total)}</p></section>
+    {#if monitorings === null}
+        <section class="wg-glass-panel p-6 text-sm text-wg-text-muted" role={monitoringsLoadFailed ? "alert" : "status"} aria-live="polite">
+            {monitoringsLoadFailed ? "Monitorings could not be loaded. Refresh to try again." : "Loading your monitorings…"}
+        </section>
+    {:else}
+    <section class="mb-4 wg-glass-panel px-5 py-5 sm:px-7" aria-label="Monitoring total"><p class="text-base font-bold">Total monitorings: {formatNumber(monitorings.meta.total)}</p></section>
 
     <section class="mb-5 wg-glass-panel p-5 sm:p-7" aria-labelledby="filters-heading">
         <p id="filters-heading" class="text-sm font-bold">Quick views</p>
@@ -157,8 +188,8 @@
         </details>
     </section>
 
-    {#if data.monitorings.data.length === 0}
-        {#if dashboard.capabilities.can_create_monitoring}
+    {#if monitorings.data.length === 0}
+        {#if dashboard?.capabilities.can_create_monitoring}
             <EmptyState title="No monitorings found" description="Adjust your filters or create a monitoring to start collecting availability data.">
                 {#snippet action()}<Button type="button" loading={createLoading} onclick={openCreateModal}>Create monitoring</Button>{/snippet}
             </EmptyState>
@@ -168,7 +199,7 @@
     {:else}
         <div class="grid gap-5 xl:grid-cols-[minmax(0,1fr)_18rem] xl:items-start">
             <section class="overflow-hidden wg-glass-panel" aria-labelledby="active-monitorings-heading">
-                <header class="flex flex-col gap-3 border-b border-wg-border px-5 py-5 sm:flex-row sm:items-end sm:justify-between sm:px-6"><div><h2 id="active-monitorings-heading" class="text-xl font-bold">Active monitorings</h2><p class="mt-1 text-sm text-wg-text-muted">System health and details in one focused workspace.</p></div><p class="text-sm font-semibold text-wg-text-muted">Total monitorings: {formatNumber(data.monitorings.meta.total)}</p></header>
+                <header class="flex flex-col gap-3 border-b border-wg-border px-5 py-5 sm:flex-row sm:items-end sm:justify-between sm:px-6"><div><h2 id="active-monitorings-heading" class="text-xl font-bold">Active monitorings</h2><p class="mt-1 text-sm text-wg-text-muted">System health and details in one focused workspace.</p></div><p class="text-sm font-semibold text-wg-text-muted">Total monitorings: {formatNumber(monitorings.meta.total)}</p></header>
                 {#if visibleMonitorings.length === 0}
                     <p class="p-6 text-sm text-wg-text-muted">No monitorings match the selected quick view and filters.</p>
                 {:else}
@@ -182,14 +213,21 @@
                         </tr>{/each}</tbody>
                     </DataTable>
                 {/if}
-                <div class="border-t border-wg-border px-5 py-4 sm:px-6"><Pagination page={data.monitorings.meta.current_page} pages={data.monitorings.meta.last_page} href={paginationHref} /></div>
+                <div class="border-t border-wg-border px-5 py-4 sm:px-6"><Pagination page={monitorings.meta.current_page} pages={monitorings.meta.last_page} href={paginationHref} /></div>
             </section>
+            {#if dashboard}
             <aside class="grid gap-4" aria-label="Operational summary">
                 <section class="wg-glass-panel p-5"><p class="text-xs font-extrabold tracking-[0.12em] text-wg-accent uppercase">All systems</p><h2 class="mt-3 text-lg font-bold">{allSystemsOperational ? "All systems operational" : "Service attention required"}</h2><dl class="mt-5 grid grid-cols-2 gap-3 border-t border-violet-200 pt-4 dark:border-violet-800"><div><dt class="text-2xl font-extrabold text-emerald-600">{formatNumber(dashboard.summary.healthy)}</dt><dd class="mt-1 text-xs text-wg-text-muted">Healthy</dd></div><div><dt class="text-2xl font-extrabold text-red-600">{formatNumber(dashboard.summary.down + dashboard.summary.unknown)}</dt><dd class="mt-1 text-xs text-wg-text-muted">Needs attention</dd></div></dl></section>
                 <section class="wg-glass-panel p-5"><div class="flex items-start justify-between gap-3"><h2 class="text-base font-bold">Open incidents</h2><span class="rounded-full bg-red-50 px-2 py-1 text-xs font-bold text-red-600 dark:bg-red-950 dark:text-red-200">{formatNumber(openIncidents.length)}</span></div><p class="mt-3 text-sm leading-5 text-wg-text-muted">Review current service disruptions and recent incident activity.</p><a class="mt-4 inline-flex text-sm font-bold text-wg-accent no-underline hover:text-wg-accent-strong" href={appRoutes.incidents}>Open incidents →</a></section>
                 <section class="wg-glass-panel p-5"><h2 class="text-base font-bold">Status pages</h2><p class="mt-3 text-sm leading-5 text-wg-text-muted">Publish service availability for your customers and teams.</p><a class="mt-4 inline-flex text-sm font-bold text-wg-accent no-underline hover:text-wg-accent-strong" href={appRoutes.statusPages}>Manage →</a></section>
             </aside>
+            {:else}
+            <aside class="wg-glass-panel p-5 text-sm text-wg-text-muted" aria-label="Operational summary" aria-live="polite">
+                {dashboardLoadFailed ? "Operational summary could not be loaded." : "Loading operational summary…"}
+            </aside>
+            {/if}
         </div>
+    {/if}
     {/if}
 </main>
 

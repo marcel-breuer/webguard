@@ -17,12 +17,15 @@
 
     interface Props {
         data: {
-            dashboard: DashboardResponse;
+            streamed: { dashboard: Promise<DashboardResponse | null> };
             session: FirstPartySession;
         };
     }
 
     let { data }: Props = $props();
+    let dashboardResponse = $state<DashboardResponse | null>(null);
+    const dashboard = $derived(dashboardResponse?.data ?? null);
+    let dashboardLoadFailed = $state(false);
     let serviceQuery = $state("");
     let activeFilter = $state<"all" | "attention" | "maintenance" | "paused">("all");
     let createOpen = $state(false);
@@ -30,12 +33,23 @@
     let createdMonitoring = $state<MonitoringMutationResult | null>(null);
     let createLoading = $state(false);
     let createError = $state("");
-    const dashboard = $derived(data.dashboard.data);
-    const pagination = $derived(data.dashboard.meta.service_pagination);
-    const services = $derived(dashboard.services.filter((service) => matchesService(service, serviceQuery, activeFilter)));
+    const pagination = $derived(dashboardResponse?.meta.service_pagination ?? { current_page: 1, last_page: 1, total: 0, from: null, to: null });
+    const services = $derived(dashboard?.services.filter((service) => matchesService(service, serviceQuery, activeFilter)) ?? []);
     const onboardingVisible = $derived(data.session.user.role === "regular"
         && data.session.user.onboarding.completed_at === null
         && data.session.user.onboarding.dismissed_at === null);
+
+    $effect(() => {
+        let active = true;
+        void data.streamed.dashboard.then((response) => {
+            if (active) {
+                dashboardResponse = response;
+                dashboardLoadFailed = response === null;
+            }
+        });
+
+        return () => { active = false; };
+    });
 
     function matchesService(service: DashboardService, query: string, filter: typeof activeFilter): boolean {
         const normalizedQuery = query.trim().toLocaleLowerCase();
@@ -66,6 +80,7 @@
     }
 
     function healthMessage(): string {
+        if (dashboard === null) return "Loading website health.";
         if (dashboard.summary.down > 0) return "Some websites are down";
         if (dashboard.summary.unknown > 0) return "Some websites need a recent check";
         if (dashboard.summary.healthy > 0) return "All checked websites are working";
@@ -75,6 +90,7 @@
     }
 
     function healthTone(): "healthy" | "degraded" | "danger" | "neutral" {
+        if (dashboard === null) return "neutral";
         if (dashboard.summary.down > 0) return "danger";
         if (dashboard.summary.unknown > 0) return "degraded";
         if (dashboard.summary.healthy > 0) return "healthy";
@@ -83,6 +99,7 @@
     }
 
     function healthBadgeLabel(): string {
+        if (dashboard === null) return "Loading";
         if (dashboard.summary.down > 0) return "Action needed";
         if (dashboard.summary.unknown > 0) return "Needs a check";
         if (dashboard.summary.healthy > 0) return "Working";
@@ -166,13 +183,18 @@
             <h1 class="mt-2 text-[clamp(2rem,6vw,3rem)] leading-[1.1] font-bold">Welcome back, {data.session.user.name}</h1>
             <p class="mt-3 max-w-2xl leading-6 text-wg-text-muted">Check which websites are working, which need attention, and when they were last checked.</p>
         </div>
-        {#if dashboard.capabilities.can_create_monitoring && dashboard.summary.total > 0}
+        {#if dashboard?.capabilities.can_create_monitoring && dashboard.summary.total > 0}
             <Button type="button" loading={createLoading} onclick={openCreateModal}>Add your website</Button>
         {/if}
     </header>
 
     {#if createError}<p class="mb-6 text-sm font-bold text-wg-danger" role="alert">{createError}</p>{/if}
 
+    {#if dashboard === null}
+        <section class="wg-glass-panel p-6 text-sm text-wg-text-muted" role={dashboardLoadFailed ? "alert" : "status"} aria-live="polite">
+            {dashboardLoadFailed ? "Dashboard data could not be loaded. Refresh to try again." : "Loading your website health and recent activity…"}
+        </section>
+    {:else}
     {#if onboardingVisible}
         <FirstRunOnboarding
             onboarding={data.session.user.onboarding}
@@ -301,6 +323,7 @@
             </Card>
 
         </section>
+    {/if}
     {/if}
 </main>
 
