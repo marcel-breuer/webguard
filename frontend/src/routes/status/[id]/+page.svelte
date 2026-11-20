@@ -67,7 +67,7 @@
 
 </script>
 
-<svelte:head><title>{data.name} | WebGuard Status</title><meta name="description" content={data.description ?? `Current status for ${data.name}.`} /></svelte:head>
+<svelte:head><title>{data.name} | WebGuard Status</title><meta name="description" content={data.description ?? `Current status for ${data.name}.`} /><meta name="robots" content={data.kind === "status_page" ? "index, follow" : "noindex, nofollow"} /></svelte:head>
 
 <main class="min-h-screen px-4 py-8 sm:px-6 sm:py-14">
     <div class="mx-auto w-full max-w-5xl">

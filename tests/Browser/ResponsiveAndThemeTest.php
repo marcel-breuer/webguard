@@ -27,6 +27,7 @@ it('renders a public status page without a session', function (): void {
     $page->assertSee('Acme Public Status')
         ->assertSee('Subscribe to updates')
         ->assertSee('Recent incidents')
+        ->assertScript('document.querySelector("meta[name=robots]")?.content', 'index, follow')
         ->assertNoJavaScriptErrors()
         ->assertScript(NO_VISIBLE_HORIZONTAL_OVERFLOW);
 });
