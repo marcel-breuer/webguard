@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Http\Controllers\HeartbeatPingController;
 use App\Http\Controllers\LegacyPublicStatusPageController;
+use App\Http\Controllers\PublicCrawlerPolicyController;
 use App\Http\Controllers\PublicStatusSubscriptionController;
 use App\Http\Controllers\TeamInvitationAcceptController;
 use App\Http\Middleware\RequireExternalApiAbility;
@@ -13,6 +14,8 @@ use App\Support\PublicStatusResourceResolver;
 use Illuminate\Support\Facades\Route;
 
 Route::redirect('/', '/login')->name('home');
+Route::get('/robots.txt', [PublicCrawlerPolicyController::class, 'robots'])->name('public.robots');
+Route::get('/sitemap.xml', [PublicCrawlerPolicyController::class, 'sitemap'])->name('public.sitemap');
 Route::match(['get', 'post'], '/heartbeat/{token}', HeartbeatPingController::class)->name('monitorings.heartbeat.ping');
 Route::permanentRedirect('/api/docs', '/api/reference')->name('api.docs.redirect');
 Route::get('/team-invitations/{token}/accept', TeamInvitationAcceptController::class)

@@ -133,7 +133,7 @@ Optional:
 
 The production Dockerfile uses BuildKit cache mounts for Composer and Bun dependency downloads. Keep BuildKit enabled in Docker, Docker Compose, or your deployment platform so repeated builds can reuse those caches.
 
-The production web container ships a static `robots.txt` that disallows all crawlers. The app also sends an `X-Robots-Tag` header on every response. SEO metadata, sitemap generation, and crawler-facing routes are intentionally not part of the core app; public discovery belongs to the separately deployed marketing website.
+The application keeps crawler access disabled by default. Its dynamic `robots.txt` permits `/status/` and `/sitemap.xml`, blocks subscriber token paths, and advertises the sitemap; the sitemap includes only status pages with `is_public` enabled. Published status pages render server-side with indexable metadata, while legacy monitoring-label pages remain `noindex`. Laravel responses retain the `X-Robots-Tag` no-index policy except for the crawler policy and sitemap routes. Set `APP_URL` to the canonical public URL so the sitemap advertises the correct absolute address.
 
 ```env
 AUTORUN_LARAVEL_SCRIBE_GENERATE=false
