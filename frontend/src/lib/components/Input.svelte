@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { Input as InputPrimitive } from "#lib/components/ui/input/index.ts";
     import { formatLocale } from "#lib/i18n/format.ts";
     import type { HTMLInputAttributes } from "svelte/elements";
 
@@ -11,10 +12,4 @@
     const inputLocale = $derived(lang ?? (localizedInputTypes.has(type ?? "") ? formatLocale() : undefined));
 </script>
 
-<input
-    {...attributes}
-    {type}
-    lang={inputLocale}
-    bind:value
-    class={`min-h-11 w-full wg-glass-control border border-wg-border px-3 py-2 text-sm text-wg-text transition-colors placeholder:text-wg-text-muted focus:border-wg-accent focus:ring-2 focus:ring-wg-focus/40 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-wg-focus disabled:cursor-not-allowed disabled:bg-wg-surface-muted disabled:text-wg-text-muted read-only:bg-wg-surface-muted ${className}`}
-/>
+<InputPrimitive {...attributes} {type} lang={inputLocale} bind:value class={className} />

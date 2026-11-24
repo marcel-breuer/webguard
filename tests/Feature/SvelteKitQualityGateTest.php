@@ -38,11 +38,13 @@ class SvelteKitQualityGateTest extends TestCase
     public function test_shared_checkbox_supports_multiple_values_in_a_bound_group(): void
     {
         $checkbox = file_get_contents(base_path('frontend/src/lib/components/Checkbox.svelte'));
+        $checkboxPrimitive = file_get_contents(base_path('frontend/src/lib/components/ui/checkbox/checkbox.svelte'));
 
         $this->assertIsString($checkbox);
+        $this->assertIsString($checkboxPrimitive);
         $this->assertStringContainsString('function toggleGroup', $checkbox);
         $this->assertStringContainsString('group = input.checked', $checkbox);
-        $this->assertSame(2, mb_substr_count($checkbox, 'rounded-full'));
+        $this->assertSame(1, mb_substr_count($checkboxPrimitive, 'rounded-full'));
         $this->assertStringNotContainsString('bind:group', $checkbox);
     }
 
@@ -183,8 +185,8 @@ class SvelteKitQualityGateTest extends TestCase
         $this->assertStringContainsString('<span class={collapsed ? "sr-only" : ""}>{item.label}</span>', $appShell);
         $this->assertStringContainsString('aria-label={item.label} title={item.label}', $appShell);
         $this->assertStringContainsString('lockBackgroundScroll', $dialog);
-        $this->assertStringContainsString('focusableElements', $dialog);
-        $this->assertStringContainsString('event.key !== "Tab"', $dialog);
+        $this->assertStringContainsString('ui/dialog/index.ts', $dialog);
+        $this->assertStringContainsString('onOpenAutoFocus={focusPanel}', $dialog);
         $this->assertStringContainsString('handleTriggerKeydown', $select);
         $this->assertStringContainsString('handleOptionKeydown', $select);
         $this->assertStringContainsString('aria-label={searchPlaceholder}', $select);
@@ -280,12 +282,14 @@ class SvelteKitQualityGateTest extends TestCase
     {
         $appShell = file_get_contents(base_path('frontend/src/lib/components/AppShell.svelte'));
         $dialog = file_get_contents(base_path('frontend/src/lib/components/Dialog.svelte'));
+        $dialogContent = file_get_contents(base_path('frontend/src/lib/components/ui/dialog/dialog-content.svelte'));
         $dataTable = file_get_contents(base_path('frontend/src/lib/components/DataTable.svelte'));
         $monitoringAnalytics = file_get_contents(base_path('frontend/src/lib/components/MonitoringAnalytics.svelte'));
         $monitoringForm = file_get_contents(base_path('frontend/src/lib/components/MonitoringForm.svelte'));
 
         $this->assertIsString($appShell);
         $this->assertIsString($dialog);
+        $this->assertIsString($dialogContent);
         $this->assertIsString($dataTable);
         $this->assertIsString($monitoringAnalytics);
         $this->assertIsString($monitoringForm);
@@ -293,7 +297,8 @@ class SvelteKitQualityGateTest extends TestCase
         $this->assertStringContainsString('mobileNavigationOpen', $appShell);
         $this->assertStringContainsString('inert={isMobileViewport && !mobileOpen}', $appShell);
         $this->assertStringContainsString('aria-controls="app-navigation"', $appShell);
-        $this->assertStringContainsString('p-2 sm:p-4', $dialog);
+        $this->assertStringContainsString('w-[calc(100%-1rem)]', $dialogContent);
+        $this->assertStringContainsString('sm:w-[calc(100%-2rem)]', $dialogContent);
         $this->assertStringContainsString('p-4 sm:p-6', $dialog);
         $this->assertStringContainsString('overscroll-x-contain', $dataTable);
         $this->assertStringContainsString('[&_table]:min-w-[42rem]', $dataTable);
@@ -307,15 +312,15 @@ class SvelteKitQualityGateTest extends TestCase
 
     public function test_shared_button_variants_define_a_clear_action_hierarchy(): void
     {
-        $button = file_get_contents(base_path('frontend/src/lib/components/Button.svelte'));
+        $button = file_get_contents(base_path('frontend/src/lib/components/ui/button/button.svelte'));
         $adminCrudTable = file_get_contents(base_path('frontend/src/lib/components/AdminCrudTable.svelte'));
         $adminApiPage = file_get_contents(base_path('frontend/src/routes/(app)/admin/api/+page.svelte'));
 
         $this->assertIsString($button);
         $this->assertIsString($adminCrudTable);
         $this->assertIsString($adminApiPage);
-        $this->assertStringContainsString('primary: "border-wg-accent bg-wg-accent', $button);
-        $this->assertStringContainsString('secondary: "border-wg-accent bg-transparent text-wg-accent', $button);
+        $this->assertStringContainsString('default: "border-wg-accent bg-wg-accent', $button);
+        $this->assertStringContainsString('outline: "border-wg-accent bg-transparent text-wg-accent', $button);
         $this->assertStringContainsString('focus-visible:outline-wg-focus', $button);
         $this->assertStringContainsString('<Button type="submit">Apply</Button>', $adminCrudTable);
         $this->assertStringContainsString('<Button type="submit">Apply</Button>', $adminApiPage);

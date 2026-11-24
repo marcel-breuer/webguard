@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { Label } from "#lib/components/ui/label/index.ts";
     import type { Snippet } from "svelte";
 
     interface Props {
@@ -12,7 +13,7 @@
     let { label, hint, error, required = false, children }: Props = $props();
 </script>
 
-<label class="grid gap-[0.45rem] text-wg-text">
+<Label>
     <span class="text-sm leading-5 font-bold">
         {label}
         {#if required}<span aria-hidden="true">*</span>{/if}
@@ -23,4 +24,4 @@
     {:else if hint}
         <span class="text-[0.8125rem] leading-5 text-wg-text-muted">{hint}</span>
     {/if}
-</label>
+</Label>
