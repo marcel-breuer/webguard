@@ -1,4 +1,6 @@
 <script lang="ts">
+    import { Badge } from "#lib/components/ui/badge/index.ts";
+    import { Alert } from "#lib/components/ui/alert/index.ts";
     import { onMount } from "svelte";
     import { FirstPartyApiError } from "#lib/api/client.ts";
     import { formatDateTime, formatNumber, formatPercentage as formatLocalizedPercentage } from "#lib/i18n/format.ts";
@@ -269,7 +271,7 @@
                 <span class="flex size-10 shrink-0 items-center justify-center rounded-xl bg-wg-accent/10" aria-hidden="true"><span class="size-2.5 rounded-full bg-wg-accent ring-4 ring-wg-accent/15"></span></span>
                 <div><p class="text-[0.6875rem] font-extrabold tracking-[0.16em] text-wg-accent uppercase">Live server metrics</p><h2 id="server-health-heading" class="mt-0.5 text-2xl font-extrabold tracking-tight">Server health</h2></div>
             </div>
-            <div class="flex flex-wrap items-center gap-2"><p class="w-fit rounded-full bg-wg-surface-muted px-3 py-1.5 text-sm font-medium text-wg-text-muted">{latest ? `Last report ${timestamp(latest.checked_at)}` : "Waiting for the first server report"}</p><Select width="compact" density="compact" value={String(summaryPeriod)} onchange={changeSummaryPeriod} disabled={summaryLoading} class="font-semibold text-wg-text-muted" aria-label="Server health metrics period"><option value="1">Last 24 hours</option><option value="7">Last 7 days</option><option value="30">Last 30 days</option></Select></div>
+            <div class="flex flex-wrap items-center gap-2"><Badge variant="neutral" class="w-fit rounded-full px-3 py-1.5 text-sm leading-normal font-medium">{latest ? `Last report ${timestamp(latest.checked_at)}` : "Waiting for the first server report"}</Badge><Select width="compact" density="compact" value={String(summaryPeriod)} onchange={changeSummaryPeriod} disabled={summaryLoading} class="font-semibold text-wg-text-muted" aria-label="Server health metrics period"><option value="1">Last 24 hours</option><option value="7">Last 7 days</option><option value="30">Last 30 days</option></Select></div>
         </div>
     </div>
 
@@ -290,5 +292,5 @@
         {#if hasChartData}<div class="h-64 p-4 sm:h-96 sm:p-6" role="img" aria-label="Server CPU RAM storage and load utilization history"><canvas bind:this={canvas}></canvas></div>
         {:else}<p class="p-6 text-sm leading-6 text-wg-text-muted">{historyLoading ? "Loading server-health telemetry…" : "Server-health history will appear after the monitoring collects reports."}</p>{/if}
     </article>
-    {#if error}<p class="mt-3 text-sm font-bold text-wg-danger" role="alert">{error}</p>{/if}
+    {#if error}<Alert variant="destructive" class="mt-3 text-sm font-bold">{error}</Alert>{/if}
 </section>

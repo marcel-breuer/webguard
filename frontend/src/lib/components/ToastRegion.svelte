@@ -1,22 +1,48 @@
 <script lang="ts">
-    import { Button } from "#lib/components/ui/button/index.ts";
-    import { Card } from "#lib/components/ui/card/index.ts";
+    import { onDestroy, untrack } from "svelte";
+    import { toast } from "svelte-sonner";
+    import { Toaster } from "#lib/components/ui/sonner/index.ts";
+    import ToastNotification from "#lib/components/ToastNotification.svelte";
 
     export type ToastTone = "success" | "error" | "info";
     export interface ToastMessage { id: string; tone: ToastTone; message: string; }
     interface Props { items?: ToastMessage[]; onDismiss?: (id: string) => void; }
     let { items = [], onDismiss }: Props = $props();
 
-    const tones: Record<ToastTone, string> = {
-        success: "border-l-green-600",
-        error: "border-l-wg-danger",
-        info: "border-l-wg-accent",
-    };
+    const regionId = $props.id();
+    let displayed = new Map<string, ToastMessage>();
+    const toastId = (id: string) => `${regionId}-${id}`;
+
+    $effect(() => {
+        const next = new Map(items.map((item) => [item.id, { ...item }]));
+
+        untrack(() => {
+            for (const id of displayed.keys()) {
+                if (!next.has(id)) toast.dismiss(toastId(id));
+            }
+
+            for (const item of next.values()) {
+                const previous = displayed.get(item.id);
+                if (previous?.message === item.message && previous.tone === item.tone) continue;
+
+                toast.custom(ToastNotification, {
+                    id: toastId(item.id),
+                    toasterId: regionId,
+                    duration: Infinity,
+                    dismissible: false,
+                    unstyled: true,
+                    componentProps: { item, dismiss: () => onDismiss?.(item.id) },
+                });
+            }
+
+            displayed = next;
+        });
+    });
+
+    onDestroy(() => {
+        for (const id of displayed.keys()) toast.dismiss(toastId(id));
+    });
 </script>
-<section class="fixed right-4 bottom-4 z-40 grid w-[min(24rem,calc(100vw_-_2rem))] gap-3" aria-label="Notifications" aria-live="polite">
-    {#each items as item (item.id)}
-        <Card class={`flex items-center justify-between gap-4 border-l-4 px-4 py-3.5 ${tones[item.tone]}`} role={item.tone === "error" ? "alert" : "status"}>
-            <p class="m-0 text-sm font-semibold">{item.message}</p><Button variant="dismiss" size="dismiss" type="button" aria-label="Dismiss notification" onclick={() => onDismiss?.(item.id)}>×</Button>
-        </Card>
-    {/each}
-</section>
+
+<Toaster id={regionId} containerAriaLabel="Notifications" position="bottom-right" expand
+    visibleToasts={Math.max(1, items.length)} gap={12} offset={16} />

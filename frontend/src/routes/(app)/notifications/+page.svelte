@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { Alert } from "#lib/components/ui/alert/index.ts";
     import { FirstPartyApiError, requestFirstPartyApi } from "#lib/api/client.ts";
     import { formatDateTime, formatNumber } from "#lib/i18n/format.ts";
     import Button from "#lib/components/Button.svelte";
@@ -158,7 +159,7 @@
             <label class="grid gap-2 text-sm font-bold">Event type<Select value={eventType} onchange={(event) => { eventType = event.currentTarget.value; load(true); }}>{#each eventTypes as [value, label]}<option {value}>{label}</option>{/each}</Select></label>
         </div>
 
-        {#if errorMessage}<p class="mt-5 text-sm font-semibold text-wg-danger" role="alert">{errorMessage}</p>{/if}
+        {#if errorMessage}<Alert variant="destructive" class="mt-5 text-sm font-semibold">{errorMessage}</Alert>{/if}
 
         {#if entries.length === 0 && !loading}
             <div class="mt-6"><EmptyState title={showRead ? "No notifications yet" : "No unread notifications"} description={showRead ? "New monitoring events and delivery failures will appear here." : "You're all caught up. Switch to all notifications to review earlier events."} /></div>

@@ -1,4 +1,6 @@
 <script lang="ts">
+    import * as Alert from "#lib/components/ui/alert/index.ts";
+    import * as Card from "#lib/components/ui/card/index.ts";
     import Button from "#lib/components/Button.svelte";
     import Input from "#lib/components/Input.svelte";
     interface FormState {
@@ -18,20 +20,22 @@
 </svelte:head>
 
 <main class="min-h-screen px-4 py-8 sm:px-6 sm:py-14">
-    <section class="mx-auto w-full max-w-lg wg-glass-panel p-6 sm:p-8">
-        <a class="inline-flex size-10 items-center justify-center rounded-xl bg-wg-accent font-black text-wg-accent-contrast no-underline" href="/" aria-label="WebGuard">W</a>
-        <h1 class="mt-5 text-3xl font-bold tracking-tight">Unsubscribe from updates</h1>
-        <p class="mt-3 text-sm leading-6 text-wg-text-muted">Enter the email address that receives these status updates to confirm the removal.</p>
+    <Card.Root as="section" class="mx-auto w-full max-w-lg">
+        <Card.Content class="p-6 sm:p-8">
+            <a class="inline-flex size-10 items-center justify-center rounded-xl bg-wg-accent font-black text-wg-accent-contrast no-underline" href="/" aria-label="WebGuard">W</a>
+            <h1 class="mt-5 text-3xl font-bold tracking-tight">Unsubscribe from updates</h1>
+            <p class="mt-3 text-sm leading-6 text-wg-text-muted">Enter the email address that receives these status updates to confirm the removal.</p>
 
-        <form method="POST" class="mt-6 grid gap-4" novalidate>
-            <div class="grid gap-2">
-                <label class="text-sm font-bold text-wg-text" for="unsubscribe-email">Email address</label>
-                <Input id="unsubscribe-email" name="email" type="email" autocomplete="email" required aria-describedby={form?.error ? "unsubscribe-email-error" : undefined} value={form?.email ?? ""} />
-                {#if form?.error}
-                    <p id="unsubscribe-email-error" class="text-sm font-bold text-wg-danger" role="alert">{form.error}</p>
-                {/if}
-            </div>
-            <Button variant="danger" type="submit">Unsubscribe</Button>
-        </form>
-    </section>
+            <form method="POST" class="mt-6 grid gap-4" novalidate>
+                <div class="grid gap-2">
+                    <label class="text-sm font-bold text-wg-text" for="unsubscribe-email">Email address</label>
+                    <Input id="unsubscribe-email" name="email" type="email" autocomplete="email" required aria-describedby={form?.error ? "unsubscribe-email-error" : undefined} value={form?.email ?? ""} />
+                    {#if form?.error}
+                        <Alert.Root id="unsubscribe-email-error" variant="destructive"><Alert.Description>{form.error}</Alert.Description></Alert.Root>
+                    {/if}
+                </div>
+                <Button variant="danger" type="submit">Unsubscribe</Button>
+            </form>
+        </Card.Content>
+    </Card.Root>
 </main>

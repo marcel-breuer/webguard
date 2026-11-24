@@ -1,4 +1,7 @@
 <script lang="ts">
+    import { Badge } from "#lib/components/ui/badge/index.ts";
+    import * as Tooltip from "#lib/components/ui/tooltip/index.ts";
+    import { Alert } from "#lib/components/ui/alert/index.ts";
     import { page } from "$app/state";
     import { onMount, tick } from "svelte";
     import { FirstPartyApiError, requestFirstPartyApi } from "#lib/api/client.ts";
@@ -375,36 +378,36 @@
         </div>
     {/if}
     {#if calendarMonths.length > 0}
-        <div class="mt-3 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-            {#each calendarMonths as [month, value]}
-                <article class="w-full wg-glass-panel p-6">
-                    <div class="flex items-baseline gap-2"><h3 class="text-lg font-extrabold">{formatMonthYear(new Date(`${month}-01T00:00:00`))}</h3><span class="text-xs font-bold text-wg-text-muted">({value.monthly_average_uptime === null ? "—" : formatPercentage(value.monthly_average_uptime)})</span></div>
-                    <div class="mt-4 grid grid-cols-7 gap-1.5 text-center text-[0.625rem] text-wg-text-muted" aria-hidden="true"><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span></div>
-                    <div class="mt-2 grid grid-cols-7 gap-1.5" aria-label={`Availability for ${month}`}>
-                        {#each calendarOffset(value.days[0]?.date ?? "") as _}
-                            <span class="aspect-square"></span>
-                        {/each}
-                        {#each value.days as day}
-                            <button
-                                class={`group relative aspect-square rounded-[0.2rem] ${uptimeTone(day.uptime_percentage)} focus-visible:z-10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-wg-focus`}
-                                type="button"
-                            >
-                                <span class="sr-only">{calendarDayLabel(day.date)} · {uptimePercentage(day.uptime_percentage)} <span>Uptime</span></span>
-                                <span
-                                    class="pointer-events-none invisible absolute bottom-[calc(100%+0.5rem)] left-1/2 z-20 w-max max-w-48 -translate-x-1/2 rounded-md bg-wg-text px-2.5 py-2 text-center text-xs font-bold leading-5 text-wg-surface opacity-0 shadow-lg transition group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100"
-                                    role="tooltip"
-                                >
-                                    <span class="block text-wg-surface/75">{calendarDayLabel(day.date)}</span>
-                                    <span class="mt-0.5 block text-sm">{uptimePercentage(day.uptime_percentage)} <span>Uptime</span></span>
-                                </span>
-                            </button>
-                        {/each}
-                    </div>
-                </article>
-            {/each}
-        </div>
+        <Tooltip.Provider>
+            <div class="mt-3 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+                {#each calendarMonths as [month, value]}
+                    <article class="w-full wg-glass-panel p-6">
+                        <div class="flex items-baseline gap-2"><h3 class="text-lg font-extrabold">{formatMonthYear(new Date(`${month}-01T00:00:00`))}</h3><span class="text-xs font-bold text-wg-text-muted">({value.monthly_average_uptime === null ? "—" : formatPercentage(value.monthly_average_uptime)})</span></div>
+                        <div class="mt-4 grid grid-cols-7 gap-1.5 text-center text-[0.625rem] text-wg-text-muted" aria-hidden="true"><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span></div>
+                        <div class="mt-2 grid grid-cols-7 gap-1.5" aria-label={`Availability for ${month}`}>
+                            {#each calendarOffset(value.days[0]?.date ?? "") as _}
+                                <span class="aspect-square"></span>
+                            {/each}
+                            {#each value.days as day}
+                                <Tooltip.Root>
+                                    <Tooltip.Trigger
+                                        class={`relative aspect-square rounded-[0.2rem] ${uptimeTone(day.uptime_percentage)} focus-visible:z-10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-wg-focus`}
+                                    >
+                                        <span class="sr-only">{calendarDayLabel(day.date)} · {uptimePercentage(day.uptime_percentage)} <span>Uptime</span></span>
+                                    </Tooltip.Trigger>
+                                    <Tooltip.Content portalProps={{ to: "#localized-app" }} sideOffset={8} class="flex-col gap-0.5 text-center font-bold">
+                                        <span>{calendarDayLabel(day.date)}</span>
+                                        <span class="text-sm">{uptimePercentage(day.uptime_percentage)} <span>Uptime</span></span>
+                                    </Tooltip.Content>
+                                </Tooltip.Root>
+                            {/each}
+                        </div>
+                    </article>
+                {/each}
+            </div>
+        </Tooltip.Provider>
     {:else}<p class="mt-3 text-sm leading-6 text-wg-text-muted">Daily availability will appear after a full monitoring day.</p>{/if}
-    {#if uptimeCalendarError}<p class="mt-3 text-sm font-bold text-wg-danger" role="alert">{uptimeCalendarError}</p>{/if}
+    {#if uptimeCalendarError}<Alert variant="destructive" class="mt-3 text-sm font-bold">{uptimeCalendarError}</Alert>{/if}
     <article class="mt-4 wg-glass-panel px-4 py-4 sm:px-6"><div class="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-xs text-wg-text-muted"><span class="inline-flex items-center gap-2"><span class="size-3 rounded-sm bg-emerald-500"></span>≥ 97.5 %</span><span class="inline-flex items-center gap-2"><span class="size-3 rounded-sm bg-amber-400"></span>≥ 90 % and &lt; 97.5 %</span><span class="inline-flex items-center gap-2"><span class="size-3 rounded-sm bg-red-500"></span>&lt; 90 %</span><span class="inline-flex items-center gap-2"><span class="size-3 rounded-sm bg-wg-surface-muted"></span>N/A</span></div></article>
 </section>
 
@@ -415,7 +418,7 @@
             <div class="h-64 sm:h-96" role="img" aria-label="Response time line chart in milliseconds"><canvas bind:this={responseTimeCanvas}></canvas></div>
         {:else}<p class="text-sm leading-6 text-wg-text-muted">{loadingResponseTimes ? "Loading response-time data…" : "Response-time data will appear after the monitoring collects results."}</p>{/if}
     </article>
-    {#if responseTimesError}<p class="mt-3 text-sm font-bold text-wg-danger" role="alert">{responseTimesError}</p>{/if}
+    {#if responseTimesError}<Alert variant="destructive" class="mt-3 text-sm font-bold">{responseTimesError}</Alert>{/if}
     {#if points.length > 0}<dl class="mt-4 grid gap-4 text-center sm:grid-cols-3"><div class="wg-glass-panel p-5"><dt class="text-sm text-wg-text-muted">Minimum</dt><dd class="mt-1 text-lg font-extrabold">{formatNumber(Math.round(responseTimes.aggregated.min ?? 0))} ms</dd></div><div class="wg-glass-panel p-5"><dt class="text-sm text-wg-text-muted">Average</dt><dd class="mt-1 text-lg font-extrabold">{formatNumber(Math.round(responseTimes.aggregated.avg ?? 0))} ms</dd></div><div class="wg-glass-panel p-5"><dt class="text-sm text-wg-text-muted">Maximum</dt><dd class="mt-1 text-lg font-extrabold">{formatNumber(Math.round(responseTimes.aggregated.max ?? 0))} ms</dd></div></dl>{/if}
 </section>
 
@@ -458,7 +461,7 @@
     {:else}
         <p class="mt-3 text-sm text-wg-text-muted">No incidents recorded in this period.</p>
     {/if}
-    {#if incidentsError}<p class="mt-3 text-sm font-bold text-wg-danger" role="alert">{incidentsError}</p>{/if}
+    {#if incidentsError}<Alert variant="destructive" class="mt-3 text-sm font-bold">{incidentsError}</Alert>{/if}
     {#if currentIncidentsMeta.has_more}<div class="mt-5 flex justify-center"><Button variant="secondary" loading={loadingIncidents} onclick={loadMoreIncidents}>Load more</Button></div>{/if}
 </section>
 
@@ -487,11 +490,11 @@
                     <div class="row-span-3 flex justify-center pt-0.5 sm:row-span-1 sm:pt-0"><span class={`grid size-5 shrink-0 place-items-center rounded-full border ${timelineDotTone(check.status)}`} aria-label={check.status}>{#if check.status === "unknown"}<span class="text-xs font-extrabold" aria-hidden="true">!</span>{:else}<svg class="size-3" viewBox="0 0 16 16" aria-hidden="true"><path fill="currentColor" d={check.status === "up" ? "M6.35 11.15 2.9 7.7l1.05-1.05 2.4 2.4 5.7-5.7L13.1 4.4z" : "m4.05 3 3.95 3.95L11.95 3 13 4.05 9.05 8 13 11.95 11.95 13 8 9.05 4.05 13 3 11.95 6.95 8 3 4.05z"} /></svg>{/if}</span></div>
                     <div class="min-w-0"><p class="text-sm font-extrabold">{timestamp(check.checked_at)}</p><p class="mt-1 text-xs text-wg-text-muted">{check.source === "live" ? "Live" : "Archived"}</p></div>
                     <dl class="col-start-2 mt-0 grid min-w-0 grid-cols-2 gap-x-4 gap-y-3 text-sm sm:col-start-auto sm:grid-cols-3 sm:gap-x-5"><div><dt class="text-[0.625rem] font-extrabold tracking-[0.1em] text-wg-text-muted uppercase">Status code</dt><dd class="mt-1 font-extrabold">{check.http_status_code ?? "—"}</dd></div><div><dt class="text-[0.625rem] font-extrabold tracking-[0.1em] text-wg-text-muted uppercase">Response time</dt><dd class="mt-1 font-extrabold text-sky-700 dark:text-sky-300">{check.response_time === null ? "—" : `${formatNumber(Math.round(check.response_time))} ms`}</dd></div><div><dt class="text-[0.625rem] font-extrabold tracking-[0.1em] text-wg-text-muted uppercase">Raw status</dt><dd class="mt-1 font-extrabold uppercase">{check.status}</dd></div></dl>
-                    <span class={`col-start-2 mt-0 inline-flex w-fit max-w-full items-center justify-self-start whitespace-nowrap rounded-full px-2.5 py-0.5 text-[0.5625rem] leading-none font-extrabold tracking-[0.08em] uppercase sm:col-start-auto sm:justify-self-end ${statusTone(check.status)}`}>{check.status === "up" ? "Successful" : check.status}</span>
+                    <Badge variant="outline" class={`col-start-2 mt-0 inline-flex w-fit max-w-full items-center justify-self-start whitespace-nowrap rounded-full px-2.5 py-0.5 text-[0.5625rem] leading-none font-extrabold tracking-[0.08em] uppercase sm:col-start-auto sm:justify-self-end ${statusTone(check.status)}`}>{check.status === "up" ? "Successful" : check.status}</Badge>
                 </article>
             {/each}
         </div>
-        {#if checksError}<p class="mt-3 text-sm font-bold text-wg-danger" role="alert">{checksError}</p>{/if}
+        {#if checksError}<Alert variant="destructive" class="mt-3 text-sm font-bold">{checksError}</Alert>{/if}
         {#if checksMeta.has_more}<div class="mt-5 flex justify-center"><Button variant="secondary" loading={loadingChecks} onclick={loadMoreChecks}>Load more</Button></div>{/if}
     {:else}<p class="mt-3 text-sm text-wg-text-muted">No checks have been recorded yet.</p>{/if}
 </section>

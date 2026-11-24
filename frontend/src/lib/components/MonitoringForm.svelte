@@ -1,4 +1,7 @@
 <script lang="ts">
+    import { Badge } from "#lib/components/ui/badge/index.ts";
+    import * as Collapsible from "#lib/components/ui/collapsible/index.ts";
+    import { Alert } from "#lib/components/ui/alert/index.ts";
     import { goto } from "$app/navigation";
     import { requestFirstPartyApi, FirstPartyApiError } from "#lib/api/client.ts";
     import type { MonitoringFormOptions, MonitoringMutationResult, MonitoringType } from "#lib/api/monitoring.ts";
@@ -198,55 +201,67 @@
             {@render websiteIntervalField()}
             {#if httpTypes}<p class="-mt-2 text-sm text-wg-text-muted">Your first check runs on the next poll. Later checks follow this interval.</p>{/if}
         </section>
-        <details class="group border-t border-wg-border" bind:open={advancedOpen}>
-            <summary class="flex min-h-12 cursor-pointer list-none items-center justify-between gap-4 py-4 text-base font-bold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-wg-focus [&::-webkit-details-marker]:hidden"><span>Advanced options</span><span class="text-base text-wg-text-muted transition group-open:rotate-180" aria-hidden="true">⌄</span></summary>
-            <div class="grid gap-5 pb-6">
-                <section class="grid gap-4">
-                    <h3 class="text-lg font-bold">Website details</h3>
-                    <Field label="Name" error={errorFor("name")}><Input name="name" placeholder={defaultWebsiteName(firstTarget)} /></Field>
-                    <Field label="Monitoring type" error={errorFor("type")}>
-                        <Select name="type" bind:value={type}>{#each options.types as option}<option value={option}>{option.replaceAll("_", " ")}</option>{/each}</Select>
-                    </Field>
-                    <Field label="Lifecycle" error={errorFor("status")}><Select name="status" value="active"><option value="active">Active</option><option value="paused">Paused</option></Select></Field>
-                </section>
-                <section class="grid gap-4 border-t border-wg-border pt-5">
-                    <h3 class="text-lg font-bold">Check settings</h3>
-                    {@render checkFields()}
-                </section>
-                <section class="grid gap-4 border-t border-wg-border pt-5">
-                    <h3 class="text-lg font-bold">Assignment and alerts</h3>
-                    {@render ownershipFields()}
-                    {@render notificationFields()}
-                </section>
-            </div>
-        </details>
+        <Collapsible.Root class="group border-t border-wg-border" bind:open={advancedOpen}>
+            <Collapsible.Trigger class="flex w-full min-h-12 cursor-pointer items-center justify-between gap-4 py-4 text-base font-bold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-wg-focus"><span>Advanced options</span><span class="text-base text-wg-text-muted transition group-data-[state=open]:rotate-180" aria-hidden="true">⌄</span></Collapsible.Trigger>
+            <Collapsible.Content forceMount class="data-[state=closed]:hidden">
+                <div class="grid gap-5 pb-6">
+                    <section class="grid gap-4">
+                        <h3 class="text-lg font-bold">Website details</h3>
+                        <Field label="Name" error={errorFor("name")}><Input name="name" placeholder={defaultWebsiteName(firstTarget)} /></Field>
+                        <Field label="Monitoring type" error={errorFor("type")}>
+                            <Select name="type" bind:value={type}>{#each options.types as option}<option value={option}>{option.replaceAll("_", " ")}</option>{/each}</Select>
+                        </Field>
+                        <Field label="Lifecycle" error={errorFor("status")}><Select name="status" value="active"><option value="active">Active</option><option value="paused">Paused</option></Select></Field>
+                    </section>
+                    <section class="grid gap-4 border-t border-wg-border pt-5">
+                        <h3 class="text-lg font-bold">Check settings</h3>
+                        {@render checkFields()}
+                    </section>
+                    <section class="grid gap-4 border-t border-wg-border pt-5">
+                        <h3 class="text-lg font-bold">Assignment and alerts</h3>
+                        {@render ownershipFields()}
+                        {@render notificationFields()}
+                    </section>
+                </div>
+            </Collapsible.Content>
+        </Collapsible.Root>
     {:else if presentation === "edit-modal"}
         <section class="grid gap-4 border-b border-wg-border pb-6">
-            {#if monitoring}<p class="text-sm font-bold text-wg-text-muted">Ownership <span class="ml-2 rounded-full bg-violet-50 px-2.5 py-1 text-xs font-extrabold text-wg-accent dark:bg-violet-950/50">{monitoring.ownership.type === "team" ? "Team" : "Private"}</span></p>{/if}
+            {#if monitoring}<p class="text-sm font-bold text-wg-text-muted">Ownership <Badge variant="outline" class="ml-2 rounded-full bg-violet-50 px-2.5 py-1 text-xs font-extrabold text-wg-accent dark:bg-violet-950/50">{monitoring.ownership.type === "team" ? "Team" : "Private"}</Badge></p>{/if}
             <h3 class="text-xl font-bold">Basics</h3>
             {@render basicFields()}
         </section>
 
-        <details class="group border-b border-wg-border">
-            <summary class="flex cursor-pointer list-none items-center justify-between gap-4 py-5 text-xl font-bold [&::-webkit-details-marker]:hidden"><span>Ownership and groups</span><span class="text-base text-wg-text-muted transition group-open:rotate-180">⌄</span></summary>
-            <div class="grid gap-4 pb-6">{@render ownershipFields()}</div>
-        </details>
-        <details class="group border-b border-wg-border">
-            <summary class="flex cursor-pointer list-none items-center justify-between gap-4 py-5 text-xl font-bold [&::-webkit-details-marker]:hidden"><span>Check configuration</span><span class="text-base text-wg-text-muted transition group-open:rotate-180">⌄</span></summary>
-            <div class="grid gap-4 pb-6">{@render checkFields()}</div>
-        </details>
-        <details class="group border-b border-wg-border">
-            <summary class="flex cursor-pointer list-none items-center justify-between gap-4 py-5 text-xl font-bold [&::-webkit-details-marker]:hidden"><span>Public display</span><span class="text-base text-wg-text-muted transition group-open:rotate-180">⌄</span></summary>
-            <div class="pb-6 text-sm leading-6 text-wg-text-muted">Publish this monitoring on a status page from <a class="font-bold text-wg-accent underline underline-offset-2" href="/status-pages">Status pages</a>.</div>
-        </details>
-        <details class="group border-b border-wg-border">
-            <summary class="flex cursor-pointer list-none items-center justify-between gap-4 py-5 text-xl font-bold [&::-webkit-details-marker]:hidden"><span>Notifications</span><span class="text-base text-wg-text-muted transition group-open:rotate-180">⌄</span></summary>
-            <div class="grid gap-4 pb-6">{@render notificationFields()}</div>
-        </details>
-        <details class="group border-b border-wg-border">
-            <summary class="flex cursor-pointer list-none items-center justify-between gap-4 py-5 text-xl font-bold [&::-webkit-details-marker]:hidden"><span>Operations</span><span class="text-base text-wg-text-muted transition group-open:rotate-180">⌄</span></summary>
-            <div class="pb-6 text-sm leading-6 text-wg-text-muted">Operational actions such as pausing or deleting this monitoring remain available from the monitoring details.</div>
-        </details>
+        <Collapsible.Root class="group border-b border-wg-border">
+            <Collapsible.Trigger class="flex w-full cursor-pointer items-center justify-between gap-4 py-5 text-xl font-bold"><span>Ownership and groups</span><span class="text-base text-wg-text-muted transition group-data-[state=open]:rotate-180" aria-hidden="true">⌄</span></Collapsible.Trigger>
+            <Collapsible.Content forceMount class="data-[state=closed]:hidden">
+                <div class="grid gap-4 pb-6">{@render ownershipFields()}</div>
+            </Collapsible.Content>
+        </Collapsible.Root>
+        <Collapsible.Root class="group border-b border-wg-border">
+            <Collapsible.Trigger class="flex w-full cursor-pointer items-center justify-between gap-4 py-5 text-xl font-bold"><span>Check configuration</span><span class="text-base text-wg-text-muted transition group-data-[state=open]:rotate-180" aria-hidden="true">⌄</span></Collapsible.Trigger>
+            <Collapsible.Content forceMount class="data-[state=closed]:hidden">
+                <div class="grid gap-4 pb-6">{@render checkFields()}</div>
+            </Collapsible.Content>
+        </Collapsible.Root>
+        <Collapsible.Root class="group border-b border-wg-border">
+            <Collapsible.Trigger class="flex w-full cursor-pointer items-center justify-between gap-4 py-5 text-xl font-bold"><span>Public display</span><span class="text-base text-wg-text-muted transition group-data-[state=open]:rotate-180" aria-hidden="true">⌄</span></Collapsible.Trigger>
+            <Collapsible.Content forceMount class="data-[state=closed]:hidden">
+                <div class="pb-6 text-sm leading-6 text-wg-text-muted">Publish this monitoring on a status page from <a class="font-bold text-wg-accent underline underline-offset-2" href="/status-pages">Status pages</a>.</div>
+            </Collapsible.Content>
+        </Collapsible.Root>
+        <Collapsible.Root class="group border-b border-wg-border">
+            <Collapsible.Trigger class="flex w-full cursor-pointer items-center justify-between gap-4 py-5 text-xl font-bold"><span>Notifications</span><span class="text-base text-wg-text-muted transition group-data-[state=open]:rotate-180" aria-hidden="true">⌄</span></Collapsible.Trigger>
+            <Collapsible.Content forceMount class="data-[state=closed]:hidden">
+                <div class="grid gap-4 pb-6">{@render notificationFields()}</div>
+            </Collapsible.Content>
+        </Collapsible.Root>
+        <Collapsible.Root class="group border-b border-wg-border">
+            <Collapsible.Trigger class="flex w-full cursor-pointer items-center justify-between gap-4 py-5 text-xl font-bold"><span>Operations</span><span class="text-base text-wg-text-muted transition group-data-[state=open]:rotate-180" aria-hidden="true">⌄</span></Collapsible.Trigger>
+            <Collapsible.Content forceMount class="data-[state=closed]:hidden">
+                <div class="pb-6 text-sm leading-6 text-wg-text-muted">Operational actions such as pausing or deleting this monitoring remain available from the monitoring details.</div>
+            </Collapsible.Content>
+        </Collapsible.Root>
     {:else}
         <section class="grid gap-4">
             <h2 class="text-lg font-bold">Basic configuration</h2>
@@ -263,7 +278,7 @@
         </section>
     {/if}
 
-    {#if message}<p class="text-sm font-bold text-wg-danger" role="alert">{message}</p>{/if}
+    {#if message}<Alert variant="destructive" class="text-sm font-bold">{message}</Alert>{/if}
     <div class={`flex flex-wrap justify-end gap-3 ${presentation === "edit-modal" ? "sticky bottom-0 z-10 -mx-4 -mb-4 border-t wg-glass-bar px-4 py-4 sm:-mx-6 sm:-mb-6 sm:px-6" : ""}`}>
         {#if onCancel}
             <Button variant="secondary" type="button" onclick={onCancel}>Cancel</Button>

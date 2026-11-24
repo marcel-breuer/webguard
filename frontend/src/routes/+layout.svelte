@@ -29,6 +29,6 @@
     <meta name="theme-color" content="#6b21a8" />
 </svelte:head>
 
-<div use:localize={{ locale: data.locale, messages: data.messages }}>
+<div id="localized-app" use:localize={{ locale: data.locale, messages: data.messages }}>
     {@render children()}
 </div>

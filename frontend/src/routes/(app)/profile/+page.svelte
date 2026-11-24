@@ -1,4 +1,7 @@
 <script lang="ts">
+    import { Button as UiButton } from "#lib/components/ui/button/index.ts";
+    import * as Empty from "#lib/components/ui/empty/index.ts";
+    import { Badge } from "#lib/components/ui/badge/index.ts";
     import { untrack } from "svelte";
     import Button from "#lib/components/Button.svelte";
     import Card from "#lib/components/Card.svelte";
@@ -78,11 +81,11 @@
 
         <Card title="API keys" description="Create scoped credentials for supported WebGuard integrations.">
             {#snippet actions()}<Button onclick={() => (createOpen = true)}>Create API key</Button>{/snippet}
-            {#if apiKeys.length === 0}<p class="m-0 text-sm leading-6 text-wg-text-muted">No API keys have been created.</p>{:else}<div class="divide-y divide-wg-border rounded-xl border border-wg-border">{#each apiKeys as apiKey (apiKey.id)}<article class="flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between"><div><p class="m-0 font-bold">{apiKey.name}</p><p class="mt-1 text-sm text-wg-text-muted">{apiKey.abilities.join(", ")} · {dateTime(apiKey.last_used_at)}</p></div>{#if apiKey.revoked_at}<span class="rounded-full bg-wg-surface-muted px-3 py-1 text-xs font-bold text-wg-text-muted">Revoked</span>{:else}<Button variant="danger" onclick={() => (revokeTarget = apiKey)}>Revoke</Button>{/if}</article>{/each}</div>{/if}
+            {#if apiKeys.length === 0}<Empty.Root class="items-start border-0 p-0 text-left"><Empty.Description>No API keys have been created.</Empty.Description></Empty.Root>{:else}<div class="divide-y divide-wg-border rounded-xl border border-wg-border">{#each apiKeys as apiKey (apiKey.id)}<article class="flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between"><div><p class="m-0 font-bold">{apiKey.name}</p><p class="mt-1 text-sm text-wg-text-muted">{apiKey.abilities.join(", ")} · {dateTime(apiKey.last_used_at)}</p></div>{#if apiKey.revoked_at}<Badge variant="secondary">Revoked</Badge>{:else}<Button variant="danger" onclick={() => (revokeTarget = apiKey)}>Revoke</Button>{/if}</article>{/each}</div>{/if}
         </Card>
 
         <Card title="Notification settings" description="Configure alert channels, monitoring digests, and unread-message reminders.">
-            {#snippet actions()}<a class="inline-flex min-h-11 items-center justify-center rounded-xl border border-wg-border bg-wg-surface px-4 py-2.5 text-sm font-bold tracking-[0.035em] text-wg-text no-underline transition-[background-color,border-color,color] duration-150 hover:border-wg-focus hover:bg-wg-surface-muted" href={appRoutes.profileNotifications}>Configure notifications</a>{/snippet}
+            {#snippet actions()}<UiButton variant="ghost" class="border-wg-border bg-wg-surface" href={appRoutes.profileNotifications}>Configure notifications</UiButton>{/snippet}
             <p class="m-0 text-sm leading-6 text-wg-text-muted">Send a test after changing a channel to verify its delivery configuration.</p>
         </Card>
 
