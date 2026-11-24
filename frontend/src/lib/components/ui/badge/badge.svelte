@@ -2,9 +2,14 @@
 	import { type VariantProps, tv } from "tailwind-variants";
 
 	export const badgeVariants = tv({
-		base: "h-5 gap-1 rounded-4xl border border-transparent px-2 py-0.5 text-xs font-medium transition-all has-data-[icon=inline-end]:pr-1.5 has-data-[icon=inline-start]:pl-1.5 [&>svg]:size-3! group/badge inline-flex w-fit shrink-0 items-center justify-center overflow-hidden whitespace-nowrap focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 [&>svg]:pointer-events-none",
+		base: "inline-flex items-center gap-[0.4rem] rounded px-[0.6rem] py-[0.3rem] text-xs leading-none font-semibold",
 		variants: {
 			variant: {
+        healthy: "bg-green-100 text-green-800 dark:bg-green-950 dark:text-green-200",
+        degraded: "bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-200",
+        danger: "bg-red-100 text-red-700 dark:bg-red-950 dark:text-red-200",
+        neutral: "bg-wg-surface-muted text-wg-text-muted",
+        paused: "bg-indigo-100 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-200",
 				default: "bg-primary text-primary-foreground [a]:hover:bg-primary/80",
 				secondary: "bg-secondary text-secondary-foreground [a]:hover:bg-secondary/80",
 				destructive: "bg-destructive/10 [a]:hover:bg-destructive/20 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 text-destructive dark:bg-destructive/20",
@@ -22,7 +27,7 @@
 </script>
 
 <script lang="ts">
-	import { cn, type WithElementRef } from "$lib/utils.js";
+	import { cn, type WithElementRef } from "#lib/utils.ts";
 	import type { HTMLAnchorAttributes } from "svelte/elements";
 
 	let {

@@ -227,6 +227,7 @@ If a command cannot be executed, agents MUST state why.
 
 ## Frontend Rules
 
+- UI is built with the latest shadcn (shadcn-svelte). Use shadcn components for all new and changed UI, add them via the shadcn CLI (`bunx shadcn-svelte@latest add <name>` from `frontend/`), apply the glass look through the theme and variants (`frontend/src/app.css` tokens and `frontend/src/lib/components/ui`), and keep the existing design tokens and colors. Do not introduce another component library or hand-rolled replacements for components shadcn provides.
 - Reuse shared Svelte components in `frontend/src/lib/components` before adding new structures.
 - Use `$unslop` from `.agents/skills/unslop/SKILL.md` for new UI views, UI redesigns, and focused UI reviews. Audit the current UI before proposing changes; preserve existing branding, design tokens, component libraries, reusable components, and these repository rules. When an audited screen is already good, report only evidence-backed issues and avoid speculative redesigns.
 - Keep UI text localized where surrounding views use `resources/lang`.

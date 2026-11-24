@@ -1,4 +1,5 @@
 <script lang="ts">
+    import * as Card from "#lib/components/ui/card/index.ts";
     import type { Snippet } from "svelte";
 
     interface Props {
@@ -12,15 +13,15 @@
     let { title, titleId, description, actions, children }: Props = $props();
 </script>
 
-<section class="overflow-hidden wg-glass-panel">
+<Card.Root as="section">
     {#if title || description || actions}
-        <header class="flex flex-col items-start justify-between gap-4 border-b border-wg-border px-[1.125rem] py-[1.125rem] sm:flex-row sm:px-6 sm:py-5">
+        <Card.Header>
             <div>
-                {#if title}<h2 id={titleId} class="text-lg leading-6 font-bold">{title}</h2>{/if}
-                {#if description}<p class="mt-[0.35rem] text-sm leading-[1.35rem] text-wg-text-muted">{description}</p>{/if}
+                {#if title}<Card.Title id={titleId}>{title}</Card.Title>{/if}
+                {#if description}<Card.Description>{description}</Card.Description>{/if}
             </div>
-            {#if actions}<div class="shrink-0">{@render actions()}</div>{/if}
-        </header>
+            {#if actions}<Card.Action>{@render actions()}</Card.Action>{/if}
+        </Card.Header>
     {/if}
-    <div class="p-[1.125rem] sm:p-6">{@render children?.()}</div>
-</section>
+    <Card.Content>{@render children?.()}</Card.Content>
+</Card.Root>
