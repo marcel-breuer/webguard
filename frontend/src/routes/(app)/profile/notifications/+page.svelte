@@ -1,4 +1,5 @@
 <script lang="ts">
+    import * as Alert from "#lib/components/ui/alert/index.ts";
     import { invalidateAll } from "$app/navigation";
     import { requestFirstPartyApi, FirstPartyApiError } from "#lib/api/client.ts";
     import Button from "#lib/components/Button.svelte";
@@ -95,8 +96,8 @@
                         <div class="mt-4 grid gap-4 sm:grid-cols-[1fr_auto]"><Field label="Webhook URL"><Input name="notification_channels[webhook][url]" type="url" value={data.settings.notification_channels.webhook.url ?? ""} placeholder="https://example.com/webhook" /></Field><Button type="button" variant="secondary" loading={testingChannel === "webhook"} onclick={() => testChannel("webhook")}>Send test</Button></div>
                     </section>
                 </div>
-                {#if testMessage}<p class="mt-4 text-sm font-semibold text-green-700 dark:text-green-300" role="status">{testMessage}</p>{/if}
-                {#if testError}<p class="mt-4 text-sm font-semibold text-wg-danger" role="alert">{testError}</p>{/if}
+                {#if testMessage}<Alert.Root class="mt-4" role="status"><Alert.Description>{testMessage}</Alert.Description></Alert.Root>{/if}
+                {#if testError}<Alert.Root variant="destructive" class="mt-4"><Alert.Description>{testError}</Alert.Description></Alert.Root>{/if}
             </Card>
 
             <Card title="Email summaries" description="Choose the cadence for digest and unread-message reminder emails.">

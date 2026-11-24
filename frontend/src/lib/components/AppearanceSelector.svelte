@@ -1,4 +1,5 @@
 <script lang="ts">
+    import * as DropdownMenu from "#lib/components/ui/dropdown-menu/index.ts";
     import { onMount } from "svelte";
     import { applyAppearanceTheme, storedAppearanceTheme } from "#lib/appearance.ts";
     import { FirstPartyApiError, requestFirstPartyApi } from "#lib/api/client.ts";
@@ -64,37 +65,30 @@
         }
     }
 
-    function handleToggle(event: Event): void {
-        if ((event.currentTarget as HTMLDetailsElement).open) {
-            onOpen?.();
-        }
-    }
 
+    function handleOpenChange(nextOpen: boolean): void {
+        if (nextOpen) onOpen?.();
+    }
 </script>
 
-<details class="relative" name="webguard-preferences" bind:open ontoggle={handleToggle}>
-    <summary class={`grid size-11 cursor-pointer list-none place-items-center rounded-[0.65rem] border [&::-webkit-details-marker]:hidden ${variant === "surface" ? "border-wg-border bg-wg-surface text-wg-text" : "border-purple-700 text-purple-100"}`} aria-label="Appearance" title="Appearance"><NavIcon name="sun" /></summary>
-    <div class={`absolute ${menuPlacement === "below" ? "top-[calc(100%+0.5rem)]" : "bottom-[calc(100%+0.5rem)]"} ${menuAlign === "right" ? "right-0" : "left-0"} z-30 w-48 rounded-xl border border-wg-border wg-glass-panel wg-glass-overlay p-2 shadow-wg-surface`} aria-label="Appearance" aria-busy={saving}>
-        {@render optionsList()}
-    </div>
-</details>
-
-{#snippet optionsList()}
-    <p class="mb-2 px-1 text-sm font-bold text-wg-text">Appearance</p>
-    <div class="grid grid-cols-3 overflow-hidden rounded-xl border border-wg-border">
-        {#each options as option}
-            <button
-                type="button"
-                class={`grid min-h-10 place-items-center border-0 border-r border-wg-border last:border-r-0 disabled:cursor-wait disabled:opacity-65 ${theme === option.value ? "bg-wg-accent text-wg-accent-contrast" : "bg-wg-surface text-wg-text-muted"}`}
-                aria-pressed={theme === option.value}
-                aria-label={`Use ${option.label.toLowerCase()} appearance`}
-                title={option.label}
-                disabled={saving}
-                onclick={() => select(option.value)}
-            >
-                <NavIcon name={option.icon} />
-            </button>
-        {/each}
-    </div>
-    {#if error}<p class="mt-2 text-[0.8125rem] text-wg-danger" role="alert">{error}</p>{/if}
-{/snippet}
+<DropdownMenu.Root bind:open onOpenChange={handleOpenChange}>
+    <DropdownMenu.Trigger class={`grid size-11 place-items-center rounded-[0.65rem] border focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-wg-focus ${variant === "surface" ? "border-wg-border bg-wg-surface text-wg-text" : "border-purple-700 text-purple-100"}`} aria-label="Appearance" title="Appearance">
+        <NavIcon name="sun" />
+    </DropdownMenu.Trigger>
+    <DropdownMenu.Content preventScroll={false} portalProps={{ disabled: true }} align={menuAlign === "right" ? "end" : "start"} side={menuPlacement === "below" ? "bottom" : "top"} sideOffset={8} class="w-48 gap-2 p-2 wg-glass-overlay" aria-label="Appearance" aria-busy={saving}>
+        <DropdownMenu.Label class="px-1 text-sm font-bold text-wg-text">Appearance</DropdownMenu.Label>
+        <DropdownMenu.RadioGroup aria-label="Appearance" class="grid w-full grid-cols-3"
+            bind:value={() => theme, (value) => {
+                const option = options.find((option) => option.value === value);
+                if (option) void select(option.value);
+            }}
+        >
+            {#each options as option (option.value)}
+                <DropdownMenu.RadioItem value={option.value} disabled={saving} class="min-h-10 justify-center px-0 data-[state=checked]:bg-wg-accent data-[state=checked]:text-wg-accent-contrast [&_[data-slot=dropdown-menu-radio-item-indicator]]:hidden" aria-label={`Use ${option.label.toLowerCase()} appearance`} title={option.label}>
+                    <NavIcon name={option.icon} />
+                </DropdownMenu.RadioItem>
+            {/each}
+        </DropdownMenu.RadioGroup>
+        {#if error}<p class="text-[0.8125rem] text-wg-danger" role="alert">{error}</p>{/if}
+    </DropdownMenu.Content>
+</DropdownMenu.Root>

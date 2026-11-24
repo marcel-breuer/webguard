@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { Badge } from "#lib/components/ui/badge/index.ts";
     interface Props {
         locations: Array<{ code: string; name: string }>;
     }
@@ -9,9 +10,11 @@
 {#if locations.length > 0}
     <ul class="m-0 flex flex-wrap gap-2 p-0" aria-label="Monitoring locations">
         {#each locations as location (location.code)}
-            <li class="inline-flex items-center gap-2 rounded-full bg-wg-surface-muted px-2.5 py-1 text-xs font-bold">
-                <span class="size-1.5 rounded-full bg-wg-accent" aria-hidden="true"></span>
-                {location.name}
+            <li>
+                <Badge variant="neutral" class="gap-2 rounded-full px-2.5 py-1 font-bold text-wg-text">
+                    <span class="size-1.5 rounded-full bg-wg-accent" aria-hidden="true"></span>
+                    {location.name}
+                </Badge>
             </li>
         {/each}
     </ul>

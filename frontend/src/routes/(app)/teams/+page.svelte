@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { Button as ActionLink } from "#lib/components/ui/button/index.ts";
     import { formatNumber } from "#lib/i18n/format.ts";
     import Card from "#lib/components/Card.svelte";
     import EmptyState from "#lib/components/EmptyState.svelte";
@@ -46,7 +47,7 @@
                             <dd class="mt-1 text-xl font-extrabold">{formatNumber(team.monitoring_count)}</dd>
                         </div>
                     </dl>
-                    <a class="mt-5 inline-flex text-sm font-bold text-wg-accent no-underline hover:underline" href={`/teams/${team.id}`}>Open workspace →</a>
+                    <ActionLink variant="link" class="mt-5 min-h-0 border-0 p-0 font-bold" href={`/teams/${team.id}`}>Open workspace →</ActionLink>
                 </Card>
             {/each}
         </div>

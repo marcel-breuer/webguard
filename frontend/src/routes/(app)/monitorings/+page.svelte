@@ -1,10 +1,14 @@
 <script lang="ts">
+    import { Badge } from "#lib/components/ui/badge/index.ts";
+    import DataTable from "#lib/components/DataTable.svelte";
+    import * as Table from "#lib/components/ui/table/index.ts";
+    import * as Collapsible from "#lib/components/ui/collapsible/index.ts";
+    import { Alert } from "#lib/components/ui/alert/index.ts";
     import { invalidateAll } from "$app/navigation";
     import { FirstPartyApiError, requestFirstPartyApi } from "#lib/api/client.ts";
     import { appRoutes } from "#lib/routes.ts";
     import { formatDateTime, formatNumber } from "#lib/i18n/format.ts";
     import Button from "#lib/components/Button.svelte";
-    import DataTable from "#lib/components/DataTable.svelte";
     import Dialog from "#lib/components/Dialog.svelte";
     import EmptyState from "#lib/components/EmptyState.svelte";
     import Input from "#lib/components/Input.svelte";
@@ -158,7 +162,7 @@
         {/if}
     </header>
 
-    {#if createError}<p class="mb-5 text-sm font-bold text-wg-danger" role="alert">{createError}</p>{/if}
+    {#if createError}<Alert variant="destructive" class="mb-5 text-sm font-bold">{createError}</Alert>{/if}
 
     {#if monitorings === null}
         <section class="wg-glass-panel p-6 text-sm text-wg-text-muted" role={monitoringsLoadFailed ? "alert" : "status"} aria-live="polite">
@@ -175,17 +179,19 @@
             {/each}
         </div>
         <form class="mt-5 grid gap-3 sm:max-w-md" method="GET"><label class="grid gap-2 text-sm font-semibold"><span class="sr-only">Search monitorings</span><Input name="search" type="search" value={data.filters.search} placeholder="Search by name, target, port or keyword" /></label><input name="lifecycle_status" type="hidden" value={data.filters.lifecycleStatus} /></form>
-        <details class="mt-4 rounded-lg border border-wg-border p-3.5">
-            <summary class="cursor-pointer text-sm font-bold marker:text-wg-text-muted">Advanced filters</summary>
-            <div class="mt-4 grid gap-4">
-                <div class="flex flex-wrap gap-2" aria-label="Monitoring type filters">{#each monitoringTypes as [type, label]}<Button class={`min-h-8 rounded px-2.5 py-1.5 text-xs normal-case ${selectedTypes.includes(type) ? "" : "border-transparent bg-wg-surface-muted text-wg-text hover:bg-wg-surface"}`} variant={selectedTypes.includes(type) ? "primary" : "quiet"} type="button" onclick={() => toggleType(type)}>{label}</Button>{/each}</div>
-                <div class="grid gap-3 sm:grid-cols-2 lg:flex lg:flex-wrap">
-                    <form method="GET"><input name="search" type="hidden" value={data.filters.search} /><label class="grid gap-1 text-xs font-semibold text-wg-text-muted">Lifecycle<Select name="lifecycle_status" value={data.filters.lifecycleStatus} onchange={(event) => event.currentTarget.form?.requestSubmit()}><option value="">All monitorings</option><option value="active">Active</option><option value="paused">Paused</option></Select></label></form>
-                    <label class="grid gap-1 text-xs font-semibold text-wg-text-muted">Group<Select bind:value={selectedGroup}><option value="">All groups</option>{#each groupOptions as group}<option value={group.id}>{group.name}</option>{/each}</Select></label>
-                    <label class="grid gap-1 text-xs font-semibold text-wg-text-muted">Sort<Select bind:value={sortOrder}><option value="name_asc">Name (A–Z)</option><option value="name_desc">Name (Z–A)</option></Select></label>
+        <Collapsible.Root class="mt-4 rounded-lg border border-wg-border p-3.5">
+            <Collapsible.Trigger class="cursor-pointer text-sm font-bold">Advanced filters</Collapsible.Trigger>
+            <Collapsible.Content>
+                <div class="mt-4 grid gap-4">
+                    <div class="flex flex-wrap gap-2" aria-label="Monitoring type filters">{#each monitoringTypes as [type, label]}<Button class={`min-h-8 rounded px-2.5 py-1.5 text-xs normal-case ${selectedTypes.includes(type) ? "" : "border-transparent bg-wg-surface-muted text-wg-text hover:bg-wg-surface"}`} variant={selectedTypes.includes(type) ? "primary" : "quiet"} type="button" onclick={() => toggleType(type)}>{label}</Button>{/each}</div>
+                    <div class="grid gap-3 sm:grid-cols-2 lg:flex lg:flex-wrap">
+                        <form method="GET"><input name="search" type="hidden" value={data.filters.search} /><label class="grid gap-1 text-xs font-semibold text-wg-text-muted">Lifecycle<Select name="lifecycle_status" value={data.filters.lifecycleStatus} onchange={(event) => event.currentTarget.form?.requestSubmit()}><option value="">All monitorings</option><option value="active">Active</option><option value="paused">Paused</option></Select></label></form>
+                        <label class="grid gap-1 text-xs font-semibold text-wg-text-muted">Group<Select bind:value={selectedGroup}><option value="">All groups</option>{#each groupOptions as group}<option value={group.id}>{group.name}</option>{/each}</Select></label>
+                        <label class="grid gap-1 text-xs font-semibold text-wg-text-muted">Sort<Select bind:value={sortOrder}><option value="name_asc">Name (A–Z)</option><option value="name_desc">Name (Z–A)</option></Select></label>
+                    </div>
                 </div>
-            </div>
-        </details>
+            </Collapsible.Content>
+        </Collapsible.Root>
     </section>
 
     {#if monitorings.data.length === 0}
@@ -204,13 +210,13 @@
                     <p class="p-6 text-sm text-wg-text-muted">No monitorings match the selected quick view and filters.</p>
                 {:else}
                     <DataTable caption="Active monitorings">
-                        <thead><tr><th>Name</th><th>Target</th><th>Last 24 hours</th><th>Status</th></tr></thead>
-                        <tbody>{#each visibleMonitorings as monitoring (monitoring.id)}<tr class="transition-colors hover:bg-wg-surface-muted/50">
-                            <td class="!p-0"><a class="block h-full px-4 py-3.5 text-wg-text no-underline focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-wg-focus" href={`/monitorings/${monitoring.id}`} aria-label={`View ${monitoring.name}`}><div class="flex min-w-40 items-center gap-2"><span class={`size-2.5 shrink-0 rounded-full ${statusTone(monitoring) === "healthy" ? "bg-emerald-500" : statusTone(monitoring) === "danger" ? "bg-red-500" : statusTone(monitoring) === "degraded" ? "bg-amber-500" : "bg-wg-text-muted"}`} aria-hidden="true"></span><span class="truncate font-bold transition-colors hover:text-wg-accent">{monitoring.name}</span></div><div class="mt-2 flex flex-wrap items-center gap-2"><span class="rounded bg-wg-surface-muted px-2 py-0.5 text-xs font-semibold text-wg-text-muted">{monitoring.type ?? "Monitoring"}</span>{#if monitoring.groups.length > 0}<span class="max-w-36 truncate text-xs text-wg-text-muted" title={monitoring.groups.map((group) => group.name).join(", ")}>{monitoring.groups.map((group) => group.name).join(", ")}</span>{/if}</div></a></td>
-                            <td class="!p-0"><a class="block h-full px-4 py-3.5 text-wg-text no-underline focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-wg-focus" href={`/monitorings/${monitoring.id}`} aria-label={`View ${monitoring.name}`}><span class="block max-w-52 truncate text-sm" title={monitoring.target}>{monitoring.target}</span><p class="mt-1 text-xs text-wg-text-muted">{checkedAt(monitoring)}</p></a></td>
-                            <td class="!p-0"><a class="block h-full px-4 py-3.5 text-wg-text no-underline focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-wg-focus" href={`/monitorings/${monitoring.id}`} aria-label={`View ${monitoring.name} details`}><div class="flex min-w-36 gap-0.5" aria-label={`24-hour availability for ${monitoring.name}`}>{#each heatmapPoints(monitoring) as point}<span class={`h-6 w-1.5 rounded-sm ${heatmapClass(point)}`} aria-hidden="true"></span>{/each}</div></a></td>
-                            <td class="!p-0"><a class="block h-full px-4 py-3.5 text-wg-text no-underline focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-wg-focus" href={`/monitorings/${monitoring.id}`} aria-label={`View ${monitoring.name} details`}><div class="flex flex-wrap gap-1"><StatusBadge tone={statusTone(monitoring)} label={statusLabel(monitoring)} />{#if monitoring.open_incident}<StatusBadge tone="danger" label="Incident" />{/if}{#if monitoring.maintenance.has_recurring_window}<StatusBadge tone="neutral" label="Maintenance" />{/if}</div></a></td>
-                        </tr>{/each}</tbody>
+                        <Table.Header><Table.Row><Table.Head scope="col">Name</Table.Head><Table.Head scope="col">Target</Table.Head><Table.Head scope="col">Last 24 hours</Table.Head><Table.Head scope="col">Status</Table.Head></Table.Row></Table.Header>
+                        <Table.Body>{#each visibleMonitorings as monitoring (monitoring.id)}<Table.Row class="transition-colors hover:bg-wg-surface-muted/50">
+                            <Table.Cell class="!p-0"><a class="block h-full px-4 py-3.5 text-wg-text no-underline focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-wg-focus" href={`/monitorings/${monitoring.id}`} aria-label={`View ${monitoring.name}`}><div class="flex min-w-40 items-center gap-2"><span class={`size-2.5 shrink-0 rounded-full ${statusTone(monitoring) === "healthy" ? "bg-emerald-500" : statusTone(monitoring) === "danger" ? "bg-red-500" : statusTone(monitoring) === "degraded" ? "bg-amber-500" : "bg-wg-text-muted"}`} aria-hidden="true"></span><span class="truncate font-bold transition-colors hover:text-wg-accent">{monitoring.name}</span></div><div class="mt-2 flex flex-wrap items-center gap-2"><Badge variant="neutral" class="px-2 py-0.5">{monitoring.type ?? "Monitoring"}</Badge>{#if monitoring.groups.length > 0}<span class="max-w-36 truncate text-xs text-wg-text-muted" title={monitoring.groups.map((group) => group.name).join(", ")}>{monitoring.groups.map((group) => group.name).join(", ")}</span>{/if}</div></a></Table.Cell>
+                            <Table.Cell class="!p-0"><a class="block h-full px-4 py-3.5 text-wg-text no-underline focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-wg-focus" href={`/monitorings/${monitoring.id}`} aria-label={`View ${monitoring.name}`}><span class="block max-w-52 truncate text-sm" title={monitoring.target}>{monitoring.target}</span><p class="mt-1 text-xs text-wg-text-muted">{checkedAt(monitoring)}</p></a></Table.Cell>
+                            <Table.Cell class="!p-0"><a class="block h-full px-4 py-3.5 text-wg-text no-underline focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-wg-focus" href={`/monitorings/${monitoring.id}`} aria-label={`View ${monitoring.name} details`}><div class="flex min-w-36 gap-0.5" aria-label={`24-hour availability for ${monitoring.name}`}>{#each heatmapPoints(monitoring) as point}<span class={`h-6 w-1.5 rounded-sm ${heatmapClass(point)}`} aria-hidden="true"></span>{/each}</div></a></Table.Cell>
+                            <Table.Cell class="!p-0"><a class="block h-full px-4 py-3.5 text-wg-text no-underline focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-wg-focus" href={`/monitorings/${monitoring.id}`} aria-label={`View ${monitoring.name} details`}><div class="flex flex-wrap gap-1"><StatusBadge tone={statusTone(monitoring)} label={statusLabel(monitoring)} />{#if monitoring.open_incident}<StatusBadge tone="danger" label="Incident" />{/if}{#if monitoring.maintenance.has_recurring_window}<StatusBadge tone="neutral" label="Maintenance" />{/if}</div></a></Table.Cell>
+                        </Table.Row>{/each}</Table.Body>
                     </DataTable>
                 {/if}
                 <div class="border-t border-wg-border px-5 py-4 sm:px-6"><Pagination page={monitorings.meta.current_page} pages={monitorings.meta.last_page} href={paginationHref} /></div>
@@ -218,7 +224,7 @@
             {#if dashboard}
             <aside class="grid gap-4" aria-label="Operational summary">
                 <section class="wg-glass-panel p-5"><p class="text-xs font-extrabold tracking-[0.12em] text-wg-accent uppercase">All systems</p><h2 class="mt-3 text-lg font-bold">{allSystemsOperational ? "All systems operational" : "Service attention required"}</h2><dl class="mt-5 grid grid-cols-2 gap-3 border-t border-violet-200 pt-4 dark:border-violet-800"><div><dt class="text-2xl font-extrabold text-emerald-600">{formatNumber(dashboard.summary.healthy)}</dt><dd class="mt-1 text-xs text-wg-text-muted">Healthy</dd></div><div><dt class="text-2xl font-extrabold text-red-600">{formatNumber(dashboard.summary.down + dashboard.summary.unknown)}</dt><dd class="mt-1 text-xs text-wg-text-muted">Needs attention</dd></div></dl></section>
-                <section class="wg-glass-panel p-5"><div class="flex items-start justify-between gap-3"><h2 class="text-base font-bold">Open incidents</h2><span class="rounded-full bg-red-50 px-2 py-1 text-xs font-bold text-red-600 dark:bg-red-950 dark:text-red-200">{formatNumber(openIncidents.length)}</span></div><p class="mt-3 text-sm leading-5 text-wg-text-muted">Review current service disruptions and recent incident activity.</p><a class="mt-4 inline-flex text-sm font-bold text-wg-accent no-underline hover:text-wg-accent-strong" href={appRoutes.incidents}>Open incidents →</a></section>
+                <section class="wg-glass-panel p-5"><div class="flex items-start justify-between gap-3"><h2 class="text-base font-bold">Open incidents</h2><Badge variant="danger" class="rounded-full bg-red-50 px-2 py-1 font-bold text-red-600 dark:bg-red-950">{formatNumber(openIncidents.length)}</Badge></div><p class="mt-3 text-sm leading-5 text-wg-text-muted">Review current service disruptions and recent incident activity.</p><a class="mt-4 inline-flex text-sm font-bold text-wg-accent no-underline hover:text-wg-accent-strong" href={appRoutes.incidents}>Open incidents →</a></section>
                 <section class="wg-glass-panel p-5"><h2 class="text-base font-bold">Status pages</h2><p class="mt-3 text-sm leading-5 text-wg-text-muted">Publish service availability for your customers and teams.</p><a class="mt-4 inline-flex text-sm font-bold text-wg-accent no-underline hover:text-wg-accent-strong" href={appRoutes.statusPages}>Manage →</a></section>
             </aside>
             {:else}

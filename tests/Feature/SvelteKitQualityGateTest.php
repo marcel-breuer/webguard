@@ -82,7 +82,7 @@ class SvelteKitQualityGateTest extends TestCase
         $this->assertSame(2, mb_substr_count($monitoringForm, '{@render basicFields()}'));
 
         $quickCreate = mb_strpos($monitoringForm, '{#if presentation === "first-website"');
-        $quickCreateDisclosure = mb_strpos($monitoringForm, '<details class="group border-t', $quickCreate);
+        $quickCreateDisclosure = mb_strpos($monitoringForm, '<Collapsible.Root class="group border-t', $quickCreate);
         $visibleIntervalField = mb_strpos($monitoringForm, '{@render websiteIntervalField()}', $quickCreate);
 
         $this->assertIsInt($quickCreate);
@@ -154,7 +154,8 @@ class SvelteKitQualityGateTest extends TestCase
     public function test_sveltekit_components_use_tailwind_without_scoped_or_inline_styles(): void
     {
         foreach (File::allFiles(base_path('frontend/src')) as $file) {
-            if ($file->getExtension() !== 'svelte') {
+            // Vendored shadcn components in ui/ set runtime CSS variables through style props.
+            if ($file->getExtension() !== 'svelte' || str_contains($file->getPathname(), '/components/ui/')) {
                 continue;
             }
 
@@ -181,14 +182,14 @@ class SvelteKitQualityGateTest extends TestCase
         $this->assertStringContainsString('Skip to main content', $appShell);
         $this->assertStringContainsString('id="main-content"', $appShell);
         $this->assertStringContainsString('aria-current={isActive', $appShell);
-        $this->assertStringContainsString('collapsed ? "justify-center px-0" : "gap-3 px-3"', $appShell);
-        $this->assertStringContainsString('<span class={collapsed ? "sr-only" : ""}>{item.label}</span>', $appShell);
-        $this->assertStringContainsString('aria-label={item.label} title={item.label}', $appShell);
+        $this->assertStringContainsString('compact ? "justify-center px-0" : "gap-3 px-3"', $appShell);
+        $this->assertStringContainsString('<span class={compact ? "sr-only" : ""}>{item.label}</span>', $appShell);
+        $this->assertStringContainsString('tooltipContent={compact ? label : undefined}', $appShell);
         $this->assertStringContainsString('lockBackgroundScroll', $dialog);
         $this->assertStringContainsString('ui/dialog/index.ts', $dialog);
         $this->assertStringContainsString('onOpenAutoFocus={focusPanel}', $dialog);
-        $this->assertStringContainsString('handleTriggerKeydown', $select);
-        $this->assertStringContainsString('handleOptionKeydown', $select);
+        $this->assertStringContainsString('<Popover.Trigger', $select);
+        $this->assertStringContainsString('<Command.Item', $select);
         $this->assertStringContainsString('aria-label={searchPlaceholder}', $select);
     }
 
@@ -332,9 +333,9 @@ class SvelteKitQualityGateTest extends TestCase
 
         $this->assertIsString($monitoringAnalytics);
         $this->assertStringContainsString('function uptimePercentage', $monitoringAnalytics);
-        $this->assertStringContainsString('role="tooltip"', $monitoringAnalytics);
-        $this->assertStringContainsString('group-hover:opacity-100', $monitoringAnalytics);
-        $this->assertStringContainsString('group-focus-visible:opacity-100', $monitoringAnalytics);
+        $this->assertStringContainsString('<Tooltip.Provider>', $monitoringAnalytics);
+        $this->assertStringContainsString('<Tooltip.Trigger', $monitoringAnalytics);
+        $this->assertStringContainsString('<Tooltip.Content', $monitoringAnalytics);
         $this->assertStringContainsString('focus-visible:outline-wg-focus', $monitoringAnalytics);
         $this->assertStringContainsString('<span>Uptime</span>', $monitoringAnalytics);
         $this->assertStringContainsString('return formatDateTime(value, "—",', $monitoringAnalytics);
@@ -344,7 +345,7 @@ class SvelteKitQualityGateTest extends TestCase
         $this->assertStringContainsString('oldest_available_month', $monitoringAnalytics);
     }
 
-    public function test_preference_menus_close_each_other_from_the_details_open_state(): void
+    public function test_preference_menus_notify_their_parent_when_opened(): void
     {
         $appearanceSelector = file_get_contents(base_path('frontend/src/lib/components/AppearanceSelector.svelte'));
         $localeSelector = file_get_contents(base_path('frontend/src/lib/components/LocaleSelector.svelte'));
@@ -355,12 +356,10 @@ class SvelteKitQualityGateTest extends TestCase
         $this->assertIsString($localeSelector);
         $this->assertIsString($monitoringDetail);
         $this->assertIsString($localize);
-        $this->assertStringContainsString('function handleToggle(event: Event): void', $appearanceSelector);
-        $this->assertStringContainsString('function handleToggle(event: Event): void', $localeSelector);
-        $this->assertStringContainsString('name="webguard-preferences"', $appearanceSelector);
-        $this->assertStringContainsString('name="webguard-preferences"', $localeSelector);
-        $this->assertStringContainsString('(event.currentTarget as HTMLDetailsElement).open', $appearanceSelector);
-        $this->assertStringContainsString('(event.currentTarget as HTMLDetailsElement).open', $localeSelector);
+        $this->assertStringContainsString('bind:open onOpenChange={handleOpenChange}', $appearanceSelector);
+        $this->assertStringContainsString('bind:open onOpenChange={handleOpenChange}', $localeSelector);
+        $this->assertStringContainsString('if (nextOpen) onOpen?.();', $appearanceSelector);
+        $this->assertStringContainsString('if (nextOpen) onOpen?.();', $localeSelector);
         $this->assertStringContainsString('function translateDynamic(value: string, messages: TranslationMessages): string | undefined', $localize);
         $this->assertStringContainsString('Checked every ([\\d.,\\u00a0\\u202f]+) (minutes|seconds)', $localize);
         $this->assertStringContainsString('The first monitoring results can take up to ([\\d.,\\u00a0\\u202f]+) minutes', $localize);
@@ -382,9 +381,9 @@ class SvelteKitQualityGateTest extends TestCase
         $this->assertIsString($localeSelector);
         $this->assertStringContainsString('<AppearanceSelector endpoint={null} menuAlign="right" menuPlacement="below" variant="surface" />', $statusPage);
         $this->assertStringContainsString('<LocaleSelector initialLocale={data.locale} endpoint={null} menuAlign="right" menuPlacement="below" variant="surface" />', $statusPage);
-        $this->assertStringContainsString('group-hover:visible group-hover:opacity-100', $statusPage);
-        $this->assertStringContainsString('group-focus-visible:visible group-focus-visible:opacity-100', $statusPage);
-        $this->assertStringContainsString('role="tooltip"', $statusPage);
+        $this->assertStringContainsString('<Tooltip.Trigger type="button"', $statusPage);
+        $this->assertStringContainsString('focus-visible:outline-wg-focus', $statusPage);
+        $this->assertStringContainsString('<Tooltip.Content sideOffset={8}', $statusPage);
         $this->assertStringContainsString('return formatDateTime(value, "Not recorded",', $statusPage);
         $this->assertStringNotContainsString('${value}T12:00:00', $statusPage);
         $this->assertStringContainsString('document.cookie = `webguard_locale=', $localeSelector);

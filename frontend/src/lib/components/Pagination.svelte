@@ -1,8 +1,29 @@
 <script lang="ts">
+    import { Button } from "#lib/components/ui/button/index.ts";
+    import * as Pagination from "#lib/components/ui/pagination/index.ts";
     import { formatNumber } from "#lib/i18n/format.ts";
 
     interface Props { page: number; pages: number; href: (page: number) => string; }
     let { page, pages, href }: Props = $props();
-    const adjacent = $derived(Array.from({ length: Math.max(0, Math.min(pages, 5)) }, (_, index) => Math.min(Math.max(1, page - 2) + index, pages)));
+    const firstPage = $derived(Math.min(Math.max(1, page - 2), Math.max(1, pages - 4)));
+    const adjacent = $derived(Array.from({ length: Math.min(pages, 5) }, (_, index) => firstPage + index));
+    const linkClass = "min-h-10 min-w-10 rounded-lg px-3 py-2 no-underline";
 </script>
-{#if pages > 1}<nav class="flex flex-wrap gap-2" aria-label="Pagination">{#if page === 1}<span class="inline-flex min-h-10 min-w-10 items-center justify-center rounded-lg border border-wg-border px-3 py-[0.55rem] text-center text-sm font-semibold text-wg-text opacity-45" aria-disabled="true">Previous</span>{:else}<a class="inline-flex min-h-10 min-w-10 items-center justify-center rounded-lg border border-wg-border px-3 py-[0.55rem] text-center text-sm font-semibold text-wg-text no-underline" href={href(page - 1)}>Previous</a>{/if}{#each adjacent as current}<a class={`inline-flex min-h-10 min-w-10 items-center justify-center rounded-lg border px-3 py-[0.55rem] text-center text-sm font-semibold no-underline ${current === page ? "border-wg-accent bg-wg-accent text-wg-accent-contrast" : "border-wg-border text-wg-text"}`} aria-current={current === page ? "page" : undefined} href={href(current)}>{formatNumber(current)}</a>{/each}{#if page === pages}<span class="inline-flex min-h-10 min-w-10 items-center justify-center rounded-lg border border-wg-border px-3 py-[0.55rem] text-center text-sm font-semibold text-wg-text opacity-45" aria-disabled="true">Next</span>{:else}<a class="inline-flex min-h-10 min-w-10 items-center justify-center rounded-lg border border-wg-border px-3 py-[0.55rem] text-center text-sm font-semibold text-wg-text no-underline" href={href(page + 1)}>Next</a>{/if}</nav>{/if}
+
+{#if pages > 1}
+    <nav aria-label="Pagination">
+        <Pagination.Content class="flex-wrap gap-2">
+            <Pagination.Item>
+                <Button href={page > 1 ? href(page - 1) : undefined} disabled={page <= 1} variant="ghost" class={`${linkClass} border-wg-border`}>Previous</Button>
+            </Pagination.Item>
+            {#each adjacent as current (current)}
+                <Pagination.Item>
+                    <Button href={href(current)} variant={current === page ? "default" : "ghost"} class={`${linkClass} ${current === page ? "" : "border-wg-border"}`} aria-current={current === page ? "page" : undefined}>{formatNumber(current)}</Button>
+                </Pagination.Item>
+            {/each}
+            <Pagination.Item>
+                <Button href={page < pages ? href(page + 1) : undefined} disabled={page >= pages} variant="ghost" class={`${linkClass} border-wg-border`}>Next</Button>
+            </Pagination.Item>
+        </Pagination.Content>
+    </nav>
+{/if}

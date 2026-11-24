@@ -1,4 +1,6 @@
 <script lang="ts">
+    import { FieldDescription, FieldLegend, FieldSet } from "#lib/components/ui/field/index.ts";
+    import { Alert } from "#lib/components/ui/alert/index.ts";
     import { FirstPartyApiError, requestFirstPartyApi } from "#lib/api/client.ts";
     import type { StatusPage, StatusPageMonitoring, StatusPageMonitoringGroup } from "#lib/api/status-pages.ts";
     import Button from "#lib/components/Button.svelte";
@@ -93,14 +95,15 @@
 <form class="grid gap-6" onsubmit={submit} novalidate>
     <div class="grid gap-5 sm:grid-cols-2">
         <Field label="Name" error={errorFor("name")} required><Input name="name" value={statusPage?.name ?? ""} required /></Field>
-        <Field label="Visibility" hint="Published pages are available at their public status URL."><Input name="is_public" type="hidden" value="0" /><label class="flex min-h-11 items-center gap-3 rounded-md border border-wg-border px-3 text-sm font-bold"><Checkbox name="is_public" value="1" checked={statusPage?.publication.is_public ?? true} /> Publish this status page</label></Field>
+        <FieldSet class="gap-0"><FieldLegend variant="label" class="font-bold">Visibility</FieldLegend><Input name="is_public" type="hidden" value="0" /><label class="flex min-h-11 items-center gap-3 rounded-md border border-wg-border px-3 text-sm font-bold"><Checkbox name="is_public" value="1" checked={statusPage?.publication.is_public ?? true} /> Publish this status page</label><FieldDescription class="mt-1 text-[0.8125rem] leading-5">Published pages are available at their public status URL.</FieldDescription></FieldSet>
     </div>
     <Field label="Description" error={errorFor("description")}><Textarea name="description" value={statusPage?.description ?? ""} /></Field>
 
-    <Field label="Incident communication" hint="Publish neutral investigating and resolved updates when an incident affects a component on this public page."><input name="auto_publish_incident_updates" type="hidden" value="0" /><label class="flex min-h-11 items-center gap-3 rounded-md border border-wg-border px-3 text-sm font-bold"><Checkbox name="auto_publish_incident_updates" value="1" checked={statusPage?.auto_publish_incident_updates ?? false} /> Automatically publish incident updates</label></Field>
+    <FieldSet class="gap-0"><FieldLegend variant="label" class="font-bold">Incident communication</FieldLegend><input name="auto_publish_incident_updates" type="hidden" value="0" /><label class="flex min-h-11 items-center gap-3 rounded-md border border-wg-border px-3 text-sm font-bold"><Checkbox name="auto_publish_incident_updates" value="1" checked={statusPage?.auto_publish_incident_updates ?? false} /> Automatically publish incident updates</label><FieldDescription class="mt-1 text-[0.8125rem] leading-5">Publish neutral investigating and resolved updates when an incident affects a component on this public page.</FieldDescription></FieldSet>
 
-    <fieldset class="grid gap-4 border-t border-wg-border pt-6">
-        <div class="flex flex-wrap items-end justify-between gap-3"><div><legend class="text-xl font-bold">Components</legend><p class="mt-1 text-sm leading-5 text-wg-text-muted">Each component can show selected monitorings or keep its monitoring-group source.</p></div><Button type="button" variant="secondary" onclick={() => components.push(emptyComponent())}>Add component</Button></div>
+    <FieldSet class="grid gap-4 border-t border-wg-border pt-6">
+        <FieldLegend class="text-xl font-bold">Components</FieldLegend>
+        <div class="flex flex-wrap items-end justify-between gap-3"><div><p class="mt-1 text-sm leading-5 text-wg-text-muted">Each component can show selected monitorings or keep its monitoring-group source.</p></div><Button type="button" variant="secondary" onclick={() => components.push(emptyComponent())}>Add component</Button></div>
         {#each components as component, index (component.id ?? index)}
             <section class="grid gap-4 border-b border-wg-border pb-5 last:border-b-0">
                 <Field label="Source"><Select name={`components[${index}][source_type]`} bind:value={component.sourceType} onchange={() => { component.monitoringGroupId = ""; component.monitoringIds = []; }}><option value="manual">Individual monitorings</option><option value="monitoring_group">Monitoring group</option></Select></Field>
@@ -109,8 +112,8 @@
                 <Field label="Component description" error={errorFor(`components.${index}.description`)}><Textarea class="min-h-20" name={`components[${index}][description]`} bind:value={component.description} /></Field>
             </section>
         {/each}
-        {#if errorFor("components")}<p class="text-sm font-bold text-wg-danger" role="alert">{errorFor("components")}</p>{/if}
-    </fieldset>
-    {#if error}<p class="text-sm font-bold text-wg-danger" role="alert">{error}</p>{/if}
+        {#if errorFor("components")}<Alert variant="destructive" class="text-sm font-bold">{errorFor("components")}</Alert>{/if}
+    </FieldSet>
+    {#if error}<Alert variant="destructive" class="text-sm font-bold">{error}</Alert>{/if}
     <Button type="submit" loading={submitting}>{statusPage ? "Save status page" : "Create status page"}</Button>
 </form>

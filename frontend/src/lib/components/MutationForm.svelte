@@ -1,4 +1,5 @@
 <script lang="ts" generics="T">
+    import { Alert } from "#lib/components/ui/alert/index.ts";
     import { FirstPartyApiError, requestFirstPartyApi } from "#lib/api/client.ts";
     import Button from "#lib/components/Button.svelte";
     import type { Snippet } from "svelte";
@@ -71,12 +72,13 @@
     {@render children?.()}
 
     {#if message}
-        <p
-            class={`m-0 text-sm font-semibold ${Object.keys(errors).length > 0 ? "text-wg-danger" : "text-green-700 dark:text-green-300"}`}
+        <Alert
+            variant={Object.keys(errors).length > 0 ? "destructive" : "default"}
+            class={Object.keys(errors).length > 0 ? "font-semibold" : "font-semibold text-green-700 dark:text-green-300"}
             role={Object.keys(errors).length > 0 ? "alert" : "status"}
         >
             {message}
-        </p>
+        </Alert>
         {#if sessionRecovery}<a class="text-sm font-bold text-wg-accent no-underline hover:underline" href="/login?expired=1">Sign in again</a>{/if}
     {/if}
 

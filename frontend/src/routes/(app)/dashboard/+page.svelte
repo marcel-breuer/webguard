@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { Alert } from "#lib/components/ui/alert/index.ts";
     import { goto, invalidateAll } from "$app/navigation";
     import { FirstPartyApiError, requestFirstPartyApi } from "#lib/api/client.ts";
     import { appRoutes } from "#lib/routes.ts";
@@ -188,7 +189,7 @@
         {/if}
     </header>
 
-    {#if createError}<p class="mb-6 text-sm font-bold text-wg-danger" role="alert">{createError}</p>{/if}
+    {#if createError}<Alert variant="destructive" class="mb-6 text-sm font-bold">{createError}</Alert>{/if}
 
     {#if dashboard === null}
         <section class="wg-glass-panel p-6 text-sm text-wg-text-muted" role={dashboardLoadFailed ? "alert" : "status"} aria-live="polite">

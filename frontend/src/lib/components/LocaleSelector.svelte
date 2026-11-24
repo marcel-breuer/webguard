@@ -1,4 +1,5 @@
 <script lang="ts">
+    import * as DropdownMenu from "#lib/components/ui/dropdown-menu/index.ts";
     import { FirstPartyApiError, requestFirstPartyApi } from "#lib/api/client.ts";
     import NavIcon from "#lib/components/NavIcon.svelte";
 
@@ -52,33 +53,27 @@
         }
     }
 
-    function handleToggle(event: Event): void {
-        if ((event.currentTarget as HTMLDetailsElement).open) {
-            onOpen?.();
-        }
-    }
 
+    function handleOpenChange(nextOpen: boolean): void {
+        if (nextOpen) onOpen?.();
+    }
 </script>
 
-<details class="relative" name="webguard-preferences" bind:open ontoggle={handleToggle}>
-    <summary class={`grid size-11 cursor-pointer list-none place-items-center rounded-[0.65rem] border [&::-webkit-details-marker]:hidden ${variant === "surface" ? "border-wg-border bg-wg-surface text-wg-text" : "border-purple-700 text-purple-100"}`} aria-label="Language" title="Language">
+<DropdownMenu.Root bind:open onOpenChange={handleOpenChange}>
+    <DropdownMenu.Trigger class={`grid size-11 place-items-center rounded-[0.65rem] border focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-wg-focus ${variant === "surface" ? "border-wg-border bg-wg-surface text-wg-text" : "border-purple-700 text-purple-100"}`} aria-label="Language" title="Language">
         <NavIcon name="globe" />
-    </summary>
-    <div class={`absolute ${menuPlacement === "below" ? "top-[calc(100%+0.5rem)]" : "bottom-[calc(100%+0.5rem)]"} ${menuAlign === "right" ? "right-0" : "left-0"} z-30 w-48 rounded-xl border border-wg-border wg-glass-panel wg-glass-overlay p-2 shadow-wg-surface`} aria-label="Language" aria-busy={saving}>
-        <p class="mb-2 px-1 text-sm font-bold text-wg-text">Language</p>
-        <div class="grid gap-1">
-            {#each options as option}
-                <button
-                    type="button"
-                    class={`flex min-h-10 items-center justify-between rounded-lg border-0 px-3 text-left text-sm font-bold disabled:cursor-wait disabled:opacity-65 ${locale === option.value ? "bg-wg-accent text-wg-accent-contrast" : "bg-transparent text-wg-text hover:bg-wg-surface-muted"}`}
-                    aria-pressed={locale === option.value}
-                    disabled={saving}
-                    onclick={() => select(option.value)}
-                >
+    </DropdownMenu.Trigger>
+    <DropdownMenu.Content preventScroll={false} portalProps={{ disabled: true }} align={menuAlign === "right" ? "end" : "start"} side={menuPlacement === "below" ? "bottom" : "top"} sideOffset={8} class="w-48 gap-2 p-2 wg-glass-overlay" aria-label="Language" aria-busy={saving}>
+        <DropdownMenu.Label class="px-1 text-sm font-bold text-wg-text">Language</DropdownMenu.Label>
+        <DropdownMenu.RadioGroup aria-label="Language" class="grid w-full gap-1"
+            bind:value={() => locale, (value) => { if (value) void select(value); }}
+        >
+            {#each options as option (option.value)}
+                <DropdownMenu.RadioItem value={option.value} disabled={saving} class="min-h-10 justify-between px-3 font-bold data-[state=checked]:bg-wg-accent data-[state=checked]:text-wg-accent-contrast [&_[data-slot=dropdown-menu-radio-item-indicator]]:hidden">
                     <span>{option.label}</span><span class="text-xs font-extrabold tracking-[0.08em]">{option.shortLabel}</span>
-                </button>
+                </DropdownMenu.RadioItem>
             {/each}
-        </div>
-        {#if error}<p class="mt-2 text-[0.8125rem] text-wg-danger" role="alert">{error}</p>{/if}
-    </div>
-</details>
+        </DropdownMenu.RadioGroup>
+        {#if error}<p class="text-[0.8125rem] text-wg-danger" role="alert">{error}</p>{/if}
+    </DropdownMenu.Content>
+</DropdownMenu.Root>

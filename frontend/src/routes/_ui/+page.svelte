@@ -1,4 +1,6 @@
 <script lang="ts">
+    import { dev } from "$app/env";
+    import * as Table from "#lib/components/ui/table/index.ts";
     import Button from "#lib/components/Button.svelte";
     import Checkbox from "#lib/components/Checkbox.svelte";
     import Dialog from "#lib/components/Dialog.svelte";
@@ -45,6 +47,7 @@
     <title>WebGuard UI preview</title>
 </svelte:head>
 
+{#if dev}
 <AppShell session={previewSession} currentPath="/dashboard">
 <div class="mx-auto w-[min(70rem,calc(100%_-_2rem))] py-6 sm:py-12">
     <header class="mb-10 max-w-2xl">
@@ -92,8 +95,8 @@
     <Card title="Monitoring overview" description="Shared content patterns used by migrated feature pages.">
         {#snippet actions()}<StatusBadge tone="healthy" label="Operational" />{/snippet}
         <DataTable caption="Recent monitorings">
-            <thead><tr><th>Name</th><th>Status</th></tr></thead>
-            <tbody><tr><td>API gateway</td><td><StatusBadge tone="healthy" label="Up" /></td></tr></tbody>
+            <Table.Header><Table.Row><Table.Head>Name</Table.Head><Table.Head>Status</Table.Head></Table.Row></Table.Header>
+            <Table.Body><Table.Row><Table.Cell>API gateway</Table.Cell><Table.Cell><StatusBadge tone="healthy" label="Up" /></Table.Cell></Table.Row></Table.Body>
         </DataTable>
         <div class="mt-4"><Pagination page={2} pages={4} href={(page) => `?page=${page}`} /></div>
     </Card>
@@ -113,3 +116,4 @@
 </AppShell>
 
 <ToastRegion items={toastItems} onDismiss={(id) => (toastItems = toastItems.filter((item) => item.id !== id))} />
+{/if}

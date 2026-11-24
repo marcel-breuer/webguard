@@ -1,4 +1,6 @@
 <script lang="ts">
+    import { FieldGroup } from "#lib/components/ui/field/index.ts";
+    import * as Alert from "#lib/components/ui/alert/index.ts";
     import { FirstPartyApiError, requestFirstPartyApi } from "#lib/api/client.ts";
     import type { AuthOptions } from "#lib/server/auth.ts";
     import Button from "#lib/components/Button.svelte";
@@ -123,24 +125,28 @@
     </div>
 
     {#if message}
-        <p class={`mb-5 text-sm font-semibold ${Object.keys(errors).length > 0 ? "text-wg-danger" : "text-green-700 dark:text-green-300"}`} role={Object.keys(errors).length > 0 ? "alert" : "status"}>{message}</p>
+        <Alert.Root class="mb-5" variant={Object.keys(errors).length > 0 ? "destructive" : "default"} role={Object.keys(errors).length > 0 ? "alert" : "status"}>
+            <Alert.Description>{message}</Alert.Description>
+        </Alert.Root>
     {/if}
 
-    <form class="grid gap-5" onsubmit={submit} novalidate>
-        {#if mode === "register"}
-            <Field label="Name" required error={errorFor("name")}><Input name="name" autocomplete="name" required /></Field>
-        {/if}
-        <Field label="Email" required error={errorFor("email")}><Input name="email" type="email" autocomplete={mode === "register" ? "username" : "email"} bind:value={email} required /></Field>
-        <Field label="Password" required error={errorFor("password")}><Input name="password" type="password" autocomplete={mode === "register" ? "new-password" : "current-password"} bind:value={password} required /></Field>
-        {#if mode === "login" || mode === "demo"}
-            <label class="flex items-center gap-2 text-sm text-wg-text-muted"><Checkbox name="remember" value="1" /> Keep me signed in</label>
-            <a class="text-sm font-bold text-wg-accent no-underline hover:underline" href="/forgot-password">Forgot your password?</a>
-        {:else}
-            <Field label="Confirm password" required error={errorFor("password_confirmation")}><Input name="password_confirmation" type="password" autocomplete="new-password" required /></Field>
-            <label class="flex items-start gap-3 text-sm leading-6 text-wg-text-muted"><Checkbox class="mt-1" name="terms" value="1" required /><span>I agree to the <a class="font-bold text-wg-accent" href={options.terms_url} target="_blank" rel="noopener">terms of use</a> and <a class="font-bold text-wg-accent" href={options.privacy_url} target="_blank" rel="noopener">privacy policy</a>.</span></label>
-            <Field label="Security check" required error={errorFor("captcha")}><div class="flex flex-col gap-3 sm:flex-row sm:items-center"><img class="h-[54px] w-[220px] rounded-md border border-wg-border object-cover" src={captchaUrl} alt="Security check" /><Button type="button" variant="secondary" onclick={() => (captchaNonce = Date.now())}>Reload</Button></div><Input name="captcha" autocomplete="off" inputmode="text" required /></Field>
-        {/if}
-        <Button type="submit" loading={submitting}>{mode === "register" ? "Create account" : "Sign in"}</Button>
+    <form onsubmit={submit} novalidate>
+        <FieldGroup class="grid gap-5">
+            {#if mode === "register"}
+                <Field label="Name" required error={errorFor("name")}><Input name="name" autocomplete="name" required /></Field>
+            {/if}
+            <Field label="Email" required error={errorFor("email")}><Input name="email" type="email" autocomplete={mode === "register" ? "username" : "email"} bind:value={email} required /></Field>
+            <Field label="Password" required error={errorFor("password")}><Input name="password" type="password" autocomplete={mode === "register" ? "new-password" : "current-password"} bind:value={password} required /></Field>
+            {#if mode === "login" || mode === "demo"}
+                <label class="flex items-center gap-2 text-sm text-wg-text-muted"><Checkbox name="remember" value="1" /> Keep me signed in</label>
+                <a class="text-sm font-bold text-wg-accent no-underline hover:underline" href="/forgot-password">Forgot your password?</a>
+            {:else}
+                <Field label="Confirm password" required error={errorFor("password_confirmation")}><Input name="password_confirmation" type="password" autocomplete="new-password" required /></Field>
+                <label class="flex items-start gap-3 text-sm leading-6 text-wg-text-muted"><Checkbox class="mt-1" name="terms" value="1" required /><span>I agree to the <a class="font-bold text-wg-accent" href={options.terms_url} target="_blank" rel="noopener">terms of use</a> and <a class="font-bold text-wg-accent" href={options.privacy_url} target="_blank" rel="noopener">privacy policy</a>.</span></label>
+                <Field label="Security check" required error={errorFor("captcha")}><div class="flex flex-col gap-3 sm:flex-row sm:items-center"><img class="h-[54px] w-[220px] rounded-md border border-wg-border object-cover" src={captchaUrl} alt="Security check" /><Button type="button" variant="secondary" onclick={() => (captchaNonce = Date.now())}>Reload</Button></div><Input name="captcha" autocomplete="off" inputmode="text" required /></Field>
+            {/if}
+            <Button type="submit" loading={submitting}>{mode === "register" ? "Create account" : "Sign in"}</Button>
+        </FieldGroup>
     </form>
     {#if showLegalLinks}
         <nav class="mt-8 flex flex-wrap justify-center gap-x-5 gap-y-2 border-t border-wg-border pt-5 text-sm font-bold" aria-label="Legal links">

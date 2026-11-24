@@ -1,4 +1,6 @@
 <script lang="ts">
+    import * as Collapsible from "#lib/components/ui/collapsible/index.ts";
+    import { Alert } from "#lib/components/ui/alert/index.ts";
     import { FirstPartyApiError, requestFirstPartyApi } from "#lib/api/client.ts";
     import type { IncidentDiagnosis, IncidentDiagnosisPayload } from "#lib/api/monitoring.ts";
     import { formatDateTime } from "#lib/i18n/format.ts";
@@ -64,21 +66,23 @@
             {/each}
         </ul>
         {#if others.length > 0}
-            <details class="mt-4 text-sm">
-                <summary class="cursor-pointer font-semibold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-wg-focus">Other hypotheses</summary>
-                <ol class="mt-2 grid gap-3 p-0">
-                    {#each others as hypothesis (hypothesis.rank)}
-                        <li class="list-none">
-                            <p><span class="font-semibold">{hypothesis.label}</span> <span class="text-wg-text-muted">· {hypothesis.confidence_label}</span></p>
-                            <p class="mt-1 leading-6 text-wg-text-muted">{hypothesis.summary}</p>
-                        </li>
-                    {/each}
-                </ol>
-            </details>
+            <Collapsible.Root class="mt-4 text-sm">
+                <Collapsible.Trigger class="cursor-pointer font-semibold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-wg-focus">Other hypotheses</Collapsible.Trigger>
+            <Collapsible.Content>
+                        <ol class="mt-2 grid gap-3 p-0">
+                            {#each others as hypothesis (hypothesis.rank)}
+                                <li class="list-none">
+                                    <p><span class="font-semibold">{hypothesis.label}</span> <span class="text-wg-text-muted">· {hypothesis.confidence_label}</span></p>
+                                    <p class="mt-1 leading-6 text-wg-text-muted">{hypothesis.summary}</p>
+                                </li>
+                            {/each}
+                        </ol>
+            </Collapsible.Content>
+            </Collapsible.Root>
         {/if}
         <p class="mt-3 text-xs text-wg-text-muted">{formatDateTime(diagnosis?.generated_at ?? null, "—")}</p>
     {:else}
         <p class="mt-2 text-sm leading-6 text-wg-text-muted">No diagnosis is available for this incident yet.</p>
     {/if}
-    {#if error}<p class="mt-3 text-sm font-bold text-wg-danger" role="alert">{error}</p>{/if}
+    {#if error}<Alert variant="destructive" class="mt-3 text-sm font-bold">{error}</Alert>{/if}
 </div>
