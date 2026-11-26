@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { Card as Surface } from "#lib/components/ui/card/index.ts";
     import { Label } from "#lib/components/ui/label/index.ts";
     import * as Alert from "#lib/components/ui/alert/index.ts";
     import { invalidateAll } from "$app/navigation";
@@ -58,7 +59,7 @@
         <div class="grid gap-6">
             <Card title="Alert channels" description="Enable a channel and add its delivery details. You can send a test without enabling it.">
                 <div class="grid gap-4">
-                    <section class="rounded-xl border border-wg-border bg-wg-surface-muted p-4">
+                    <Surface as="section" variant="inset" class="overflow-visible rounded-xl border-wg-border bg-wg-surface-muted p-4 shadow-none">
                         <input type="hidden" name="notification_channels[email][enabled]" value="0" />
                         <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"><div><h2 class="text-base font-bold">Email</h2><p class="mt-1 text-sm leading-5 text-wg-text-muted">Send alerts to your verified account email address.</p></div><Label class="flex items-center gap-2 text-sm font-bold"><Checkbox name="notification_channels[email][enabled]" value="1" checked={emailChannel.enabled} disabled={!emailChannel.verified} /> Enabled</Label></div>
                         <div class="mt-4 grid gap-4 sm:grid-cols-[1fr_auto] sm:items-end">
@@ -69,33 +70,33 @@
                             </div>
                             <Button type="button" variant="secondary" loading={testingChannel === "email"} disabled={!emailChannel.verified} onclick={() => testChannel("email")}>Send test</Button>
                         </div>
-                    </section>
+                    </Surface>
 
-                    <section class="rounded-xl border border-wg-border bg-wg-surface-muted p-4">
+                    <Surface as="section" variant="inset" class="overflow-visible rounded-xl border-wg-border bg-wg-surface-muted p-4 shadow-none">
                         <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"><div><h2 class="text-base font-bold">Slack</h2><p class="mt-1 text-sm leading-5 text-wg-text-muted">Use a Slack Incoming Webhook URL.</p></div><Label class="flex items-center gap-2 text-sm font-bold"><Checkbox name="notification_channels[slack][enabled]" value="1" checked={data.settings.notification_channels.slack.enabled} /> Enabled</Label></div>
                         <div class="mt-4 grid gap-4 sm:grid-cols-[1fr_auto]"><Field label="Webhook URL"><Input name="notification_channels[slack][webhook_url]" type="url" value={data.settings.notification_channels.slack.webhook_url ?? ""} placeholder="https://hooks.slack.com/services/..." /></Field><Button type="button" variant="secondary" loading={testingChannel === "slack"} onclick={() => testChannel("slack")}>Send test</Button></div>
-                    </section>
+                    </Surface>
 
-                    <section class="rounded-xl border border-wg-border bg-wg-surface-muted p-4">
+                    <Surface as="section" variant="inset" class="overflow-visible rounded-xl border-wg-border bg-wg-surface-muted p-4 shadow-none">
                         <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"><div><h2 class="text-base font-bold">Telegram</h2><p class="mt-1 text-sm leading-5 text-wg-text-muted">Provide a bot token and the target chat ID.</p></div><Label class="flex items-center gap-2 text-sm font-bold"><Checkbox name="notification_channels[telegram][enabled]" value="1" checked={data.settings.notification_channels.telegram.enabled} /> Enabled</Label></div>
                         <div class="mt-4 grid gap-4 sm:grid-cols-2"><Field label="Bot token"><Input name="notification_channels[telegram][bot_token]" type="password" value={data.settings.notification_channels.telegram.bot_token ?? ""} autocomplete="off" /></Field><Field label="Chat ID"><Input name="notification_channels[telegram][chat_id]" value={data.settings.notification_channels.telegram.chat_id ?? ""} /></Field></div>
                         <div class="mt-4"><Button type="button" variant="secondary" loading={testingChannel === "telegram"} onclick={() => testChannel("telegram")}>Send test</Button></div>
-                    </section>
+                    </Surface>
 
-                    <section class="rounded-xl border border-wg-border bg-wg-surface-muted p-4">
+                    <Surface as="section" variant="inset" class="overflow-visible rounded-xl border-wg-border bg-wg-surface-muted p-4 shadow-none">
                         <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"><div><h2 class="text-base font-bold">Discord</h2><p class="mt-1 text-sm leading-5 text-wg-text-muted">Use a Discord webhook URL.</p></div><Label class="flex items-center gap-2 text-sm font-bold"><Checkbox name="notification_channels[discord][enabled]" value="1" checked={data.settings.notification_channels.discord.enabled} /> Enabled</Label></div>
                         <div class="mt-4 grid gap-4 sm:grid-cols-[1fr_auto]"><Field label="Webhook URL"><Input name="notification_channels[discord][webhook_url]" type="url" value={data.settings.notification_channels.discord.webhook_url ?? ""} placeholder="https://discord.com/api/webhooks/..." /></Field><Button type="button" variant="secondary" loading={testingChannel === "discord"} onclick={() => testChannel("discord")}>Send test</Button></div>
-                    </section>
+                    </Surface>
 
-                    <section class="rounded-xl border border-wg-border bg-wg-surface-muted p-4">
+                    <Surface as="section" variant="inset" class="overflow-visible rounded-xl border-wg-border bg-wg-surface-muted p-4 shadow-none">
                         <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"><div><h2 class="text-base font-bold">Microsoft Teams</h2><p class="mt-1 text-sm leading-5 text-wg-text-muted">Use a Microsoft Teams incoming webhook URL.</p></div><Label class="flex items-center gap-2 text-sm font-bold"><Checkbox name="notification_channels[teams][enabled]" value="1" checked={data.settings.notification_channels.teams.enabled} /> Enabled</Label></div>
                         <div class="mt-4 grid gap-4 sm:grid-cols-[1fr_auto]"><Field label="Webhook URL"><Input name="notification_channels[teams][webhook_url]" type="url" value={data.settings.notification_channels.teams.webhook_url ?? ""} placeholder="https://..." /></Field><Button type="button" variant="secondary" loading={testingChannel === "teams"} onclick={() => testChannel("teams")}>Send test</Button></div>
-                    </section>
+                    </Surface>
 
-                    <section class="rounded-xl border border-wg-border bg-wg-surface-muted p-4">
+                    <Surface as="section" variant="inset" class="overflow-visible rounded-xl border-wg-border bg-wg-surface-muted p-4 shadow-none">
                         <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"><div><h2 class="text-base font-bold">Webhook</h2><p class="mt-1 text-sm leading-5 text-wg-text-muted">Send the notification payload to a custom HTTP endpoint.</p></div><Label class="flex items-center gap-2 text-sm font-bold"><Checkbox name="notification_channels[webhook][enabled]" value="1" checked={data.settings.notification_channels.webhook.enabled} /> Enabled</Label></div>
                         <div class="mt-4 grid gap-4 sm:grid-cols-[1fr_auto]"><Field label="Webhook URL"><Input name="notification_channels[webhook][url]" type="url" value={data.settings.notification_channels.webhook.url ?? ""} placeholder="https://example.com/webhook" /></Field><Button type="button" variant="secondary" loading={testingChannel === "webhook"} onclick={() => testChannel("webhook")}>Send test</Button></div>
-                    </section>
+                    </Surface>
                 </div>
                 {#if testMessage}<Alert.Root class="mt-4" role="status"><Alert.Description>{testMessage}</Alert.Description></Alert.Root>{/if}
                 {#if testError}<Alert.Root variant="destructive" class="mt-4"><Alert.Description>{testError}</Alert.Description></Alert.Root>{/if}

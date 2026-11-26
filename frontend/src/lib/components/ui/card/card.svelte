@@ -10,11 +10,13 @@
 		size = "default",
 		variant = "default",
 		...restProps
-	}: WithElementRef<HTMLAttributes<HTMLElement>> & { as?: "div" | "section" | "li"; size?: "default" | "sm"; variant?: "default" | "inset" | "overlay" } = $props();
+	}: WithElementRef<HTMLAttributes<HTMLElement>> & { as?: "div" | "section" | "article" | "li"; size?: "default" | "sm"; variant?: "default" | "inset" | "overlay" | "toolbar" | "sticky-footer" } = $props();
 
 	const surfaces = {
 		default: "wg-glass-panel",
 		inset: "wg-glass-inset",
+		toolbar: "wg-glass-bar rounded-none border-b",
+		"sticky-footer": "wg-glass-bar rounded-none border-t",
 		overlay: "wg-glass-panel wg-glass-overlay wg-glass-dialog",
 	};
 </script>

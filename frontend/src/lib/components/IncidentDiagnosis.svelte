@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { EmptyDescription } from "#lib/components/ui/empty/index.ts";
     import { Card as Surface } from "#lib/components/ui/card/index.ts";
     import * as Collapsible from "#lib/components/ui/collapsible/index.ts";
     import { Alert } from "#lib/components/ui/alert/index.ts";
@@ -83,7 +84,7 @@
         {/if}
         <p class="mt-3 text-xs text-wg-text-muted">{formatDateTime(diagnosis?.generated_at ?? null, "—")}</p>
     {:else}
-        <p class="mt-2 text-sm leading-6 text-wg-text-muted">No diagnosis is available for this incident yet.</p>
+        <EmptyDescription class="mt-2 text-sm leading-6 text-wg-text-muted">No diagnosis is available for this incident yet.</EmptyDescription>
     {/if}
     {#if error}<Alert variant="destructive" class="mt-3 text-sm font-bold">{error}</Alert>{/if}
 </Surface>

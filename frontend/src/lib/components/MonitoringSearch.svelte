@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { Alert } from "#lib/components/ui/alert/index.ts";
     import { afterNavigate } from "$app/navigation";
     import { Command as CommandPrimitive } from "bits-ui";
     import * as Command from "#lib/components/ui/command/index.ts";
@@ -74,13 +75,13 @@
                 <Input {...props} aria-label="Search monitorings" bind:value={search} type="search" maxlength={120} placeholder="Name or target URL" class="min-h-12 px-4 text-base" />
             {/snippet}
         </CommandPrimitive.Input>
-        <p role="status" aria-live="polite" class="mt-3 text-sm text-wg-text-muted">
+        <Alert variant="inline" role="status" aria-live="polite" class="mt-3 text-sm text-wg-text-muted">
             {#if search.trim().length < 2}Type at least two characters
             {:else if loading}Searching monitorings…
             {:else if failed}Search could not be loaded. Try again.
             {:else if results.length === 0}No matching monitorings
             {:else}Up to 10 results · Use arrow keys and Enter to open{/if}
-        </p>
+        </Alert>
         <Command.List id="monitoring-search-results" aria-label="Matching monitorings" aria-busy={loading} class={results.length === 0 ? "hidden" : "max-h-[50dvh]"}>
             <CommandPrimitive.Viewport>
                 <Command.Group class="mt-3 rounded-lg border border-wg-border">
