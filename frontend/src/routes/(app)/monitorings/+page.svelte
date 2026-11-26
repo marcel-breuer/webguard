@@ -1,4 +1,7 @@
 <script lang="ts">
+    import * as Card from "#lib/components/ui/card/index.ts";
+    import { Field as FormField, FieldLabel } from "#lib/components/ui/field/index.ts";
+    import * as Empty from "#lib/components/ui/empty/index.ts";
     import { Badge } from "#lib/components/ui/badge/index.ts";
     import DataTable from "#lib/components/DataTable.svelte";
     import * as Table from "#lib/components/ui/table/index.ts";
@@ -165,34 +168,36 @@
     {#if createError}<Alert variant="destructive" class="mb-5 text-sm font-bold">{createError}</Alert>{/if}
 
     {#if monitorings === null}
-        <section class="wg-glass-panel p-6 text-sm text-wg-text-muted" role={monitoringsLoadFailed ? "alert" : "status"} aria-live="polite">
+        <Card.Root class="p-6 text-sm text-wg-text-muted" role={monitoringsLoadFailed ? "alert" : "status"} aria-live="polite">
             {monitoringsLoadFailed ? "Monitorings could not be loaded. Refresh to try again." : "Loading your monitorings…"}
-        </section>
+        </Card.Root>
     {:else}
-    <section class="mb-4 wg-glass-panel px-5 py-5 sm:px-7" aria-label="Monitoring total"><p class="text-base font-bold">Total monitorings: {formatNumber(monitorings.meta.total)}</p></section>
+    <Card.Root as="section" class="mb-4 px-5 py-5 sm:px-7" aria-label="Monitoring total"><p class="text-base font-bold">Total monitorings: {formatNumber(monitorings.meta.total)}</p></Card.Root>
 
-    <section class="mb-5 wg-glass-panel p-5 sm:p-7" aria-labelledby="filters-heading">
+    <Card.Root as="section" class="mb-5 p-5 sm:p-7" aria-labelledby="filters-heading">
         <p id="filters-heading" class="text-sm font-bold">Quick views</p>
         <div class="mt-3 flex flex-wrap gap-2" aria-label="Quick monitoring views">
             {#each [["all", "All"], ["attention", "Needs attention"], ["paused", "Paused"], ["maintenance", "In maintenance"]] as [view, label]}
-                <Button class={`min-h-8 rounded-full px-3 py-1.5 text-xs normal-case ${quickView === view ? "" : "border-wg-border bg-wg-surface-muted text-wg-text hover:bg-wg-surface"}`} variant={quickView === view ? "primary" : "secondary"} type="button" onclick={() => (quickView = view as QuickView)}>{label}</Button>
+                <Button class={`min-h-8 rounded-full px-3 py-1.5 text-xs normal-case ${quickView === view ? "" : "border-wg-border bg-wg-surface-muted text-wg-text hover:bg-wg-surface"}`} variant={quickView === view ? "primary" : "secondary"} aria-pressed={quickView === view} type="button" onclick={() => (quickView = view as QuickView)}>{label}</Button>
             {/each}
         </div>
-        <form class="mt-5 grid gap-3 sm:max-w-md" method="GET"><label class="grid gap-2 text-sm font-semibold"><span class="sr-only">Search monitorings</span><Input name="search" type="search" value={data.filters.search} placeholder="Search by name, target, port or keyword" /></label><input name="lifecycle_status" type="hidden" value={data.filters.lifecycleStatus} /></form>
-        <Collapsible.Root class="mt-4 rounded-lg border border-wg-border p-3.5">
-            <Collapsible.Trigger class="cursor-pointer text-sm font-bold">Advanced filters</Collapsible.Trigger>
-            <Collapsible.Content>
-                <div class="mt-4 grid gap-4">
-                    <div class="flex flex-wrap gap-2" aria-label="Monitoring type filters">{#each monitoringTypes as [type, label]}<Button class={`min-h-8 rounded px-2.5 py-1.5 text-xs normal-case ${selectedTypes.includes(type) ? "" : "border-transparent bg-wg-surface-muted text-wg-text hover:bg-wg-surface"}`} variant={selectedTypes.includes(type) ? "primary" : "quiet"} type="button" onclick={() => toggleType(type)}>{label}</Button>{/each}</div>
-                    <div class="grid gap-3 sm:grid-cols-2 lg:flex lg:flex-wrap">
-                        <form method="GET"><input name="search" type="hidden" value={data.filters.search} /><label class="grid gap-1 text-xs font-semibold text-wg-text-muted">Lifecycle<Select name="lifecycle_status" value={data.filters.lifecycleStatus} onchange={(event) => event.currentTarget.form?.requestSubmit()}><option value="">All monitorings</option><option value="active">Active</option><option value="paused">Paused</option></Select></label></form>
-                        <label class="grid gap-1 text-xs font-semibold text-wg-text-muted">Group<Select bind:value={selectedGroup}><option value="">All groups</option>{#each groupOptions as group}<option value={group.id}>{group.name}</option>{/each}</Select></label>
-                        <label class="grid gap-1 text-xs font-semibold text-wg-text-muted">Sort<Select bind:value={sortOrder}><option value="name_asc">Name (A–Z)</option><option value="name_desc">Name (Z–A)</option></Select></label>
+        <form class="mt-5 grid gap-3 sm:max-w-md" method="GET"><FormField><FieldLabel for="monitoring-filter-search" class="sr-only">Search monitorings</FieldLabel><Input id="monitoring-filter-search" name="search" type="search" value={data.filters.search} placeholder="Search by name, target, port or keyword" /></FormField><input name="lifecycle_status" type="hidden" value={data.filters.lifecycleStatus} /></form>
+        <Card.Root variant="inset" class="mt-4 rounded-lg p-3.5">
+            <Collapsible.Root>
+                <Collapsible.Trigger class="cursor-pointer text-sm font-bold">Advanced filters</Collapsible.Trigger>
+                <Collapsible.Content>
+                    <div class="mt-4 grid gap-4">
+                        <div class="flex flex-wrap gap-2" aria-label="Monitoring type filters">{#each monitoringTypes as [type, label]}<Button class={`min-h-8 rounded px-2.5 py-1.5 text-xs normal-case ${selectedTypes.includes(type) ? "" : "border-transparent bg-wg-surface-muted text-wg-text hover:bg-wg-surface"}`} variant={selectedTypes.includes(type) ? "primary" : "quiet"} aria-pressed={selectedTypes.includes(type)} type="button" onclick={() => toggleType(type)}>{label}</Button>{/each}</div>
+                        <div class="grid gap-3 sm:grid-cols-2 lg:flex lg:flex-wrap">
+                            <form method="GET"><input name="search" type="hidden" value={data.filters.search} /><FormField class="gap-1"><FieldLabel for="monitoring-filter-lifecycle" class="text-xs font-semibold text-wg-text-muted">Lifecycle</FieldLabel><Select id="monitoring-filter-lifecycle" name="lifecycle_status" value={data.filters.lifecycleStatus} onchange={(event) => event.currentTarget.form?.requestSubmit()}><option value="">All monitorings</option><option value="active">Active</option><option value="paused">Paused</option></Select></FormField></form>
+                            <FormField class="gap-1"><FieldLabel for="monitoring-filter-group" class="text-xs font-semibold text-wg-text-muted">Group</FieldLabel><Select id="monitoring-filter-group" bind:value={selectedGroup}><option value="">All groups</option>{#each groupOptions as group}<option value={group.id}>{group.name}</option>{/each}</Select></FormField>
+                            <FormField class="gap-1"><FieldLabel for="monitoring-filter-sort" class="text-xs font-semibold text-wg-text-muted">Sort</FieldLabel><Select id="monitoring-filter-sort" bind:value={sortOrder}><option value="name_asc">Name (A–Z)</option><option value="name_desc">Name (Z–A)</option></Select></FormField>
+                        </div>
                     </div>
-                </div>
-            </Collapsible.Content>
-        </Collapsible.Root>
-    </section>
+                </Collapsible.Content>
+            </Collapsible.Root>
+        </Card.Root>
+    </Card.Root>
 
     {#if monitorings.data.length === 0}
         {#if dashboard?.capabilities.can_create_monitoring}
@@ -204,10 +209,10 @@
         {/if}
     {:else}
         <div class="grid gap-5 xl:grid-cols-[minmax(0,1fr)_18rem] xl:items-start">
-            <section class="overflow-hidden wg-glass-panel" aria-labelledby="active-monitorings-heading">
-                <header class="flex flex-col gap-3 border-b border-wg-border px-5 py-5 sm:flex-row sm:items-end sm:justify-between sm:px-6"><div><h2 id="active-monitorings-heading" class="text-xl font-bold">Active monitorings</h2><p class="mt-1 text-sm text-wg-text-muted">System health and details in one focused workspace.</p></div><p class="text-sm font-semibold text-wg-text-muted">Total monitorings: {formatNumber(monitorings.meta.total)}</p></header>
+            <Card.Root as="section" aria-labelledby="active-monitorings-heading">
+                <Card.Header class="gap-3 px-5 py-5 sm:items-end"><div><Card.Title id="active-monitorings-heading" class="text-xl">Active monitorings</Card.Title><Card.Description class="mt-1">System health and details in one focused workspace.</Card.Description></div><p class="text-sm font-semibold text-wg-text-muted">Total monitorings: {formatNumber(monitorings.meta.total)}</p></Card.Header>
                 {#if visibleMonitorings.length === 0}
-                    <p class="p-6 text-sm text-wg-text-muted">No monitorings match the selected quick view and filters.</p>
+                    <Empty.Root class="items-start gap-0 rounded-none border-0 p-6 text-left text-sm text-wg-text-muted md:p-6">No monitorings match the selected quick view and filters.</Empty.Root>
                 {:else}
                     <DataTable caption="Active monitorings">
                         <Table.Header><Table.Row><Table.Head scope="col">Name</Table.Head><Table.Head scope="col">Target</Table.Head><Table.Head scope="col">Last 24 hours</Table.Head><Table.Head scope="col">Status</Table.Head></Table.Row></Table.Header>
@@ -220,17 +225,17 @@
                     </DataTable>
                 {/if}
                 <div class="border-t border-wg-border px-5 py-4 sm:px-6"><Pagination page={monitorings.meta.current_page} pages={monitorings.meta.last_page} href={paginationHref} /></div>
-            </section>
+            </Card.Root>
             {#if dashboard}
             <aside class="grid gap-4" aria-label="Operational summary">
-                <section class="wg-glass-panel p-5"><p class="text-xs font-extrabold tracking-[0.12em] text-wg-accent uppercase">All systems</p><h2 class="mt-3 text-lg font-bold">{allSystemsOperational ? "All systems operational" : "Service attention required"}</h2><dl class="mt-5 grid grid-cols-2 gap-3 border-t border-violet-200 pt-4 dark:border-violet-800"><div><dt class="text-2xl font-extrabold text-emerald-600">{formatNumber(dashboard.summary.healthy)}</dt><dd class="mt-1 text-xs text-wg-text-muted">Healthy</dd></div><div><dt class="text-2xl font-extrabold text-red-600">{formatNumber(dashboard.summary.down + dashboard.summary.unknown)}</dt><dd class="mt-1 text-xs text-wg-text-muted">Needs attention</dd></div></dl></section>
-                <section class="wg-glass-panel p-5"><div class="flex items-start justify-between gap-3"><h2 class="text-base font-bold">Open incidents</h2><Badge variant="danger" class="rounded-full bg-red-50 px-2 py-1 font-bold text-red-600 dark:bg-red-950">{formatNumber(openIncidents.length)}</Badge></div><p class="mt-3 text-sm leading-5 text-wg-text-muted">Review current service disruptions and recent incident activity.</p><a class="mt-4 inline-flex text-sm font-bold text-wg-accent no-underline hover:text-wg-accent-strong" href={appRoutes.incidents}>Open incidents →</a></section>
-                <section class="wg-glass-panel p-5"><h2 class="text-base font-bold">Status pages</h2><p class="mt-3 text-sm leading-5 text-wg-text-muted">Publish service availability for your customers and teams.</p><a class="mt-4 inline-flex text-sm font-bold text-wg-accent no-underline hover:text-wg-accent-strong" href={appRoutes.statusPages}>Manage →</a></section>
+                <Card.Root as="section" class="p-5"><p class="text-xs font-extrabold tracking-[0.12em] text-wg-accent uppercase">All systems</p><h2 class="mt-3 text-lg font-bold">{allSystemsOperational ? "All systems operational" : "Service attention required"}</h2><dl class="mt-5 grid grid-cols-2 gap-3 border-t border-violet-200 pt-4 dark:border-violet-800"><div><dt class="text-2xl font-extrabold text-emerald-600">{formatNumber(dashboard.summary.healthy)}</dt><dd class="mt-1 text-xs text-wg-text-muted">Healthy</dd></div><div><dt class="text-2xl font-extrabold text-red-600">{formatNumber(dashboard.summary.down + dashboard.summary.unknown)}</dt><dd class="mt-1 text-xs text-wg-text-muted">Needs attention</dd></div></dl></Card.Root>
+                <Card.Root as="section" class="p-5"><div class="flex items-start justify-between gap-3"><h2 class="text-base font-bold">Open incidents</h2><Badge variant="danger" class="rounded-full bg-red-50 px-2 py-1 font-bold text-red-600 dark:bg-red-950">{formatNumber(openIncidents.length)}</Badge></div><p class="mt-3 text-sm leading-5 text-wg-text-muted">Review current service disruptions and recent incident activity.</p><a class="mt-4 inline-flex text-sm font-bold text-wg-accent no-underline hover:text-wg-accent-strong" href={appRoutes.incidents}>Open incidents →</a></Card.Root>
+                <Card.Root as="section" class="p-5"><h2 class="text-base font-bold">Status pages</h2><p class="mt-3 text-sm leading-5 text-wg-text-muted">Publish service availability for your customers and teams.</p><a class="mt-4 inline-flex text-sm font-bold text-wg-accent no-underline hover:text-wg-accent-strong" href={appRoutes.statusPages}>Manage →</a></Card.Root>
             </aside>
             {:else}
-            <aside class="wg-glass-panel p-5 text-sm text-wg-text-muted" aria-label="Operational summary" aria-live="polite">
+            <Card.Root role="complementary" class="p-5 text-sm text-wg-text-muted" aria-label="Operational summary" aria-live="polite">
                 {dashboardLoadFailed ? "Operational summary could not be loaded." : "Loading operational summary…"}
-            </aside>
+            </Card.Root>
             {/if}
         </div>
     {/if}

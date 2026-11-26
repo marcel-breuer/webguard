@@ -1,4 +1,6 @@
 <script lang="ts">
+    import { Card as CardPrimitive } from "#lib/components/ui/card/index.ts";
+    import { Label } from "#lib/components/ui/label/index.ts";
     import { dev } from "$app/env";
     import * as Table from "#lib/components/ui/table/index.ts";
     import Button from "#lib/components/Button.svelte";
@@ -56,7 +58,7 @@
         <span class="mt-4 block text-base leading-[1.6] text-wg-text-muted">Dark-aware, keyboard-accessible and ready for the SvelteKit workspace.</span>
     </header>
 
-    <section aria-labelledby="buttons-heading" class="mt-5 wg-glass-panel p-[1.125rem] sm:p-6">
+    <CardPrimitive as="section" aria-labelledby="buttons-heading" class="mt-5 overflow-visible p-[1.125rem] sm:p-6">
         <h2 id="buttons-heading" class="mb-4 mt-0 text-base">Actions</h2>
         <div class="flex flex-wrap gap-3">
             <Button>Save changes</Button>
@@ -64,9 +66,9 @@
             <Button variant="danger">Delete monitoring</Button>
             <Button variant="quiet">View details</Button>
         </div>
-    </section>
+    </CardPrimitive>
 
-    <section aria-labelledby="form-heading" class="mt-5 wg-glass-panel p-[1.125rem] sm:p-6">
+    <CardPrimitive as="section" aria-labelledby="form-heading" class="mt-5 overflow-visible p-[1.125rem] sm:p-6">
         <h2 id="form-heading" class="mb-4 mt-0 text-base">Fields</h2>
         <div class="grid gap-4 md:grid-cols-2">
             <Field label="Monitoring name" required hint="Visible to your team.">
@@ -81,16 +83,16 @@
             <Field label="Description">
                 <Textarea name="description" value="API availability checks for the public gateway." />
             </Field>
-            <label class="flex items-center gap-3 rounded-md border border-wg-border px-3 py-2 text-sm font-bold">
+            <Label class="flex items-center gap-3 rounded-md border border-wg-border px-3 py-2 text-sm font-bold">
                 <Checkbox name="notifications" checked /> Notify on failure
-            </label>
+            </Label>
         </div>
-    </section>
+    </CardPrimitive>
 
-    <section aria-labelledby="dialog-heading" class="mt-5 wg-glass-panel p-[1.125rem] sm:p-6">
+    <CardPrimitive as="section" aria-labelledby="dialog-heading" class="mt-5 overflow-visible p-[1.125rem] sm:p-6">
         <h2 id="dialog-heading" class="mb-4 mt-0 text-base">Dialog</h2>
         <Button onclick={() => (dialogOpen = true)}>Open confirmation</Button>
-    </section>
+    </CardPrimitive>
 
     <Card title="Monitoring overview" description="Shared content patterns used by migrated feature pages.">
         {#snippet actions()}<StatusBadge tone="healthy" label="Operational" />{/snippet}
@@ -101,10 +103,10 @@
         <div class="mt-4"><Pagination page={2} pages={4} href={(page) => `?page=${page}`} /></div>
     </Card>
 
-    <section aria-label="Feedback states" class="mt-5 grid gap-5 wg-glass-panel p-[1.125rem] sm:p-6">
+    <CardPrimitive as="section" aria-label="Feedback states" class="mt-5 grid gap-5 overflow-visible p-[1.125rem] sm:p-6">
         <LoadingState label="Loading monitoring results" />
         <EmptyState title="No maintenance windows" description="Planned maintenance will appear here once it is scheduled." />
-    </section>
+    </CardPrimitive>
 </div>
 
 <Dialog bind:open={dialogOpen} title="Discard unsaved changes?" description="Your edits have not been saved yet.">

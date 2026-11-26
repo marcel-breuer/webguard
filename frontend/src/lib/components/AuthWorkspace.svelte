@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { Label } from "#lib/components/ui/label/index.ts";
     import { FieldGroup } from "#lib/components/ui/field/index.ts";
     import * as Alert from "#lib/components/ui/alert/index.ts";
     import { FirstPartyApiError, requestFirstPartyApi } from "#lib/api/client.ts";
@@ -138,11 +139,11 @@
             <Field label="Email" required error={errorFor("email")}><Input name="email" type="email" autocomplete={mode === "register" ? "username" : "email"} bind:value={email} required /></Field>
             <Field label="Password" required error={errorFor("password")}><Input name="password" type="password" autocomplete={mode === "register" ? "new-password" : "current-password"} bind:value={password} required /></Field>
             {#if mode === "login" || mode === "demo"}
-                <label class="flex items-center gap-2 text-sm text-wg-text-muted"><Checkbox name="remember" value="1" /> Keep me signed in</label>
+                <Label class="flex items-center gap-2 text-sm text-wg-text-muted"><Checkbox name="remember" value="1" /> Keep me signed in</Label>
                 <a class="text-sm font-bold text-wg-accent no-underline hover:underline" href="/forgot-password">Forgot your password?</a>
             {:else}
                 <Field label="Confirm password" required error={errorFor("password_confirmation")}><Input name="password_confirmation" type="password" autocomplete="new-password" required /></Field>
-                <label class="flex items-start gap-3 text-sm leading-6 text-wg-text-muted"><Checkbox class="mt-1" name="terms" value="1" required /><span>I agree to the <a class="font-bold text-wg-accent" href={options.terms_url} target="_blank" rel="noopener">terms of use</a> and <a class="font-bold text-wg-accent" href={options.privacy_url} target="_blank" rel="noopener">privacy policy</a>.</span></label>
+                <Label class="flex items-start gap-3 text-sm leading-6 text-wg-text-muted"><Checkbox class="mt-1" name="terms" value="1" required /><span>I agree to the <a class="font-bold text-wg-accent" href={options.terms_url} target="_blank" rel="noopener">terms of use</a> and <a class="font-bold text-wg-accent" href={options.privacy_url} target="_blank" rel="noopener">privacy policy</a>.</span></Label>
                 <Field label="Security check" required error={errorFor("captcha")}><div class="flex flex-col gap-3 sm:flex-row sm:items-center"><img class="h-[54px] w-[220px] rounded-md border border-wg-border object-cover" src={captchaUrl} alt="Security check" /><Button type="button" variant="secondary" onclick={() => (captchaNonce = Date.now())}>Reload</Button></div><Input name="captcha" autocomplete="off" inputmode="text" required /></Field>
             {/if}
             <Button type="submit" loading={submitting}>{mode === "register" ? "Create account" : "Sign in"}</Button>

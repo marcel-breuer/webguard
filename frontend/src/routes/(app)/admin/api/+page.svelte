@@ -1,4 +1,6 @@
 <script lang="ts">
+    import { Card as GlassCard } from "#lib/components/ui/card/index.ts";
+    import { Field as FilterField, FieldLabel } from "#lib/components/ui/field/index.ts";
     import { Button as ActionLink } from "#lib/components/ui/button/index.ts";
     import * as Table from "#lib/components/ui/table/index.ts";
     import { appRoutes } from "#lib/routes.ts";
@@ -20,6 +22,7 @@
         };
     }
 
+    const filterId = $props.id();
     let { data }: Props = $props();
     const logs = $derived(data.logs.data);
     const filters = $derived(data.filters);
@@ -76,16 +79,33 @@
         <p class="mt-3 leading-6 text-wg-text-muted">Review recent authenticated API usage without exposing credentials.</p>
     </header>
 
-    <form class="mb-5 grid gap-4 wg-glass-panel p-5 sm:grid-cols-[minmax(0,1fr)_14rem_8rem_auto] sm:items-end" method="GET">
-        <label class="grid gap-2 text-sm font-bold"><span>Search</span><Input name="search" type="search" value={filters.search} placeholder="Search route or user email" /></label>
-        <label class="grid gap-2 text-sm font-bold"><span>User</span><Select name="user_id" value={filters.userId}><option value="">All users</option>{#each data.logs.options.users as user}<option value={user.id}>{user.email}</option>{/each}</Select></label>
-        <label class="grid gap-2 text-sm font-bold"><span>Rows</span><Select name="per_page" value={String(filters.perPage)}><option value="10">10</option><option value="25">25</option><option value="50">50</option><option value="100">100</option></Select></label>
-        <div class="flex gap-3"><Button type="submit">Apply</Button><ActionLink variant="outline" class="no-underline" href={appRoutes.adminApi}>Reset</ActionLink></div>
-        <input name="sort" type="hidden" value={filters.sort} /><input name="direction" type="hidden" value={filters.direction} />
-    </form>
+    <GlassCard class="mb-5 overflow-visible p-5">
+        <form class="grid gap-4 sm:grid-cols-[minmax(0,1fr)_14rem_8rem_auto] sm:items-end" method="GET">
+
+            <FilterField>
+                <FieldLabel for={`${filterId}-search`} class="font-bold">Search</FieldLabel>
+                <Input id={`${filterId}-search`} name="search" type="search" value={filters.search} placeholder="Search route or user email" />
+            </FilterField>
+
+            <FilterField>
+                <FieldLabel for={`${filterId}-user_id`} class="font-bold">User</FieldLabel>
+                <Select id={`${filterId}-user_id`} name="user_id" value={filters.userId}><option value="">All users</option>{#each data.logs.options.users as user}<option value={user.id}>{user.email}</option>{/each}</Select>
+            </FilterField>
+
+            <FilterField>
+                <FieldLabel for={`${filterId}-per_page`} class="font-bold">Rows</FieldLabel>
+                <Select id={`${filterId}-per_page`} name="per_page" value={String(filters.perPage)}><option value="10">10</option><option value="25">25</option><option value="50">50</option><option value="100">100</option></Select>
+            </FilterField>
+
+            <div class="flex gap-3"><Button type="submit">Apply</Button><ActionLink variant="outline" class="no-underline" href={appRoutes.adminApi}>Reset</ActionLink></div>
+
+            <input name="sort" type="hidden" value={filters.sort} /><input name="direction" type="hidden" value={filters.direction} />
+
+        </form>
+    </GlassCard>
 
     {#if logs.items.length === 0}
-        <p class="wg-glass-panel p-6 text-wg-text-muted">No API activity matches the selected filters.</p>
+        <GlassCard class="p-6"><p class="text-wg-text-muted">No API activity matches the selected filters.</p></GlassCard>
     {:else}
         <DataTable caption="API usage">
             <Table.Header><Table.Row><Table.Head><a class="font-bold text-wg-text-muted no-underline hover:text-wg-accent" href={sortHref("created_at")}>Time{sortLabel("created_at")}</a></Table.Head><Table.Head><a class="font-bold text-wg-text-muted no-underline hover:text-wg-accent" href={sortHref("user_email")}>User{sortLabel("user_email")}</a></Table.Head><Table.Head><a class="font-bold text-wg-text-muted no-underline hover:text-wg-accent" href={sortHref("route")}>Endpoint{sortLabel("route")}</a></Table.Head></Table.Row></Table.Header>

@@ -1,4 +1,7 @@
 <script lang="ts">
+    import { Button as LinkButton } from "#lib/components/ui/button/index.ts";
+    import { Card as Surface } from "#lib/components/ui/card/index.ts";
+    import { Field, FieldLabel } from "#lib/components/ui/field/index.ts";
     import { Alert } from "#lib/components/ui/alert/index.ts";
     import { goto, invalidateAll } from "$app/navigation";
     import { FirstPartyApiError, requestFirstPartyApi } from "#lib/api/client.ts";
@@ -192,9 +195,9 @@
     {#if createError}<Alert variant="destructive" class="mb-6 text-sm font-bold">{createError}</Alert>{/if}
 
     {#if dashboard === null}
-        <section class="wg-glass-panel p-6 text-sm text-wg-text-muted" role={dashboardLoadFailed ? "alert" : "status"} aria-live="polite">
+        <Surface as="section" class="p-6 text-sm text-wg-text-muted" role={dashboardLoadFailed ? "alert" : "status"} aria-live="polite">
             {dashboardLoadFailed ? "Dashboard data could not be loaded. Refresh to try again." : "Loading your website health and recent activity…"}
-        </section>
+        </Surface>
     {:else}
     {#if onboardingVisible}
         <FirstRunOnboarding
@@ -217,10 +220,10 @@
             <p class="mb-4 mt-0 text-sm font-bold text-wg-text-muted">{formatNumber(dashboard.summary.total)} <span>websites</span></p>
             <dl class="grid grid-cols-2 gap-3 sm:grid-cols-5">
                 {#each [["healthy", "Working"], ["down", "Down"], ["unknown", "Needs a check"], ["paused", "Paused"], ["maintenance", "Maintenance"]] as [key, label]}
-                    <div class="rounded-xl bg-wg-surface-muted p-3">
+                    <Surface variant="inset" class="rounded-xl border-0 bg-wg-surface-muted p-3 shadow-none">
                         <dt class="text-xs font-bold text-wg-text-muted">{label}</dt>
                         <dd class="mt-1 text-xl font-extrabold">{formatNumber(dashboard.summary[key as keyof typeof dashboard.summary])}</dd>
-                    </div>
+                    </Surface>
                 {/each}
             </dl>
         </Card>
@@ -232,23 +235,25 @@
                 {:else}
                     <ul class="m-0 grid list-none gap-3 p-0">
                         {#each dashboard.attention as item}
-                            <li class={`rounded-xl border p-3 ${attentionBorderClass(item.type)}`}>
-                                {#if item.monitoring_id}
-                                    <a class="block rounded-md text-wg-text no-underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-wg-focus" href={`/monitorings/${item.monitoring_id}`}>
+                            <li>
+                                <Surface variant="inset" class={`rounded-xl border bg-transparent p-3 shadow-none ${attentionBorderClass(item.type)}`}>
+                                    {#if item.monitoring_id}
+                                        <LinkButton variant="link" class="block min-h-0 border-0 p-0 text-left text-base leading-normal font-normal tracking-normal text-wg-text hover:no-underline active:translate-y-0" href={`/monitorings/${item.monitoring_id}`}>
+                                            <div class="flex flex-wrap items-center justify-between gap-3">
+                                                <p class="m-0 font-bold">{item.monitoring_name ?? "Website"}</p>
+                                                <StatusBadge tone={attentionTone(item.type)} label={attentionStatusLabel(item.type)} />
+                                            </div>
+                                            <p class="mb-0 mt-1 text-sm text-wg-text-muted">{item.monitoring_target}</p>
+                                            <span class="mt-2 inline-block text-sm font-semibold text-wg-accent">View website details <span aria-hidden="true">→</span></span>
+                                        </LinkButton>
+                                    {:else}
                                         <div class="flex flex-wrap items-center justify-between gap-3">
-                                            <p class="m-0 font-bold">{item.monitoring_name ?? "Website"}</p>
+                                            <p class="m-0 font-bold">{formatNumber(item.count ?? 0)} <span>notification deliveries</span></p>
                                             <StatusBadge tone={attentionTone(item.type)} label={attentionStatusLabel(item.type)} />
                                         </div>
-                                        <p class="mb-0 mt-1 text-sm text-wg-text-muted">{item.monitoring_target}</p>
-                                        <span class="mt-2 inline-block text-sm font-semibold text-wg-accent">View website details <span aria-hidden="true">→</span></span>
-                                    </a>
-                                {:else}
-                                    <div class="flex flex-wrap items-center justify-between gap-3">
-                                        <p class="m-0 font-bold">{formatNumber(item.count ?? 0)} <span>notification deliveries</span></p>
-                                        <StatusBadge tone={attentionTone(item.type)} label={attentionStatusLabel(item.type)} />
-                                    </div>
-                                    <p class="mb-0 mt-1 text-sm text-wg-text-muted">Review failed delivery configuration.</p>
-                                {/if}
+                                        <p class="mb-0 mt-1 text-sm text-wg-text-muted">Review failed delivery configuration.</p>
+                                    {/if}
+                                </Surface>
                             </li>
                         {/each}
                     </ul>
@@ -258,10 +263,10 @@
 
         <div class="mt-6">
             <Card title="Your websites" titleId="services-heading" description="Current status and last check for each website.">
-                <label class="mb-4 block w-full sm:max-w-sm">
-                    <span class="sr-only">Search websites</span>
-                    <Input bind:value={serviceQuery} type="search" placeholder="Search by name or address" />
-                </label>
+                <Field class="mb-4 sm:max-w-sm">
+                    <FieldLabel for="dashboard-website-search" class="sr-only">Search websites</FieldLabel>
+                    <Input id="dashboard-website-search" bind:value={serviceQuery} type="search" placeholder="Search by name or address" />
+                </Field>
                 <div class="flex flex-wrap gap-2" aria-label="Website filters">
                     {#each [["all", "All"], ["attention", "Needs attention"], ["maintenance", "Maintenance"], ["paused", "Paused"]] as [filter, label]}
                         <Button class={`min-h-9 rounded-full px-3 py-1.5 text-xs ${activeFilter === filter ? "" : "border-wg-border bg-wg-surface text-wg-text hover:bg-wg-surface-muted"}`} variant={activeFilter === filter ? "primary" : "secondary"} type="button" onclick={() => (activeFilter = filter as typeof activeFilter)}>{label}</Button>
@@ -302,9 +307,11 @@
                 {:else}
                     <ul class="m-0 grid list-none gap-3 p-0">
                         {#each dashboard.maintenance as maintenance}
-                            <li class="rounded-xl border border-wg-border p-3">
-                                <div class="flex items-center justify-between gap-3"><p class="font-bold">{maintenance.monitoring_name}</p><StatusBadge tone="neutral" label={maintenance.status === "active" ? "Active" : "Upcoming"} /></div>
-                                <p class="mt-1 text-sm text-wg-text-muted">Starts {dateTime(maintenance.starts_at)}</p>
+                            <li>
+                                <Surface variant="inset" class="rounded-xl border-wg-border bg-transparent p-3 shadow-none">
+                                    <div class="flex items-center justify-between gap-3"><p class="font-bold">{maintenance.monitoring_name}</p><StatusBadge tone="neutral" label={maintenance.status === "active" ? "Active" : "Upcoming"} /></div>
+                                    <p class="mt-1 text-sm text-wg-text-muted">Starts {dateTime(maintenance.starts_at)}</p>
+                                </Surface>
                             </li>
                         {/each}
                     </ul>
@@ -317,7 +324,7 @@
                 {:else}
                     <ul class="m-0 grid list-none gap-3 p-0">
                         {#each dashboard.recent_incidents as incident}
-                            <li class="rounded-xl border border-wg-border p-3"><p class="font-bold">{incident.monitoring_name ?? "Monitoring"}</p><p class="mt-1 text-sm text-wg-text-muted">Started {dateTime(incident.down_at)} · {incident.resolved ? "Resolved incident" : "Open incident"}</p></li>
+                            <li><Surface variant="inset" class="rounded-xl border-wg-border bg-transparent p-3 shadow-none"><p class="font-bold">{incident.monitoring_name ?? "Monitoring"}</p><p class="mt-1 text-sm text-wg-text-muted">Started {dateTime(incident.down_at)} · {incident.resolved ? "Resolved incident" : "Open incident"}</p></Surface></li>
                         {/each}
                     </ul>
                 {/if}

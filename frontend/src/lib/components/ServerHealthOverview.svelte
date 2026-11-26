@@ -1,4 +1,6 @@
 <script lang="ts">
+    import { Card as Surface } from "#lib/components/ui/card/index.ts";
+    import * as Tooltip from "#lib/components/ui/tooltip/index.ts";
     import { Badge } from "#lib/components/ui/badge/index.ts";
     import { Alert } from "#lib/components/ui/alert/index.ts";
     import { onMount } from "svelte";
@@ -263,8 +265,27 @@
     });
 </script>
 
+{#snippet metricCard(label: string, value: number | null, threshold: number | null, format: (value: number | null) => string)}
+    {@const state = metricState(value, threshold)}
+    {@const status = statusText(state)}
+    <Surface class={`relative p-5 transition-transform duration-150 ease-out hover:-translate-y-0.5 ${cardTone(state)}`}>
+        <span class={`absolute inset-x-0 top-0 h-1 ${accentTone(state)}`}></span>
+        <dt class="flex items-center justify-between text-[0.6875rem] font-extrabold tracking-[0.14em] text-wg-text-muted uppercase">
+            {label}
+            <Tooltip.Root>
+                <Tooltip.Trigger class={`size-2 rounded-full focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-wg-focus ${accentTone(state)}`} aria-label={status} />
+                <Tooltip.Content portalProps={{ to: "#localized-app" }}>{status}</Tooltip.Content>
+            </Tooltip.Root>
+        </dt>
+        <dd class="mt-5 text-4xl leading-none font-extrabold tracking-tight tabular-nums">{format(value)}</dd>
+        <dd class="mt-5 flex items-center justify-between border-t border-wg-border/70 pt-3 text-sm text-wg-text-muted">
+            <span>Limit</span><span class="font-bold text-wg-text">{format(threshold)}</span>
+        </dd>
+    </Surface>
+{/snippet}
+
 <section class="mt-6" aria-labelledby="server-health-heading">
-    <div class="relative overflow-hidden wg-glass-panel px-5 py-5 sm:px-6">
+    <Surface class="relative overflow-hidden px-5 py-5 sm:px-6">
         <div class="absolute inset-y-0 left-0 w-1 bg-wg-accent"></div>
         <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div class="flex items-center gap-3">
@@ -273,24 +294,26 @@
             </div>
             <div class="flex flex-wrap items-center gap-2"><Badge variant="neutral" class="w-fit rounded-full px-3 py-1.5 text-sm leading-normal font-medium">{latest ? `Last report ${timestamp(latest.checked_at)}` : "Waiting for the first server report"}</Badge><Select width="compact" density="compact" value={String(summaryPeriod)} onchange={changeSummaryPeriod} disabled={summaryLoading} class="font-semibold text-wg-text-muted" aria-label="Server health metrics period"><option value="1">Last 24 hours</option><option value="7">Last 7 days</option><option value="30">Last 30 days</option></Select></div>
         </div>
-    </div>
+    </Surface>
 
     {#if latest}
-        <dl class="mt-4 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-            <div class={`group relative overflow-hidden wg-glass-panel wg-glass-lift p-5 ${cardTone(metricState(latest.cpu_usage_percent, summaryTelemetry.thresholds.cpu_usage_percent))}`}><span class={`absolute inset-x-0 top-0 h-1 ${accentTone(metricState(latest.cpu_usage_percent, summaryTelemetry.thresholds.cpu_usage_percent))}`}></span><dt class="flex items-center justify-between text-[0.6875rem] font-extrabold tracking-[0.14em] text-wg-text-muted uppercase">CPU <span class={`size-2 rounded-full ${accentTone(metricState(latest.cpu_usage_percent, summaryTelemetry.thresholds.cpu_usage_percent))}`} title={statusText(metricState(latest.cpu_usage_percent, summaryTelemetry.thresholds.cpu_usage_percent))}></span></dt><dd class="mt-5 text-4xl leading-none font-extrabold tracking-tight tabular-nums">{formatPercentage(latest.cpu_usage_percent)}</dd><dd class="mt-5 flex items-center justify-between border-t border-wg-border/70 pt-3 text-sm text-wg-text-muted"><span>Limit</span><span class="font-bold text-wg-text">{formatPercentage(summaryTelemetry.thresholds.cpu_usage_percent)}</span></dd></div>
-            <div class={`group relative overflow-hidden wg-glass-panel wg-glass-lift p-5 ${cardTone(metricState(latest.ram_usage_percent, summaryTelemetry.thresholds.ram_usage_percent))}`}><span class={`absolute inset-x-0 top-0 h-1 ${accentTone(metricState(latest.ram_usage_percent, summaryTelemetry.thresholds.ram_usage_percent))}`}></span><dt class="flex items-center justify-between text-[0.6875rem] font-extrabold tracking-[0.14em] text-wg-text-muted uppercase">RAM <span class={`size-2 rounded-full ${accentTone(metricState(latest.ram_usage_percent, summaryTelemetry.thresholds.ram_usage_percent))}`} title={statusText(metricState(latest.ram_usage_percent, summaryTelemetry.thresholds.ram_usage_percent))}></span></dt><dd class="mt-5 text-4xl leading-none font-extrabold tracking-tight tabular-nums">{formatPercentage(latest.ram_usage_percent)}</dd><dd class="mt-5 flex items-center justify-between border-t border-wg-border/70 pt-3 text-sm text-wg-text-muted"><span>Limit</span><span class="font-bold text-wg-text">{formatPercentage(summaryTelemetry.thresholds.ram_usage_percent)}</span></dd></div>
-            <div class={`group relative overflow-hidden wg-glass-panel wg-glass-lift p-5 ${cardTone(metricState(latest.storage_usage_percent, summaryTelemetry.thresholds.storage_usage_percent))}`}><span class={`absolute inset-x-0 top-0 h-1 ${accentTone(metricState(latest.storage_usage_percent, summaryTelemetry.thresholds.storage_usage_percent))}`}></span><dt class="flex items-center justify-between text-[0.6875rem] font-extrabold tracking-[0.14em] text-wg-text-muted uppercase">Storage <span class={`size-2 rounded-full ${accentTone(metricState(latest.storage_usage_percent, summaryTelemetry.thresholds.storage_usage_percent))}`} title={statusText(metricState(latest.storage_usage_percent, summaryTelemetry.thresholds.storage_usage_percent))}></span></dt><dd class="mt-5 text-4xl leading-none font-extrabold tracking-tight tabular-nums">{formatPercentage(latest.storage_usage_percent)}</dd><dd class="mt-5 flex items-center justify-between border-t border-wg-border/70 pt-3 text-sm text-wg-text-muted"><span>Limit</span><span class="font-bold text-wg-text">{formatPercentage(summaryTelemetry.thresholds.storage_usage_percent)}</span></dd></div>
-            <div class={`group relative overflow-hidden wg-glass-panel wg-glass-lift p-5 ${cardTone(metricState(latest.normalized_load, summaryTelemetry.thresholds.load_per_cpu))}`}><span class={`absolute inset-x-0 top-0 h-1 ${accentTone(metricState(latest.normalized_load, summaryTelemetry.thresholds.load_per_cpu))}`}></span><dt class="flex items-center justify-between text-[0.6875rem] font-extrabold tracking-[0.14em] text-wg-text-muted uppercase">Load per CPU <span class={`size-2 rounded-full ${accentTone(metricState(latest.normalized_load, summaryTelemetry.thresholds.load_per_cpu))}`} title={statusText(metricState(latest.normalized_load, summaryTelemetry.thresholds.load_per_cpu))}></span></dt><dd class="mt-5 text-4xl leading-none font-extrabold tracking-tight tabular-nums">{formatLoad(latest.normalized_load)}</dd><dd class="mt-5 flex items-center justify-between border-t border-wg-border/70 pt-3 text-sm text-wg-text-muted"><span>Limit</span><span class="font-bold text-wg-text">{summaryTelemetry.thresholds.load_per_cpu === null ? "—" : formatLoad(summaryTelemetry.thresholds.load_per_cpu)}</span></dd></div>
-        </dl>
+        <Tooltip.Provider>
+            <dl class="mt-4 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+                {@render metricCard("CPU", latest.cpu_usage_percent, summaryTelemetry.thresholds.cpu_usage_percent, formatPercentage)}
+                {@render metricCard("RAM", latest.ram_usage_percent, summaryTelemetry.thresholds.ram_usage_percent, formatPercentage)}
+                {@render metricCard("Storage", latest.storage_usage_percent, summaryTelemetry.thresholds.storage_usage_percent, formatPercentage)}
+                {@render metricCard("Load per CPU", latest.normalized_load, summaryTelemetry.thresholds.load_per_cpu, formatLoad)}
+            </dl>
+        </Tooltip.Provider>
     {:else}
-        <div class="mt-4 wg-glass-panel p-6 text-sm leading-6 text-wg-text-muted">Server metrics will appear after the monitoring receives its first report.</div>
+        <Surface class="mt-4 p-6 text-sm leading-6 text-wg-text-muted">Server metrics will appear after the monitoring receives its first report.</Surface>
     {/if}
 
     <div class="mt-7 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"><div><p class="text-[0.6875rem] font-extrabold tracking-[0.14em] text-wg-text-muted uppercase">Telemetry trend</p><h3 class="mt-0.5 text-xl font-extrabold tracking-tight">Utilization history</h3></div><Select width="compact" density="compact" value={String(historyPeriod)} onchange={changeHistoryPeriod} disabled={historyLoading} class="font-semibold text-wg-text-muted" aria-label="Server health history period"><option value="1">Last 24 hours</option><option value="7">Last 7 days</option><option value="30">Last 30 days</option></Select></div>
-    <article class="mt-3 overflow-hidden wg-glass-panel">
+    <Surface role="article" class="mt-3 overflow-hidden">
         <div class="flex items-center justify-between gap-3 border-b border-wg-border bg-wg-surface-muted/50 px-5 py-3 text-xs font-bold text-wg-text-muted"><span>CPU · RAM · Storage · Load</span><span class="flex items-center gap-2"><span class="size-2 rounded-full bg-emerald-500"></span>{historyLoading ? "Updating" : "Reported values"}</span></div>
         {#if hasChartData}<div class="h-64 p-4 sm:h-96 sm:p-6" role="img" aria-label="Server CPU RAM storage and load utilization history"><canvas bind:this={canvas}></canvas></div>
         {:else}<p class="p-6 text-sm leading-6 text-wg-text-muted">{historyLoading ? "Loading server-health telemetry…" : "Server-health history will appear after the monitoring collects reports."}</p>{/if}
-    </article>
+    </Surface>
     {#if error}<Alert variant="destructive" class="mt-3 text-sm font-bold">{error}</Alert>{/if}
 </section>

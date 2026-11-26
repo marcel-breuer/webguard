@@ -70,7 +70,7 @@
     const hasSelection = $derived(selectedValues.length > 0);
     const widthClass = $derived(width === "full" ? "w-full" : "w-32");
     const densityClass = $derived(density === "default" ? "min-h-11 px-3 py-2 text-sm" : "min-h-8 px-2.5 py-1 text-xs");
-    const controlClass = $derived(`wg-glass-control border border-wg-border text-wg-text transition-colors hover:border-wg-text-muted focus:border-wg-accent focus:ring-2 focus:ring-wg-focus/40 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-wg-focus disabled:cursor-not-allowed disabled:bg-wg-surface-muted disabled:text-wg-text-muted ${densityClass} ${className}`);
+    const controlClass = $derived(`border border-wg-border text-wg-text transition-colors hover:border-wg-text-muted focus:border-wg-accent focus:ring-2 focus:ring-wg-focus/40 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-wg-focus disabled:cursor-not-allowed disabled:bg-wg-surface-muted disabled:text-wg-text-muted ${densityClass} ${className}`);
 
     function select(option: SelectOption): void {
         if (option.disabled) return;
@@ -111,7 +111,7 @@
             {/if}
         {/if}
         <Popover.Root bind:open onOpenChange={(nextOpen) => { if (!nextOpen) query = ""; }}>
-            <Popover.Trigger id={id ?? undefined} title={title ?? undefined} {disabled} aria-label={attributes["aria-label"]} aria-labelledby={attributes["aria-labelledby"]} aria-describedby={attributes["aria-describedby"]} aria-invalid={attributes["aria-invalid"]}
+            <Popover.Trigger variant="control" id={id ?? undefined} title={title ?? undefined} {disabled} aria-label={attributes["aria-label"]} aria-labelledby={attributes["aria-labelledby"]} aria-describedby={attributes["aria-describedby"]} aria-invalid={attributes["aria-invalid"]}
                 class={`flex w-full items-center gap-2 pr-16 text-left outline-none ${controlClass}`}
                 onkeydown={(event) => {
                     if (!open && (event.key === "ArrowDown" || event.key === "ArrowUp")) {
@@ -133,7 +133,7 @@
                 </span>
                 <ChevronDownIcon class={`size-4 shrink-0 text-wg-accent transition-transform ${open ? "rotate-180" : ""}`} />
             </Popover.Trigger>
-            <Popover.Content portalProps={{ disabled: true }} class="w-(--bits-popover-anchor-width) p-1 wg-glass-overlay"
+            <Popover.Content variant="glass" portalProps={{ disabled: true }} class="w-(--bits-popover-anchor-width) p-1"
                 onOpenAutoFocus={(event) => {
                     event.preventDefault();
                     searchInput?.focus();

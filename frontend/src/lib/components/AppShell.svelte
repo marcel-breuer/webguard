@@ -125,18 +125,18 @@
 </script>
 <MonitoringSearch bind:open={monitoringSearchOpen} />
 
-<a href="#main-content" class="sr-only fixed top-3 left-3 z-[60] rounded-md bg-wg-accent px-4 py-2 text-sm font-bold text-wg-accent-contrast no-underline focus:not-sr-only">Skip to main content</a>
+<Button href="#main-content" class="sr-only fixed top-3 left-3 z-[60] min-h-0 border-0 px-4 py-2 font-bold tracking-normal no-underline shadow-none focus:not-sr-only">Skip to main content</Button>
 
 <Sidebar.Provider open={!collapsed} onOpenChange={(open) => setCollapsed(!open)}>
     <div class={`min-h-screen w-full min-w-0 transition-[padding] duration-150 ${collapsed ? "pl-[5.5rem] max-[54rem]:pl-0" : "pl-68 max-[54rem]:pl-0"}`}>
         {#if !isMobileViewport}
             <Sidebar.Root collapsible="none" class={`fixed inset-y-0 left-0 z-20 border-r border-purple-900 transition-[width] duration-150 max-[54rem]:hidden ${collapsed ? "w-[5.5rem]" : "w-68"}`}>
-                <aside id="app-navigation" class="flex h-full flex-col wg-glass-navigation text-purple-100" aria-label="Application navigation">{@render Navigation()}</aside>
+                <Sidebar.Root as="aside" collapsible="none" variant="navigation" id="app-navigation" class="w-full" aria-label="Application navigation">{@render Navigation()}</Sidebar.Root>
             </Sidebar.Root>
         {/if}
 
         <Sheet.Root bind:open={mobileOpen}>
-            <header inert={mobileOpen} class="hidden min-h-16 items-center justify-between border-b wg-glass-bar px-4 max-[54rem]:flex">
+            <Sidebar.Header variant="bar" inert={mobileOpen} class="hidden min-h-16 items-center justify-between px-4 max-[54rem]:flex">
                 <a class="flex items-center gap-3 font-extrabold tracking-tight no-underline" href={appRoutes.dashboard} aria-label="WebGuard dashboard"><img class="size-9 rounded-[0.65rem] bg-white object-contain p-0.5" src="/brand/webguard-logo.png" alt="" /><span>WebGuard</span></a>
                 <Button variant="ghost" class="ml-auto mr-2 size-11 border-wg-border p-0" aria-label="Search monitorings" aria-haspopup="dialog" onclick={openMonitoringSearch}><NavIcon name="search" /></Button>
                 <Sheet.Trigger>
@@ -144,7 +144,7 @@
                         <Button {...props} variant="ghost" class="size-11 border-wg-border p-0 text-xl" aria-controls="app-navigation" aria-expanded={mobileOpen} aria-label="Toggle navigation">☰</Button>
                     {/snippet}
                 </Sheet.Trigger>
-            </header>
+            </Sidebar.Header>
             {#if isMobileViewport}
                 <!-- Keep the controlled element mounted and let the mobile-navigation dataset own the scroll lock. -->
                 <Sheet.Content side="left" id="app-navigation" forceMount preventScroll={false} showCloseButton={false}
@@ -152,7 +152,7 @@
                     inert={isMobileViewport && !mobileOpen} aria-describedby={undefined} portalProps={{ to: "#localized-app" }}
                     onCloseAutoFocus={(event) => { if (monitoringSearchOpen) event.preventDefault(); }}>
                     <Sheet.Title class="sr-only">Application navigation</Sheet.Title>
-                    <div class="flex h-full min-h-0 flex-col wg-glass-navigation text-purple-100">{@render Navigation()}</div>
+                    <Sidebar.Root collapsible="none" variant="navigation" class="min-h-0 w-auto">{@render Navigation()}</Sidebar.Root>
                 </Sheet.Content>
             {/if}
         </Sheet.Root>

@@ -1,4 +1,7 @@
 <script lang="ts">
+    import { Button as LinkButton } from "#lib/components/ui/button/index.ts";
+    import { Card } from "#lib/components/ui/card/index.ts";
+    import { FieldLabel } from "#lib/components/ui/field/index.ts";
     import { Badge } from "#lib/components/ui/badge/index.ts";
     import * as Collapsible from "#lib/components/ui/collapsible/index.ts";
     import { Alert } from "#lib/components/ui/alert/index.ts";
@@ -138,7 +141,7 @@
     </div>
     <Field label="Name" error={errorFor("name")} required><Input name="name" value={monitoring?.name ?? ""} required /></Field>
     {#if generatedTarget}
-        <p class="rounded-xl border border-dashed border-wg-border bg-wg-surface-muted p-3 text-sm text-wg-text-muted">The endpoint is generated securely after this monitoring is saved.</p>
+        <Alert role="note" class="rounded-xl border-dashed border-wg-border bg-wg-surface-muted p-3 text-wg-text-muted">The endpoint is generated securely after this monitoring is saved.</Alert>
     {:else}
         <Field label="Target" error={errorFor("target")} required><Input name="target" value={monitoring?.target ?? ""} required /></Field>
     {/if}
@@ -178,20 +181,20 @@
             </div>
             {#if type === "keyword"}<Field label="Required keyword" error={errorFor("keyword")} required><Input name="keyword" value={monitoring?.keyword ?? ""} required /></Field>{/if}
         </div>
-        {#if monitoring}<label class="flex items-center gap-2 text-sm text-wg-text-muted"><Checkbox name="clear_auth_password" /> Remove stored HTTP basic-auth password</label>{/if}
+        {#if monitoring}<FieldLabel class="flex-row text-sm font-normal text-wg-text-muted"><Checkbox name="clear_auth_password" /> Remove stored HTTP basic-auth password</FieldLabel>{/if}
     {/if}
 {/snippet}
 
 {#snippet notificationFields()}
     <div class="grid gap-4 sm:grid-cols-2"><Field label="Failure confirmation attempts" error={errorFor("failure_confirmation_threshold")} required><Input name="failure_confirmation_threshold" type="number" min="1" max="10" value={monitoring?.failure_confirmation_threshold ?? 2} required /></Field><Field label="SSL warning days" error={errorFor("ssl_expiry_warning_days")} required><Input name="ssl_expiry_warning_days" type="number" min="1" max="365" value={monitoring?.ssl_expiry_warning_days ?? 7} required /></Field></div>
-    <label class="flex items-center gap-2 text-sm font-bold"><Checkbox name="notification_on_failure" checked={monitoring?.notification_on_failure ?? true} /> Notify on failure</label>
+    <FieldLabel class="flex-row text-sm font-bold"><Checkbox name="notification_on_failure" checked={monitoring?.notification_on_failure ?? true} /> Notify on failure</FieldLabel>
 {/snippet}
 
 <form class={presentation === "edit-modal" ? "grid gap-0" : "grid gap-6"} onsubmit={submit} novalidate>
     {#if presentation === "first-website"}
         <section class="grid gap-4 pb-6">
             {#if generatedTarget}
-                <p class="rounded-xl border border-dashed border-wg-border bg-wg-surface-muted p-3 text-sm text-wg-text-muted">The endpoint is generated securely after this monitoring is saved.</p>
+                <Alert role="note" class="rounded-xl border-dashed border-wg-border bg-wg-surface-muted p-3 text-wg-text-muted">The endpoint is generated securely after this monitoring is saved.</Alert>
             {:else}
                 <Field label={type === "http" ? "Website URL" : "Target"} error={errorFor("target")} required>
                     <Input name="target" type={type === "http" || type === "keyword" ? "url" : "text"} bind:value={firstTarget} placeholder={type === "http" ? "https://example.com" : "example.com"} required />
@@ -279,12 +282,22 @@
     {/if}
 
     {#if message}<Alert variant="destructive" class="text-sm font-bold">{message}</Alert>{/if}
-    <div class={`flex flex-wrap justify-end gap-3 ${presentation === "edit-modal" ? "sticky bottom-0 z-10 -mx-4 -mb-4 border-t wg-glass-bar px-4 py-4 sm:-mx-6 sm:-mb-6 sm:px-6" : ""}`}>
-        {#if onCancel}
-            <Button variant="secondary" type="button" onclick={onCancel}>Cancel</Button>
-        {:else}
-            <a class="inline-flex min-h-11 items-center justify-center rounded-md border border-wg-border bg-wg-surface px-4 py-2.5 text-sm font-semibold tracking-[0.035em] text-wg-text no-underline transition hover:border-wg-focus hover:bg-wg-surface-muted" href={monitoring ? `/monitorings/${monitoring.id}` : "/monitorings"}>Cancel</a>
-        {/if}
-        <Button type="submit" loading={submitting}>{monitoring ? (presentation === "edit-modal" ? "Update" : "Save monitoring") : presentation === "first-website" ? "Add website" : "Create monitoring"}</Button>
-    </div>
+    {#snippet actions()}
+        <div class="flex flex-wrap justify-end gap-3">
+            {#if onCancel}
+                <Button variant="secondary" type="button" onclick={onCancel}>Cancel</Button>
+            {:else}
+                <LinkButton variant="ghost" class="border-wg-border bg-wg-surface no-underline" href={monitoring ? `/monitorings/${monitoring.id}` : "/monitorings"}>Cancel</LinkButton>
+            {/if}
+            <Button type="submit" loading={submitting}>{monitoring ? (presentation === "edit-modal" ? "Update" : "Save monitoring") : presentation === "first-website" ? "Add website" : "Create monitoring"}</Button>
+        </div>
+    {/snippet}
+
+    {#if presentation === "edit-modal"}
+        <Card class="sticky bottom-0 z-10 -mx-4 -mb-4 rounded-none border-0 border-t border-(--wg-glass-rim) shadow-[inset_0_1px_0_var(--wg-glass-edge)] px-4 py-4 sm:-mx-6 sm:-mb-6 sm:px-6">
+            {@render actions()}
+        </Card>
+    {:else}
+        {@render actions()}
+    {/if}
 </form>

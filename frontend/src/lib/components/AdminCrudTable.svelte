@@ -1,4 +1,6 @@
 <script lang="ts">
+    import { Card as GlassCard } from "#lib/components/ui/card/index.ts";
+    import { Field as FilterField, FieldLabel } from "#lib/components/ui/field/index.ts";
     import * as Alert from "#lib/components/ui/alert/index.ts";
     import { Button as ActionLink } from "#lib/components/ui/button/index.ts";
     import * as Table from "#lib/components/ui/table/index.ts";
@@ -39,6 +41,7 @@
         extraActions?: (item: Item) => Array<{ label: string; endpoint: string }>;
     }
 
+    const filterId = $props.id();
     let { title, description, singular, endpoint, pagePath, items, pagination, query, columns, fields, tableFilters = [], createDefaults = {}, itemLabel = (item) => String(item.id), extraActions = () => [] }: Props = $props();
     let dialogOpen = $state(false);
     let editing = $state<Item | null>(null);
@@ -107,13 +110,32 @@
     <header class="mb-8 flex flex-col items-start justify-between gap-4 sm:flex-row"><div><p class="m-0 text-[0.8125rem] font-extrabold tracking-[0.1em] text-wg-accent uppercase">Administration</p><h1 class="mt-2 text-[clamp(2rem,6vw,3rem)] leading-[1.1] font-bold">{title}</h1><p class="mt-3 leading-6 text-wg-text-muted">{description}</p></div><Button onclick={openCreate}>Create {singular}</Button></header>
     {#if error}<Alert.Root variant="destructive" class="mb-5 font-bold"><Alert.Description>{error}</Alert.Description></Alert.Root>{/if}
 
-    <form class="mb-5 grid gap-4 wg-glass-panel p-5 sm:grid-cols-[minmax(0,1fr)_11rem_8rem_auto] sm:items-end" method="GET">
-        <label class="grid gap-2 text-sm font-bold"><span>Search</span><Input name="search" type="search" value={query.search} placeholder={`Search ${title.toLowerCase()}`} /></label>
-        {#each tableFilters as filter}<label class="grid gap-2 text-sm font-bold"><span>{filter.label}</span><Select name={filter.name} value={filter.value}><option value="">All {filter.label.toLowerCase()}</option>{#each filter.options as option}<option value={option.value}>{option.label}</option>{/each}</Select></label>{/each}
-        <label class="grid gap-2 text-sm font-bold"><span>Rows</span><Select name="per_page" value={String(query.perPage)}><option value="10">10</option><option value="25">25</option><option value="50">50</option><option value="100">100</option></Select></label>
-        <div class="flex gap-3"><Button type="submit">Apply</Button><ActionLink variant="outline" class="no-underline" href={pagePath}>Reset</ActionLink></div>
-        <input name="sort" type="hidden" value={query.sort} /><input name="direction" type="hidden" value={query.direction} />
-    </form>
+    <GlassCard class="mb-5 overflow-visible p-5">
+        <form class="grid gap-4 sm:grid-cols-[minmax(0,1fr)_11rem_8rem_auto] sm:items-end" method="GET">
+
+            <FilterField>
+                <FieldLabel for={`${filterId}-search`} class="font-bold">Search</FieldLabel>
+                <Input id={`${filterId}-search`} name="search" type="search" value={query.search} placeholder={`Search ${title.toLowerCase()}`} />
+            </FilterField>
+
+            {#each tableFilters as filter}
+                <FilterField>
+                    <FieldLabel for={`${filterId}-${filter.name}`} class="font-bold">{filter.label}</FieldLabel>
+                    <Select id={`${filterId}-${filter.name}`} name={filter.name} value={filter.value}><option value="">All {filter.label.toLowerCase()}</option>{#each filter.options as option}<option value={option.value}>{option.label}</option>{/each}</Select>
+                </FilterField>
+            {/each}
+
+            <FilterField>
+                <FieldLabel for={`${filterId}-per_page`} class="font-bold">Rows</FieldLabel>
+                <Select id={`${filterId}-per_page`} name="per_page" value={String(query.perPage)}><option value="10">10</option><option value="25">25</option><option value="50">50</option><option value="100">100</option></Select>
+            </FilterField>
+
+            <div class="flex gap-3"><Button type="submit">Apply</Button><ActionLink variant="outline" class="no-underline" href={pagePath}>Reset</ActionLink></div>
+
+            <input name="sort" type="hidden" value={query.sort} /><input name="direction" type="hidden" value={query.direction} />
+
+        </form>
+    </GlassCard>
 
     {#if items.length === 0}<EmptyState title={`No ${title.toLowerCase()} match the selected filters`} description="Try a broader search or reset the table controls." />{:else}<DataTable caption={title}><Table.Header><Table.Row>{#each columns as column}<Table.Head>{#if column.sortKey}<a class="font-bold text-wg-text-muted no-underline hover:text-wg-accent" href={sortHref(column.sortKey)}>{column.label}{sortLabel(column.sortKey)}</a>{:else}{column.label}{/if}</Table.Head>{/each}<Table.Head>Actions</Table.Head></Table.Row></Table.Header><Table.Body>{#each items as item (String(item.id))}<Table.Row>{#each columns as column}<Table.Cell>{format(column, item)}</Table.Cell>{/each}<Table.Cell><div class="flex flex-wrap gap-2 md:flex-nowrap"><Button class="min-h-9 px-3 py-1.5 text-xs" variant="secondary" type="button" onclick={() => openEdit(item)}>Edit</Button>{#each extraActions(item) as mutation}<Button class="min-h-9 px-3 py-1.5 text-xs" variant="secondary" type="button" onclick={() => action(item, mutation)}>{mutation.label}</Button>{/each}<Button class="min-h-9 px-3 py-1.5 text-xs" variant="danger" type="button" onclick={() => remove(item)}>Delete</Button></div></Table.Cell></Table.Row>{/each}</Table.Body></DataTable>{/if}
 

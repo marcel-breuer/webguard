@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { Label } from "#lib/components/ui/label/index.ts";
     import { FieldDescription, FieldLegend, FieldSet } from "#lib/components/ui/field/index.ts";
     import { Alert } from "#lib/components/ui/alert/index.ts";
     import { FirstPartyApiError, requestFirstPartyApi } from "#lib/api/client.ts";
@@ -95,11 +96,11 @@
 <form class="grid gap-6" onsubmit={submit} novalidate>
     <div class="grid gap-5 sm:grid-cols-2">
         <Field label="Name" error={errorFor("name")} required><Input name="name" value={statusPage?.name ?? ""} required /></Field>
-        <FieldSet class="gap-0"><FieldLegend variant="label" class="font-bold">Visibility</FieldLegend><Input name="is_public" type="hidden" value="0" /><label class="flex min-h-11 items-center gap-3 rounded-md border border-wg-border px-3 text-sm font-bold"><Checkbox name="is_public" value="1" checked={statusPage?.publication.is_public ?? true} /> Publish this status page</label><FieldDescription class="mt-1 text-[0.8125rem] leading-5">Published pages are available at their public status URL.</FieldDescription></FieldSet>
+        <FieldSet class="gap-0"><FieldLegend variant="label" class="font-bold">Visibility</FieldLegend><Input name="is_public" type="hidden" value="0" /><Label class="flex min-h-11 items-center gap-3 rounded-md border border-wg-border px-3 text-sm font-bold"><Checkbox name="is_public" value="1" checked={statusPage?.publication.is_public ?? true} /> Publish this status page</Label><FieldDescription class="mt-1 text-[0.8125rem] leading-5">Published pages are available at their public status URL.</FieldDescription></FieldSet>
     </div>
     <Field label="Description" error={errorFor("description")}><Textarea name="description" value={statusPage?.description ?? ""} /></Field>
 
-    <FieldSet class="gap-0"><FieldLegend variant="label" class="font-bold">Incident communication</FieldLegend><input name="auto_publish_incident_updates" type="hidden" value="0" /><label class="flex min-h-11 items-center gap-3 rounded-md border border-wg-border px-3 text-sm font-bold"><Checkbox name="auto_publish_incident_updates" value="1" checked={statusPage?.auto_publish_incident_updates ?? false} /> Automatically publish incident updates</label><FieldDescription class="mt-1 text-[0.8125rem] leading-5">Publish neutral investigating and resolved updates when an incident affects a component on this public page.</FieldDescription></FieldSet>
+    <FieldSet class="gap-0"><FieldLegend variant="label" class="font-bold">Incident communication</FieldLegend><input name="auto_publish_incident_updates" type="hidden" value="0" /><Label class="flex min-h-11 items-center gap-3 rounded-md border border-wg-border px-3 text-sm font-bold"><Checkbox name="auto_publish_incident_updates" value="1" checked={statusPage?.auto_publish_incident_updates ?? false} /> Automatically publish incident updates</Label><FieldDescription class="mt-1 text-[0.8125rem] leading-5">Publish neutral investigating and resolved updates when an incident affects a component on this public page.</FieldDescription></FieldSet>
 
     <FieldSet class="grid gap-4 border-t border-wg-border pt-6">
         <FieldLegend class="text-xl font-bold">Components</FieldLegend>

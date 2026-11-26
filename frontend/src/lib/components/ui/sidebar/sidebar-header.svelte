@@ -4,18 +4,19 @@
 
 	let {
 		ref = $bindable(null),
+		variant = "default",
 		class: className,
 		children,
 		...restProps
-	}: WithElementRef<HTMLAttributes<HTMLElement>> = $props();
+	}: WithElementRef<HTMLAttributes<HTMLElement>> & { variant?: "default" | "bar" } = $props();
 </script>
 
-<div
+<svelte:element this={variant === "bar" ? "header" : "div"}
 	bind:this={ref}
 	data-slot="sidebar-header"
 	data-sidebar="header"
-	class={cn("gap-2 p-2 flex flex-col", className)}
+	class={cn(variant === "bar" ? "wg-glass-bar border-b" : "gap-2 p-2 flex flex-col", className)}
 	{...restProps}
 >
 	{@render children?.()}
-</div>
+</svelte:element>

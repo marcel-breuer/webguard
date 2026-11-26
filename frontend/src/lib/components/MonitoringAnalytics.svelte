@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { Card as Surface } from "#lib/components/ui/card/index.ts";
     import { Badge } from "#lib/components/ui/badge/index.ts";
     import * as Tooltip from "#lib/components/ui/tooltip/index.ts";
     import { Alert } from "#lib/components/ui/alert/index.ts";
@@ -381,7 +382,7 @@
         <Tooltip.Provider>
             <div class="mt-3 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
                 {#each calendarMonths as [month, value]}
-                    <article class="w-full wg-glass-panel p-6">
+                    <Surface role="article" class="w-full p-6">
                         <div class="flex items-baseline gap-2"><h3 class="text-lg font-extrabold">{formatMonthYear(new Date(`${month}-01T00:00:00`))}</h3><span class="text-xs font-bold text-wg-text-muted">({value.monthly_average_uptime === null ? "—" : formatPercentage(value.monthly_average_uptime)})</span></div>
                         <div class="mt-4 grid grid-cols-7 gap-1.5 text-center text-[0.625rem] text-wg-text-muted" aria-hidden="true"><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span></div>
                         <div class="mt-2 grid grid-cols-7 gap-1.5" aria-label={`Availability for ${month}`}>
@@ -402,24 +403,24 @@
                                 </Tooltip.Root>
                             {/each}
                         </div>
-                    </article>
+                    </Surface>
                 {/each}
             </div>
         </Tooltip.Provider>
     {:else}<p class="mt-3 text-sm leading-6 text-wg-text-muted">Daily availability will appear after a full monitoring day.</p>{/if}
     {#if uptimeCalendarError}<Alert variant="destructive" class="mt-3 text-sm font-bold">{uptimeCalendarError}</Alert>{/if}
-    <article class="mt-4 wg-glass-panel px-4 py-4 sm:px-6"><div class="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-xs text-wg-text-muted"><span class="inline-flex items-center gap-2"><span class="size-3 rounded-sm bg-emerald-500"></span>≥ 97.5 %</span><span class="inline-flex items-center gap-2"><span class="size-3 rounded-sm bg-amber-400"></span>≥ 90 % and &lt; 97.5 %</span><span class="inline-flex items-center gap-2"><span class="size-3 rounded-sm bg-red-500"></span>&lt; 90 %</span><span class="inline-flex items-center gap-2"><span class="size-3 rounded-sm bg-wg-surface-muted"></span>N/A</span></div></article>
+    <Surface role="article" class="mt-4 px-4 py-4 sm:px-6"><div class="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-xs text-wg-text-muted"><span class="inline-flex items-center gap-2"><span class="size-3 rounded-sm bg-emerald-500"></span>≥ 97.5 %</span><span class="inline-flex items-center gap-2"><span class="size-3 rounded-sm bg-amber-400"></span>≥ 90 % and &lt; 97.5 %</span><span class="inline-flex items-center gap-2"><span class="size-3 rounded-sm bg-red-500"></span>&lt; 90 %</span><span class="inline-flex items-center gap-2"><span class="size-3 rounded-sm bg-wg-surface-muted"></span>N/A</span></div></Surface>
 </section>
 
 <section class="mt-7" aria-labelledby="response-time-heading">
     <div class="flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between"><h2 id="response-time-heading" class="shrink-0 text-2xl font-extrabold">Response Time</h2><Select width="compact" density="compact" value={String(responseTimeDays)} onchange={changeResponseTimePeriod} disabled={loadingResponseTimes} class="font-semibold text-wg-text-muted" aria-label="Response time period"><option value="1">Daily</option><option value="7">Weekly</option><option value="30">Monthly</option></Select></div>
-    <article class="mt-3 wg-glass-panel p-4 sm:p-6">
+    <Surface role="article" class="mt-3 p-4 sm:p-6">
         {#if points.length > 0}
             <div class="h-64 sm:h-96" role="img" aria-label="Response time line chart in milliseconds"><canvas bind:this={responseTimeCanvas}></canvas></div>
         {:else}<p class="text-sm leading-6 text-wg-text-muted">{loadingResponseTimes ? "Loading response-time data…" : "Response-time data will appear after the monitoring collects results."}</p>{/if}
-    </article>
+    </Surface>
     {#if responseTimesError}<Alert variant="destructive" class="mt-3 text-sm font-bold">{responseTimesError}</Alert>{/if}
-    {#if points.length > 0}<dl class="mt-4 grid gap-4 text-center sm:grid-cols-3"><div class="wg-glass-panel p-5"><dt class="text-sm text-wg-text-muted">Minimum</dt><dd class="mt-1 text-lg font-extrabold">{formatNumber(Math.round(responseTimes.aggregated.min ?? 0))} ms</dd></div><div class="wg-glass-panel p-5"><dt class="text-sm text-wg-text-muted">Average</dt><dd class="mt-1 text-lg font-extrabold">{formatNumber(Math.round(responseTimes.aggregated.avg ?? 0))} ms</dd></div><div class="wg-glass-panel p-5"><dt class="text-sm text-wg-text-muted">Maximum</dt><dd class="mt-1 text-lg font-extrabold">{formatNumber(Math.round(responseTimes.aggregated.max ?? 0))} ms</dd></div></dl>{/if}
+    {#if points.length > 0}<dl class="mt-4 grid gap-4 text-center sm:grid-cols-3"><Surface class="p-5"><dt class="text-sm text-wg-text-muted">Minimum</dt><dd class="mt-1 text-lg font-extrabold">{formatNumber(Math.round(responseTimes.aggregated.min ?? 0))} ms</dd></Surface><Surface class="p-5"><dt class="text-sm text-wg-text-muted">Average</dt><dd class="mt-1 text-lg font-extrabold">{formatNumber(Math.round(responseTimes.aggregated.avg ?? 0))} ms</dd></Surface><Surface class="p-5"><dt class="text-sm text-wg-text-muted">Maximum</dt><dd class="mt-1 text-lg font-extrabold">{formatNumber(Math.round(responseTimes.aggregated.max ?? 0))} ms</dd></Surface></dl>{/if}
 </section>
 
 <section class="mt-7" aria-labelledby="incidents-heading">
@@ -427,34 +428,36 @@
     {#if incidents.length > 0}
         <ul class="mt-3 grid gap-3 p-0">
             {#each incidents as incident}
-                <li class="list-none wg-glass-panel p-4">
-                    <p class="font-bold">{incident.up_at ? "Resolved incident" : "Open incident"}</p>
-                    <p class="mt-1 text-sm text-wg-text-muted">{timestamp(incident.down_at)} · {duration(incident)}</p>
-                    {#if incident.diagnosis || !incident.up_at}
-                        <IncidentDiagnosisPanel incidentId={incident.id} diagnosis={incident.diagnosis} />
+                <li class="list-none">
+                    <Surface class="p-4">
+                        <p class="font-bold">{incident.up_at ? "Resolved incident" : "Open incident"}</p>
+                        <p class="mt-1 text-sm text-wg-text-muted">{timestamp(incident.down_at)} · {duration(incident)}</p>
+                        {#if incident.diagnosis || !incident.up_at}
+                            <IncidentDiagnosisPanel incidentId={incident.id} diagnosis={incident.diagnosis} />
+                        {/if}
+                        {#if incident.consensus_snapshot}
+                            {@const consensus = incident.consensus_snapshot}
+                            <Surface variant="inset" class="mt-4 rounded-xl border border-wg-border bg-wg-surface-muted/40 shadow-none p-4">
+                                <h3 class="font-bold">Decision evidence</h3>
+                                <p class="mt-2 text-sm leading-6 text-wg-text-muted">
+                                    {localized("Incident opened as :classification because :failed_count of :reporting fresh results failed; :required failures were required from :total selected locations.", {
+                                        classification: localized(consensus.status === "global" ? "Global outage" : "Regional outage"),
+                                        failed_count: consensus.affected_locations.length,
+                                        reporting: consensus.reporting_locations,
+                                        required: consensus.required_failures,
+                                        total: consensus.total_locations,
+                                    })}
+                                </p>
+                                <p class="mt-3 text-sm"><span class="font-semibold">Failed locations:</span> {consensus.affected_locations.join(", ") || "—"}</p>
+                                <p class="mt-3 text-sm font-semibold">Location evidence</p>
+                                <ul class="mt-1 grid gap-1 pl-5 text-sm text-wg-text-muted">
+                                    {#each consensus.locations as location (location.code)}
+                                        <li>{locationEvidence(location)}</li>
+                                    {/each}
+                                </ul>
+                        </Surface>
                     {/if}
-                    {#if incident.consensus_snapshot}
-                        {@const consensus = incident.consensus_snapshot}
-                        <div class="mt-4 rounded-xl border border-wg-border bg-wg-surface-muted/40 p-4">
-                            <h3 class="font-bold">Decision evidence</h3>
-                            <p class="mt-2 text-sm leading-6 text-wg-text-muted">
-                                {localized("Incident opened as :classification because :failed_count of :reporting fresh results failed; :required failures were required from :total selected locations.", {
-                                    classification: localized(consensus.status === "global" ? "Global outage" : "Regional outage"),
-                                    failed_count: consensus.affected_locations.length,
-                                    reporting: consensus.reporting_locations,
-                                    required: consensus.required_failures,
-                                    total: consensus.total_locations,
-                                })}
-                            </p>
-                            <p class="mt-3 text-sm"><span class="font-semibold">Failed locations:</span> {consensus.affected_locations.join(", ") || "—"}</p>
-                            <p class="mt-3 text-sm font-semibold">Location evidence</p>
-                            <ul class="mt-1 grid gap-1 pl-5 text-sm text-wg-text-muted">
-                                {#each consensus.locations as location (location.code)}
-                                    <li>{locationEvidence(location)}</li>
-                                {/each}
-                            </ul>
-                        </div>
-                    {/if}
+                    </Surface>
                 </li>
             {/each}
         </ul>
@@ -467,7 +470,7 @@
 
 {#if detail.current_check.regional_consensus}
     {@const consensus = detail.current_check.regional_consensus}
-    <section class="mt-7 wg-glass-panel p-4 sm:p-6" aria-labelledby="regional-consensus-heading">
+    <Surface as="section" class="mt-7 p-4 sm:p-6" aria-labelledby="regional-consensus-heading">
         <h2 id="regional-consensus-heading" class="text-2xl font-extrabold">Current regional consensus</h2>
         <p class="mt-2 text-sm leading-6 text-wg-text-muted">{consensusExplanation(consensus)}</p>
         <p class="mt-3 text-sm"><span class="font-semibold">Failed locations:</span> {consensus.affected_locations.join(", ") || "None"}</p>
@@ -477,13 +480,13 @@
                 <li>{locationEvidence(location)}</li>
             {/each}
         </ul>
-    </section>
+    </Surface>
 {/if}
 
 <section class="mt-7" aria-labelledby="recent-checks-heading">
     <div><h2 id="recent-checks-heading" class="text-2xl font-extrabold">Recent Checks</h2><p class="mt-1 text-sm text-wg-text-muted">{formatNumber(checks.length)} loaded checks · Live and archived data</p></div>
     {#if checks.length > 0}
-        <div class="relative mt-3 overflow-hidden wg-glass-panel">
+        <Surface class="relative mt-3 overflow-hidden">
             {#each checks as check, index (check.id)}
                 <article class="relative z-10 grid grid-cols-[1.25rem_minmax(0,1fr)] gap-x-3 gap-y-3 px-4 py-4 transition-colors hover:bg-wg-surface-muted/50 sm:grid-cols-[1.5rem_minmax(11rem,0.9fr)_minmax(0,1.6fr)_auto] sm:items-center sm:gap-4 sm:px-5 sm:py-5">
                     {#if index < checks.length - 1}<span class={`pointer-events-none absolute top-[1.625rem] bottom-[-1.625rem] left-[1.625rem] z-[-1] w-px sm:left-8 ${timelineConnectorTone(check.status)}`} aria-hidden="true"></span>{/if}
@@ -493,7 +496,7 @@
                     <Badge variant="outline" class={`col-start-2 mt-0 inline-flex w-fit max-w-full items-center justify-self-start whitespace-nowrap rounded-full px-2.5 py-0.5 text-[0.5625rem] leading-none font-extrabold tracking-[0.08em] uppercase sm:col-start-auto sm:justify-self-end ${statusTone(check.status)}`}>{check.status === "up" ? "Successful" : check.status}</Badge>
                 </article>
             {/each}
-        </div>
+        </Surface>
         {#if checksError}<Alert variant="destructive" class="mt-3 text-sm font-bold">{checksError}</Alert>{/if}
         {#if checksMeta.has_more}<div class="mt-5 flex justify-center"><Button variant="secondary" loading={loadingChecks} onclick={loadMoreChecks}>Load more</Button></div>{/if}
     {:else}<p class="mt-3 text-sm text-wg-text-muted">No checks have been recorded yet.</p>{/if}
