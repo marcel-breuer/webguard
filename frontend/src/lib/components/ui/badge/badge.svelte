@@ -5,6 +5,7 @@
 		base: "inline-flex items-center gap-[0.4rem] rounded px-[0.6rem] py-[0.3rem] text-xs leading-none font-semibold",
 		variants: {
 			variant: {
+				dot: "shrink-0 rounded-full bg-current p-0",
         healthy: "bg-green-100 text-green-800 dark:bg-green-950 dark:text-green-200",
         degraded: "bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-200",
         danger: "bg-red-100 text-red-700 dark:bg-red-950 dark:text-red-200",

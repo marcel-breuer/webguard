@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { Separator } from "#lib/components/ui/separator/index.ts";
     import { Button as LinkButton } from "#lib/components/ui/button/index.ts";
     import { Card } from "#lib/components/ui/card/index.ts";
     import { FieldLabel } from "#lib/components/ui/field/index.ts";
@@ -204,7 +205,8 @@
             {@render websiteIntervalField()}
             {#if httpTypes}<p class="-mt-2 text-sm text-wg-text-muted">Your first check runs on the next poll. Later checks follow this interval.</p>{/if}
         </section>
-        <Collapsible.Root class="group border-t border-wg-border" bind:open={advancedOpen}>
+        <Collapsible.Root class="group" bind:open={advancedOpen}>
+            <Separator class="bg-wg-border" />
             <Collapsible.Trigger class="flex w-full min-h-12 cursor-pointer items-center justify-between gap-4 py-4 text-base font-bold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-wg-focus"><span>Advanced options</span><span class="text-base text-wg-text-muted transition group-data-[state=open]:rotate-180" aria-hidden="true">⌄</span></Collapsible.Trigger>
             <Collapsible.Content forceMount class="data-[state=closed]:hidden">
                 <div class="grid gap-5 pb-6">
@@ -216,11 +218,13 @@
                         </Field>
                         <Field label="Lifecycle" error={errorFor("status")}><Select name="status" value="active"><option value="active">Active</option><option value="paused">Paused</option></Select></Field>
                     </section>
-                    <section class="grid gap-4 border-t border-wg-border pt-5">
+                    <section class="relative grid gap-4 pt-5">
+                        <Separator class="absolute inset-x-0 top-0 bg-wg-border" />
                         <h3 class="text-lg font-bold">Check settings</h3>
                         {@render checkFields()}
                     </section>
-                    <section class="grid gap-4 border-t border-wg-border pt-5">
+                    <section class="relative grid gap-4 pt-5">
+                        <Separator class="absolute inset-x-0 top-0 bg-wg-border" />
                         <h3 class="text-lg font-bold">Assignment and alerts</h3>
                         {@render ownershipFields()}
                         {@render notificationFields()}
@@ -270,11 +274,13 @@
             <h2 class="text-lg font-bold">Basic configuration</h2>
             {@render basicFields()}
         </section>
-        <section class="grid gap-4 border-t border-wg-border pt-6">
+        <section class="relative grid gap-4 pt-6">
+            <Separator class="absolute inset-x-0 top-0 bg-wg-border" />
             <h2 class="text-lg font-bold">Check settings</h2>
             {@render checkFields()}
         </section>
-        <section class="grid gap-4 border-t border-wg-border pt-6">
+        <section class="relative grid gap-4 pt-6">
+            <Separator class="absolute inset-x-0 top-0 bg-wg-border" />
             <h2 class="text-lg font-bold">Assignment and alerts</h2>
             {@render ownershipFields()}
             {@render notificationFields()}

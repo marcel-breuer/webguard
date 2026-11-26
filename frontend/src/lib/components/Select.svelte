@@ -2,6 +2,7 @@
     import CheckIcon from "@lucide/svelte/icons/check";
     import ChevronDownIcon from "@lucide/svelte/icons/chevron-down";
     import XIcon from "@lucide/svelte/icons/x";
+    import { Badge } from "#lib/components/ui/badge/index.ts";
     import { Button } from "#lib/components/ui/button/index.ts";
     import { Command as CommandPrimitive } from "bits-ui";
     import * as Command from "#lib/components/ui/command/index.ts";
@@ -123,7 +124,7 @@
                 <span class="flex min-w-0 flex-1 flex-wrap items-center gap-1.5">
                     {#if multiple && selectedOptions.length > 0}
                         {#each selectedOptions as option (option.value)}
-                            <span class="max-w-full truncate rounded bg-wg-surface-muted px-2 py-0.5 text-xs font-semibold text-wg-accent">{option.label}</span>
+                            <Badge variant="neutral" class="block max-w-full truncate px-2 py-0.5 leading-normal text-wg-accent">{option.label}</Badge>
                         {/each}
                     {:else if selectedOptions[0]}
                         <span class="truncate">{selectedOptions[0].label}</span>
