@@ -8,15 +8,17 @@
 		children,
 		as = "div",
 		size = "default",
+		variant = "default",
 		...restProps
-	}: WithElementRef<HTMLAttributes<HTMLElement>> & { as?: "div" | "section"; size?: "default" | "sm" } = $props();
+	}: WithElementRef<HTMLAttributes<HTMLElement>> & { as?: "div" | "section"; size?: "default" | "sm"; variant?: "default" | "inset" } = $props();
 </script>
 
 <svelte:element this={as}
 	bind:this={ref}
 	data-slot="card"
 	data-size={size}
-	class={cn("wg-glass-panel overflow-hidden", className)}
+	data-variant={variant}
+	class={cn(variant === "inset" ? "wg-glass-inset" : "wg-glass-panel", "overflow-hidden", className)}
 	{...restProps}
 >
 	{@render children?.()}
