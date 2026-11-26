@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { EmptyDescription } from "#lib/components/ui/empty/index.ts";
     import { FieldLabel, FieldLegend, FieldSet } from "#lib/components/ui/field/index.ts";
     import { Alert } from "#lib/components/ui/alert/index.ts";
     import { invalidateAll } from "$app/navigation";
@@ -101,7 +102,7 @@
                             {notificationChannelLabel(channel)}
                         </FieldLabel>
                     {:else}
-                        <p class="text-sm text-wg-text-muted">No notification channels are configured.</p>
+                        <EmptyDescription class="text-sm text-wg-text-muted">No notification channels are configured.</EmptyDescription>
                     {/each}
                 </FieldSet>
                 <Field label="SSL warning days">

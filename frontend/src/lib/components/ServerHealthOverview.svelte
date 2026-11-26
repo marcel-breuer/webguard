@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { Separator } from "#lib/components/ui/separator/index.ts";
     import { Card as Surface } from "#lib/components/ui/card/index.ts";
     import * as Tooltip from "#lib/components/ui/tooltip/index.ts";
     import { Badge } from "#lib/components/ui/badge/index.ts";
@@ -311,7 +312,8 @@
 
     <div class="mt-7 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"><div><p class="text-[0.6875rem] font-extrabold tracking-[0.14em] text-wg-text-muted uppercase">Telemetry trend</p><h3 class="mt-0.5 text-xl font-extrabold tracking-tight">Utilization history</h3></div><Select width="compact" density="compact" value={String(historyPeriod)} onchange={changeHistoryPeriod} disabled={historyLoading} class="font-semibold text-wg-text-muted" aria-label="Server health history period"><option value="1">Last 24 hours</option><option value="7">Last 7 days</option><option value="30">Last 30 days</option></Select></div>
     <Surface role="article" class="mt-3 overflow-hidden">
-        <div class="flex items-center justify-between gap-3 border-b border-wg-border bg-wg-surface-muted/50 px-5 py-3 text-xs font-bold text-wg-text-muted"><span>CPU · RAM · Storage · Load</span><span class="flex items-center gap-2"><span class="size-2 rounded-full bg-emerald-500"></span>{historyLoading ? "Updating" : "Reported values"}</span></div>
+        <div class="flex items-center justify-between gap-3 bg-wg-surface-muted/50 px-5 py-3 text-xs font-bold text-wg-text-muted"><span>CPU · RAM · Storage · Load</span><span class="flex items-center gap-2"><span class="size-2 rounded-full bg-emerald-500"></span>{historyLoading ? "Updating" : "Reported values"}</span></div>
+        <Separator class="bg-wg-border" />
         {#if hasChartData}<div class="h-64 p-4 sm:h-96 sm:p-6" role="img" aria-label="Server CPU RAM storage and load utilization history"><canvas bind:this={canvas}></canvas></div>
         {:else}<p class="p-6 text-sm leading-6 text-wg-text-muted">{historyLoading ? "Loading server-health telemetry…" : "Server-health history will appear after the monitoring collects reports."}</p>{/if}
     </Surface>

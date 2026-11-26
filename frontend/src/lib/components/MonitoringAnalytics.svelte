@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { EmptyDescription } from "#lib/components/ui/empty/index.ts";
     import { Card as Surface } from "#lib/components/ui/card/index.ts";
     import { Badge } from "#lib/components/ui/badge/index.ts";
     import * as Tooltip from "#lib/components/ui/tooltip/index.ts";
@@ -462,7 +463,7 @@
             {/each}
         </ul>
     {:else}
-        <p class="mt-3 text-sm text-wg-text-muted">No incidents recorded in this period.</p>
+        <EmptyDescription class="mt-3 text-sm text-wg-text-muted">No incidents recorded in this period.</EmptyDescription>
     {/if}
     {#if incidentsError}<Alert variant="destructive" class="mt-3 text-sm font-bold">{incidentsError}</Alert>{/if}
     {#if currentIncidentsMeta.has_more}<div class="mt-5 flex justify-center"><Button variant="secondary" loading={loadingIncidents} onclick={loadMoreIncidents}>Load more</Button></div>{/if}
@@ -499,5 +500,5 @@
         </Surface>
         {#if checksError}<Alert variant="destructive" class="mt-3 text-sm font-bold">{checksError}</Alert>{/if}
         {#if checksMeta.has_more}<div class="mt-5 flex justify-center"><Button variant="secondary" loading={loadingChecks} onclick={loadMoreChecks}>Load more</Button></div>{/if}
-    {:else}<p class="mt-3 text-sm text-wg-text-muted">No checks have been recorded yet.</p>{/if}
+    {:else}<EmptyDescription class="mt-3 text-sm text-wg-text-muted">No checks have been recorded yet.</EmptyDescription>{/if}
 </section>

@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { Card as Surface } from "#lib/components/ui/card/index.ts";
     import { Label } from "#lib/components/ui/label/index.ts";
     import { FieldGroup } from "#lib/components/ui/field/index.ts";
     import * as Alert from "#lib/components/ui/alert/index.ts";
@@ -119,11 +120,11 @@
 </script>
 
 <GuestAuthLayout title={mode === "register" ? "Create your account" : "Welcome to WebGuard"} description={mode === "register" ? "Start monitoring the services your team depends on." : "Sign in to manage your monitorings, status pages, and notifications."} initialLocale={initialLocale} showPreferences={showPreferences}>
-    <div class="mb-7 grid grid-cols-3 gap-2 rounded-xl bg-wg-surface-muted p-1.5" aria-label="Authentication mode">
+    <Surface variant="inset" class="mb-7 grid grid-cols-3 gap-2 overflow-visible rounded-xl border-0 bg-wg-surface-muted p-1.5 shadow-none" aria-label="Authentication mode">
         <Button variant={mode === "login" ? "primary" : "quiet"} onclick={() => selectMode("login")}>Sign in</Button>
         <Button variant={mode === "register" ? "primary" : "quiet"} onclick={() => selectMode("register")}>Register</Button>
         <Button variant={mode === "demo" ? "primary" : "quiet"} loading={loadingDemo} onclick={() => selectMode("demo")}>Demo</Button>
-    </div>
+    </Surface>
 
     {#if message}
         <Alert.Root class="mb-5" variant={Object.keys(errors).length > 0 ? "destructive" : "default"} role={Object.keys(errors).length > 0 ? "alert" : "status"}>

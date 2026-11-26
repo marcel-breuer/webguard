@@ -294,7 +294,7 @@
     {/snippet}
 
     {#if presentation === "edit-modal"}
-        <Card class="sticky bottom-0 z-10 -mx-4 -mb-4 rounded-none border-0 border-t border-(--wg-glass-rim) shadow-[inset_0_1px_0_var(--wg-glass-edge)] px-4 py-4 sm:-mx-6 sm:-mb-6 sm:px-6">
+        <Card variant="sticky-footer" class="sticky bottom-0 z-10 -mx-4 -mb-4 px-4 py-4 sm:-mx-6 sm:-mb-6 sm:px-6">
             {@render actions()}
         </Card>
     {:else}

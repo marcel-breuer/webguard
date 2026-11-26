@@ -1,5 +1,6 @@
 <script lang="ts">
     import { Button as LinkButton } from "#lib/components/ui/button/index.ts";
+    import * as Empty from "#lib/components/ui/empty/index.ts";
     import { Card as Surface } from "#lib/components/ui/card/index.ts";
     import { Field, FieldLabel } from "#lib/components/ui/field/index.ts";
     import { Alert } from "#lib/components/ui/alert/index.ts";
@@ -195,8 +196,10 @@
     {#if createError}<Alert variant="destructive" class="mb-6 text-sm font-bold">{createError}</Alert>{/if}
 
     {#if dashboard === null}
-        <Surface as="section" class="p-6 text-sm text-wg-text-muted" role={dashboardLoadFailed ? "alert" : "status"} aria-live="polite">
-            {dashboardLoadFailed ? "Dashboard data could not be loaded. Refresh to try again." : "Loading your website health and recent activity…"}
+        <Surface as="section" class="p-6 text-sm text-wg-text-muted">
+            <Alert variant="inline" role={dashboardLoadFailed ? "alert" : "status"} aria-live="polite">
+                {dashboardLoadFailed ? "Dashboard data could not be loaded. Refresh to try again." : "Loading your website health and recent activity…"}
+            </Alert>
         </Surface>
     {:else}
     {#if onboardingVisible}
@@ -231,7 +234,7 @@
         <div class="mt-6">
             <Card title="Needs attention" titleId="attention-heading" description="Websites with an issue, or notification delivery problems.">
                 {#if dashboard.attention.length === 0}
-                    <p class="m-0 text-sm text-wg-text-muted">No websites need attention.</p>
+                    <Empty.Description class="m-0 text-sm text-wg-text-muted">No websites need attention.</Empty.Description>
                 {:else}
                     <ul class="m-0 grid list-none gap-3 p-0">
                         {#each dashboard.attention as item}
@@ -273,11 +276,11 @@
                     {/each}
                 </div>
                 {#if services.length === 0}
-                    <p class="mb-0 mt-5 text-sm text-wg-text-muted">No websites match your search or filters.</p>
+                    <Empty.Root class="mt-5 items-start border-0 p-0 text-left [text-wrap:wrap]"><Empty.Description class="text-sm text-wg-text-muted">No websites match your search or filters.</Empty.Description></Empty.Root>
                 {:else}
                     <div class="mt-5 divide-y divide-wg-border border-y border-wg-border">
                         {#each services as service (service.id)}
-                            <a class="flex flex-col gap-3 py-4 text-wg-text no-underline transition hover:bg-wg-surface-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-wg-focus sm:flex-row sm:items-center sm:justify-between" href={`/monitorings/${service.id}`}>
+                            <LinkButton variant="ghost" class="flex min-h-0 flex-col items-stretch justify-start gap-3 rounded-none border-0 px-0 py-4 text-base leading-normal font-normal tracking-normal text-wg-text no-underline transition hover:bg-wg-surface-muted active:translate-y-0 sm:flex-row sm:items-center sm:justify-between" href={`/monitorings/${service.id}`}>
                                 <div class="min-w-0">
                                     <div class="flex flex-wrap items-center gap-2">
                                         <span class={`size-2.5 shrink-0 rounded-full ${statusDotClass(service.status)}`} aria-hidden="true"></span>
@@ -292,7 +295,7 @@
                                     <p>{service.response_time_ms === null ? "—" : `${formatNumber(Math.round(service.response_time_ms))} ms`}</p>
                                     <p class="mt-1 text-xs">{dateTime(service.last_checked_at)}</p>
                                 </div>
-                            </a>
+                            </LinkButton>
                         {/each}
                     </div>
                 {/if}
@@ -303,7 +306,7 @@
         <section class="mt-6 grid gap-6 lg:grid-cols-2">
             <Card title="Maintenance" description="Scheduled and active maintenance windows.">
                 {#if dashboard.maintenance.length === 0}
-                    <p class="text-sm text-wg-text-muted">No maintenance windows are scheduled.</p>
+                    <Empty.Description class="text-sm text-wg-text-muted">No maintenance windows are scheduled.</Empty.Description>
                 {:else}
                     <ul class="m-0 grid list-none gap-3 p-0">
                         {#each dashboard.maintenance as maintenance}
@@ -320,7 +323,7 @@
 
             <Card title="Recent incidents" description="Latest incidents for monitorings you can access.">
                 {#if dashboard.recent_incidents.length === 0}
-                    <p class="text-sm text-wg-text-muted">No recent incidents.</p>
+                    <Empty.Description class="text-sm text-wg-text-muted">No recent incidents.</Empty.Description>
                 {:else}
                     <ul class="m-0 grid list-none gap-3 p-0">
                         {#each dashboard.recent_incidents as incident}

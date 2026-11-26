@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { Card as Surface } from "#lib/components/ui/card/index.ts";
     import { FieldLegend, FieldSet } from "#lib/components/ui/field/index.ts";
     import { Label } from "#lib/components/ui/label/index.ts";
     import { Button as UiButton } from "#lib/components/ui/button/index.ts";
@@ -83,7 +84,7 @@
 
         <Card title="API keys" description="Create scoped credentials for supported WebGuard integrations.">
             {#snippet actions()}<Button onclick={() => (createOpen = true)}>Create API key</Button>{/snippet}
-            {#if apiKeys.length === 0}<Empty.Root class="items-start border-0 p-0 text-left"><Empty.Description>No API keys have been created.</Empty.Description></Empty.Root>{:else}<div class="divide-y divide-wg-border rounded-xl border border-wg-border">{#each apiKeys as apiKey (apiKey.id)}<article class="flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between"><div><p class="m-0 font-bold">{apiKey.name}</p><p class="mt-1 text-sm text-wg-text-muted">{apiKey.abilities.join(", ")} · {dateTime(apiKey.last_used_at)}</p></div>{#if apiKey.revoked_at}<Badge variant="secondary">Revoked</Badge>{:else}<Button variant="danger" onclick={() => (revokeTarget = apiKey)}>Revoke</Button>{/if}</article>{/each}</div>{/if}
+            {#if apiKeys.length === 0}<Empty.Root class="items-start border-0 p-0 text-left"><Empty.Description>No API keys have been created.</Empty.Description></Empty.Root>{:else}<Surface variant="inset" class="divide-y divide-wg-border overflow-visible rounded-xl border-wg-border bg-transparent shadow-none">{#each apiKeys as apiKey (apiKey.id)}<article class="flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between"><div><p class="m-0 font-bold">{apiKey.name}</p><p class="mt-1 text-sm text-wg-text-muted">{apiKey.abilities.join(", ")} · {dateTime(apiKey.last_used_at)}</p></div>{#if apiKey.revoked_at}<Badge variant="secondary">Revoked</Badge>{:else}<Button variant="danger" onclick={() => (revokeTarget = apiKey)}>Revoke</Button>{/if}</article>{/each}</Surface>{/if}
         </Card>
 
         <Card title="Notification settings" description="Configure alert channels, monitoring digests, and unread-message reminders.">
@@ -107,4 +108,4 @@
 
 <Dialog open={revokeTarget !== null} onclose={() => (revokeTarget = null)} title="Revoke API key" description="The key will stop working immediately.">{#if revokeTarget}<MutationForm action={`/api/profile/api-keys/${revokeTarget.id}`} method="DELETE" submitLabel="Revoke API key" successMessage="API key revoked." onSuccess={markApiKeyRevoked}><p class="m-0 text-sm text-wg-text-muted">Revoke <strong>{revokeTarget.name}</strong>?</p></MutationForm>{/if}</Dialog>
 <Dialog bind:open={deleteOpen} title="Delete account" description="Confirm your password to permanently schedule the deletion of your account."><MutationForm action="/api/profile/account" method="DELETE" submitLabel="Delete account" successMessage="Account deletion scheduled." onSuccess={finishDeletion}><Field label="Current password" required><Input name="password" type="password" autocomplete="current-password" /></Field></MutationForm></Dialog>
-<Dialog open={revealedToken !== null} onclose={() => (revealedToken = null)} title="Copy your API key" description="Store this value securely. It cannot be recovered after this dialog is closed.">{#if revealedToken}<p class="m-0 break-all rounded-xl border border-wg-border bg-wg-surface-muted p-4 font-mono text-sm" aria-live="polite">{revealedToken}</p>{/if}</Dialog>
+<Dialog open={revealedToken !== null} onclose={() => (revealedToken = null)} title="Copy your API key" description="Store this value securely. It cannot be recovered after this dialog is closed.">{#if revealedToken}<Surface variant="inset" class="break-all rounded-xl border-wg-border bg-wg-surface-muted p-4 font-mono text-sm shadow-none" aria-live="polite">{revealedToken}</Surface>{/if}</Dialog>

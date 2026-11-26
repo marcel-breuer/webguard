@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { Alert } from "#lib/components/ui/alert/index.ts";
     import * as DropdownMenu from "#lib/components/ui/dropdown-menu/index.ts";
     import { FirstPartyApiError, requestFirstPartyApi } from "#lib/api/client.ts";
     import NavIcon from "#lib/components/NavIcon.svelte";
@@ -74,6 +75,6 @@
                 </DropdownMenu.RadioItem>
             {/each}
         </DropdownMenu.RadioGroup>
-        {#if error}<p class="text-[0.8125rem] text-wg-danger" role="alert">{error}</p>{/if}
+        {#if error}<Alert variant="inline" class="text-[0.8125rem] text-wg-danger">{error}</Alert>{/if}
     </DropdownMenu.Content>
 </DropdownMenu.Root>
