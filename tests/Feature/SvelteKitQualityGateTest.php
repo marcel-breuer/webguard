@@ -82,7 +82,7 @@ class SvelteKitQualityGateTest extends TestCase
         $this->assertSame(2, mb_substr_count($monitoringForm, '{@render basicFields()}'));
 
         $quickCreate = mb_strpos($monitoringForm, '{#if presentation === "first-website"');
-        $quickCreateDisclosure = mb_strpos($monitoringForm, '<Collapsible.Root class="group border-t', $quickCreate);
+        $quickCreateDisclosure = mb_strpos($monitoringForm, '<Collapsible.Root class="group"', $quickCreate);
         $visibleIntervalField = mb_strpos($monitoringForm, '{@render websiteIntervalField()}', $quickCreate);
 
         $this->assertIsInt($quickCreate);

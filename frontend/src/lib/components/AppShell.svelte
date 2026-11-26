@@ -1,4 +1,6 @@
 <script lang="ts">
+    import { Separator } from "#lib/components/ui/separator/index.ts";
+    import { Kbd } from "#lib/components/ui/kbd/index.ts";
     import * as Avatar from "#lib/components/ui/avatar/index.ts";
     import * as DropdownMenu from "#lib/components/ui/dropdown-menu/index.ts";
     import * as Sheet from "#lib/components/ui/sheet/index.ts";
@@ -186,7 +188,7 @@
                 tooltipContent={compact ? "Search monitorings" : undefined} tooltipContentProps={{ role: "tooltip", portalProps: { to: "#localized-app" } }} onclick={openMonitoringSearch}>
                 <NavIcon name="search" />
                 <span class={compact ? "sr-only" : "min-w-0 flex-1 text-left"}>Search</span>
-                {#if !compact}<kbd class="shrink-0 rounded border border-purple-700 px-1 text-xs text-purple-300" aria-hidden="true">⌘K</kbd>{/if}
+                {#if !compact}<Kbd class="h-auto min-w-0 shrink-0 rounded border border-purple-700 bg-transparent px-1 font-mono text-xs font-normal text-purple-300" aria-hidden="true">⌘K</Kbd>{/if}
             </Sidebar.MenuButton>
             <Sidebar.Menu class="gap-0">
                 {@render NavItem({ href: appRoutes.dashboard, icon: "home", label: "Dashboard" })}
@@ -198,7 +200,8 @@
         </nav>
     </Sidebar.Content>
 
-    <Sidebar.Footer class="grid gap-3 border-t border-purple-900 p-3.5">
+    <Sidebar.Footer class="relative grid gap-3 p-3.5">
+        <Separator class="absolute inset-x-0 top-0 bg-purple-900" />
         <div class="flex flex-wrap items-center gap-2">
             <AppearanceSelector initialTheme={session.user.theme} bind:open={appearanceOpen} onOpen={() => (localeOpen = false)} />
             <LocaleSelector initialLocale={session.user.locale} bind:open={localeOpen} onOpen={() => (appearanceOpen = false)} />

@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { Spinner } from "#lib/components/ui/spinner/index.ts";
     import { Button as ButtonPrimitive, type ButtonVariant } from "#lib/components/ui/button/index.ts";
     import type { Snippet } from "svelte";
     import type { HTMLButtonAttributes } from "svelte/elements";
@@ -38,7 +39,7 @@
     aria-busy={loading}
 >
     {#if loading}
-        <span class="size-3.5 animate-spin rounded-full border-2 border-current border-r-transparent" aria-hidden="true"></span>
+        <Spinner class="size-3.5" aria-hidden="true" />
         <span class="sr-only">Saving</span>
     {/if}
     {@render children?.()}

@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { Separator } from "#lib/components/ui/separator/index.ts";
     import { Button as LinkButton } from "#lib/components/ui/button/index.ts";
     import { Badge } from "#lib/components/ui/badge/index.ts";
     import * as Alert from "#lib/components/ui/alert/index.ts";
@@ -93,7 +94,8 @@
         </ol>
 
         {#if canComplete}
-            <div class="mt-5 flex flex-wrap items-center justify-between gap-3 border-t border-violet-200 pt-4 dark:border-violet-800">
+            <div class="relative mt-5 flex flex-wrap items-center justify-between gap-3 pt-4">
+                <Separator class="absolute inset-x-0 top-0 bg-violet-200 dark:bg-violet-800" />
                 <p class="m-0 text-sm font-semibold">Your website check is active and the test alert was delivered.</p>
                 <Button type="button" loading={saving} onclick={() => save("complete")}>Complete setup</Button>
             </div>

@@ -12,7 +12,7 @@
         {#each locations as location (location.code)}
             <li>
                 <Badge variant="neutral" class="gap-2 rounded-full px-2.5 py-1 font-bold text-wg-text">
-                    <span class="size-1.5 rounded-full bg-wg-accent" aria-hidden="true"></span>
+                    <Badge variant="dot" class="size-1.5 bg-wg-accent" aria-hidden="true" />
                     {location.name}
                 </Badge>
             </li>

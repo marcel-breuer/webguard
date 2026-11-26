@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Alert } from "#lib/components/ui/alert/index.ts";
+    import { FieldError } from "#lib/components/ui/field/index.ts";
     import * as DropdownMenu from "#lib/components/ui/dropdown-menu/index.ts";
     import { onMount } from "svelte";
     import { applyAppearanceTheme, storedAppearanceTheme } from "#lib/appearance.ts";
@@ -90,6 +90,6 @@
                 </DropdownMenu.RadioItem>
             {/each}
         </DropdownMenu.RadioGroup>
-        {#if error}<Alert variant="inline" class="text-[0.8125rem] text-wg-danger">{error}</Alert>{/if}
+        {#if error}<FieldError class="text-[0.8125rem] text-wg-danger">{error}</FieldError>{/if}
     </DropdownMenu.Content>
 </DropdownMenu.Root>

@@ -7,5 +7,5 @@
 </script>
 
 <Badge variant={tone}>
-    <span class="size-[0.45rem] rounded-full bg-current" aria-hidden="true"></span>{label}
+    <Badge variant="dot" class="size-[0.45rem]" aria-hidden="true" />{label}
 </Badge>

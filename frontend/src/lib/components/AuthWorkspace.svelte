@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { Separator } from "#lib/components/ui/separator/index.ts";
     import { Card as Surface } from "#lib/components/ui/card/index.ts";
     import { Label } from "#lib/components/ui/label/index.ts";
     import { FieldGroup } from "#lib/components/ui/field/index.ts";
@@ -151,7 +152,8 @@
         </FieldGroup>
     </form>
     {#if showLegalLinks}
-        <nav class="mt-8 flex flex-wrap justify-center gap-x-5 gap-y-2 border-t border-wg-border pt-5 text-sm font-bold" aria-label="Legal links">
+        <nav class="relative mt-8 flex flex-wrap justify-center gap-x-5 gap-y-2 pt-5 text-sm font-bold" aria-label="Legal links">
+            <Separator class="absolute inset-x-0 top-0 bg-wg-border" />
             <a class="text-wg-text-muted no-underline hover:text-wg-accent hover:underline" href={options.imprint_url} target="_blank" rel="noopener">Imprint</a>
             <a class="text-wg-text-muted no-underline hover:text-wg-accent hover:underline" href={options.privacy_url} target="_blank" rel="noopener">Privacy Policy</a>
         </nav>
