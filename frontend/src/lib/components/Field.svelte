@@ -16,9 +16,9 @@
     let { label, hint, error, required = false, children }: Props = $props();
 </script>
 
-<Field class="w-auto gap-[0.45rem]" aria-labelledby={uid} aria-describedby={error || hint ? messageId : undefined}>
+<Field class="w-auto gap-[0.45rem]" aria-describedby={error || hint ? messageId : undefined}>
     <Label>
-        <span id={uid} class="text-sm leading-5 font-bold">
+        <span class="text-sm leading-5 font-bold">
             {label}
             {#if required}<span aria-hidden="true">*</span>{/if}
         </span>
