@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { FieldLegend, FieldSet } from "#lib/components/ui/field/index.ts";
+    import { FieldLabel, FieldLegend, FieldSet } from "#lib/components/ui/field/index.ts";
     import { Alert } from "#lib/components/ui/alert/index.ts";
     import { invalidateAll } from "$app/navigation";
     import { FirstPartyApiError, requestFirstPartyApi } from "#lib/api/client.ts";
@@ -70,4 +70,52 @@
     }
 </script>
 
-{#if monitoring}<section class="mt-6 grid gap-6 xl:grid-cols-2"><Card title="Ownership" description="Choose whether this monitoring is private or administered by a team."><form class="grid gap-4" onsubmit={updateOwnership}><Field label="Owner"><Select name="team_id"><option value="" selected={monitoring.ownership.type === "private"}>Private monitoring</option>{#each options.teams as team}<option value={team.id} selected={monitoring.ownership.team_id === team.id}>Team: {team.name}</option>{/each}</Select></Field><Button type="submit" loading={ownershipSaving}>Save ownership</Button></form></Card><Card title="Notification preferences" description="Control your effective alert settings for this monitoring."><form class="grid gap-4" onsubmit={updateNotifications}><Input name="notification_on_failure" type="hidden" value="0" /><label class="flex items-center gap-2 text-sm font-bold"><Checkbox name="notification_on_failure" value="1" checked={preferences.effective.notification_on_failure} /> Notify on failure</label><FieldSet class="grid gap-2"><FieldLegend class="text-sm font-bold">Channels</FieldLegend>{#if preferences.permitted_channels.length > 0}{#each preferences.permitted_channels as channel}<label class="flex items-center gap-2 text-sm"><Checkbox name="notification_channels[]" value={channel} bind:group={selectedChannels} />{notificationChannelLabel(channel)}</label>{/each}{:else}<p class="text-sm text-wg-text-muted">No notification channels are configured.</p>{/if}</FieldSet><Field label="SSL warning days"><Input name="ssl_expiry_warning_days" type="number" min="1" max="365" value={preferences.effective.ssl_expiry_warning_days} required /></Field><Button type="submit" loading={notificationsSaving} disabled={!preferences.can_update}>Save notification preferences</Button></form></Card></section>{#if message}<p class="mt-4 text-sm font-bold text-green-700 dark:text-green-300" role="status">{message}</p>{/if}{#if error}<Alert variant="destructive" class="mt-4 text-sm font-bold">{error}</Alert>{/if}{/if}
+{#if monitoring}
+    <section class="mt-6 grid gap-6 xl:grid-cols-2">
+        <Card title="Ownership" description="Choose whether this monitoring is private or administered by a team.">
+            <form class="grid gap-4" onsubmit={updateOwnership}>
+                <Field label="Owner">
+                    <Select name="team_id">
+                        <option value="" selected={monitoring.ownership.type === "private"}>Private monitoring</option>
+                        {#each options.teams as team (team.id)}
+                            <option value={team.id} selected={monitoring.ownership.team_id === team.id}>Team: {team.name}</option>
+                        {/each}
+                    </Select>
+                </Field>
+                <Button type="submit" loading={ownershipSaving}>Save ownership</Button>
+            </form>
+        </Card>
+
+        <Card title="Notification preferences" description="Control your effective alert settings for this monitoring.">
+            <form class="grid gap-4" onsubmit={updateNotifications}>
+                <input name="notification_on_failure" type="hidden" value="0" />
+                <FieldLabel class="flex-row text-sm font-bold">
+                    <Checkbox name="notification_on_failure" value="1" checked={preferences.effective.notification_on_failure} />
+                    Notify on failure
+                </FieldLabel>
+                <FieldSet class="grid gap-2">
+                    <FieldLegend class="text-sm font-bold">Channels</FieldLegend>
+                    {#each preferences.permitted_channels as channel (channel)}
+                        <FieldLabel class="flex-row text-sm font-normal">
+                            <Checkbox name="notification_channels[]" value={channel} bind:group={selectedChannels} />
+                            {notificationChannelLabel(channel)}
+                        </FieldLabel>
+                    {:else}
+                        <p class="text-sm text-wg-text-muted">No notification channels are configured.</p>
+                    {/each}
+                </FieldSet>
+                <Field label="SSL warning days">
+                    <Input name="ssl_expiry_warning_days" type="number" min="1" max="365" value={preferences.effective.ssl_expiry_warning_days} required />
+                </Field>
+                <Button type="submit" loading={notificationsSaving} disabled={!preferences.can_update}>Save notification preferences</Button>
+            </form>
+        </Card>
+    </section>
+
+    {#if message}
+        <Alert role="status" class="mt-4 rounded-none border-0 bg-transparent p-0 text-sm font-bold text-green-700 dark:text-green-300">{message}</Alert>
+    {/if}
+    {#if error}
+        <Alert variant="destructive" class="mt-4 text-sm font-bold">{error}</Alert>
+    {/if}
+{/if}

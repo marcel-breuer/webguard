@@ -5,13 +5,14 @@
 	let {
 		ref = $bindable(null),
 		class: className,
+		variant = "default",
 		...restProps
-	}: PopoverPrimitive.TriggerProps = $props();
+	}: PopoverPrimitive.TriggerProps & { variant?: "default" | "control" } = $props();
 </script>
 
 <PopoverPrimitive.Trigger
 	bind:ref
 	data-slot="popover-trigger"
-	class={cn(className)}
+	class={cn(variant === "control" && "wg-glass-control", className)}
 	{...restProps}
 />

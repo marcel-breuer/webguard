@@ -1,4 +1,7 @@
 <script lang="ts">
+    import * as Card from "#lib/components/ui/card/index.ts";
+    import * as DropdownMenu from "#lib/components/ui/dropdown-menu/index.ts";
+    import { Button, buttonVariants } from "#lib/components/ui/button/index.ts";
     import { Badge } from "#lib/components/ui/badge/index.ts";
     import { Alert } from "#lib/components/ui/alert/index.ts";
     import { goto, invalidateAll } from "$app/navigation";
@@ -6,7 +9,6 @@
     import { appRoutes } from "#lib/routes.ts";
     import { formatDateTime, formatNumber, formatPercentage } from "#lib/i18n/format.ts";
     import { translate, type TranslationMessages } from "#lib/i18n/localize.ts";
-    import Button from "#lib/components/Button.svelte";
     import Dialog from "#lib/components/Dialog.svelte";
     import MonitoringAnalytics from "#lib/components/MonitoringAnalytics.svelte";
     import MonitoringForm from "#lib/components/MonitoringForm.svelte";
@@ -154,7 +156,7 @@
 
 <svelte:head><title>{data.monitoring.name} | WebGuard</title></svelte:head>
 
-<div class="border-b wg-glass-bar">
+<Card.Root class="rounded-none border-0 border-b border-(--wg-glass-rim) shadow-[inset_0_1px_0_var(--wg-glass-edge)]">
     <header class="mx-auto w-[min(76rem,calc(100%_-_2rem))] py-6 sm:py-7">
         <a class="inline-flex items-center gap-2 text-sm font-bold text-wg-text-muted no-underline transition hover:text-wg-accent" href={appRoutes.monitorings}>
             <NavIcon name="arrow-left" size={16} />Back to monitorings
@@ -167,10 +169,25 @@
         <div class="mt-4 flex flex-wrap items-center gap-3 text-sm text-wg-text-muted">
             <span class="break-all">{data.monitoring.target}</span>
             {#if linkedTarget}
-                <a class="inline-grid size-8 place-items-center rounded-md text-wg-accent transition hover:bg-violet-50 dark:hover:bg-violet-950/50" href={linkedTarget} target="_blank" rel="noreferrer" aria-label="Open target" title="Open target"><NavIcon name="external" size={16} /></a>
+                <Button variant="ghost" size="icon" class="min-h-0 border-transparent p-0 text-wg-accent enabled:hover:bg-violet-50 dark:enabled:hover:bg-violet-950/50" href={linkedTarget} target="_blank" rel="noreferrer" aria-label="Open target" title="Open target"><NavIcon name="external" size={16} /></Button>
             {/if}
             {#if data.monitoring.can_manage}
-                <details class="relative"><summary class="inline-grid size-10 cursor-pointer list-none place-items-center rounded-md border border-wg-focus text-wg-accent transition hover:bg-violet-50 [&::-webkit-details-marker]:hidden dark:hover:bg-violet-950/50" aria-label="Monitoring actions" title="Monitoring actions"><NavIcon name="ellipsis" size={18} /></summary><div class="absolute left-0 z-20 mt-2 grid w-48 gap-1 wg-glass-panel wg-glass-overlay p-1.5"><Button class="justify-start px-3 py-2 text-sm normal-case" variant="quiet" type="button" loading={editLoading} onclick={openEdit}>Edit monitoring</Button><Button class="justify-start px-3 py-2 text-sm normal-case" variant="quiet" type="button" loading={resettingResults} onclick={resetResults}>{translate("Reset results", data.locale, data.messages)}</Button><Button class="justify-start px-3 py-2 text-sm normal-case" variant="danger" type="button" disabled={deleting} onclick={remove}>Delete monitoring</Button></div></details>
+                <DropdownMenu.Root>
+                    <DropdownMenu.Trigger
+                        class={buttonVariants({ variant: "outline", size: "icon", class: "size-10 min-h-0 border-wg-focus p-0" })}
+                        aria-label="Monitoring actions"
+                        title="Monitoring actions"
+                    >
+                        <NavIcon name="ellipsis" size={18} />
+                    </DropdownMenu.Trigger>
+                    <DropdownMenu.Content variant="glass" class="w-48 bg-(--wg-glass-raised-fill) p-1.5 text-wg-text" sideOffset={8} portalProps={{ to: "#localized-app" }}>
+                        <DropdownMenu.Group>
+                            <DropdownMenu.Item class="cursor-pointer px-3 py-2" disabled={editLoading} onSelect={openEdit}>Edit monitoring</DropdownMenu.Item>
+                            <DropdownMenu.Item class="cursor-pointer px-3 py-2" disabled={resettingResults} onSelect={resetResults}>{translate("Reset results", data.locale, data.messages)}</DropdownMenu.Item>
+                            <DropdownMenu.Item variant="destructive" class="cursor-pointer px-3 py-2" disabled={deleting} onSelect={remove}>Delete monitoring</DropdownMenu.Item>
+                        </DropdownMenu.Group>
+                    </DropdownMenu.Content>
+                </DropdownMenu.Root>
             {/if}
         </div>
         {#if checkLocations.length > 0}
@@ -180,18 +197,18 @@
             </div>
         {/if}
     </header>
-</div>
+</Card.Root>
 
 <main>
     <div class="mx-auto w-[min(76rem,calc(100%_-_2rem))] py-6 sm:py-7">
         {#if data.monitoring.latest_check === null && data.monitoring.initial_results_wait_minutes !== null && data.monitoring.initial_results_wait_minutes !== undefined}
-            <p class="mb-6 rounded-xl border border-blue-200 bg-blue-50 p-4 text-sm leading-6 text-blue-900 dark:border-blue-900 dark:bg-blue-950/40 dark:text-blue-100">The first check is scheduled on the next monitoring poll and usually starts within about {data.monitoring.initial_results_wait_minutes} {data.monitoring.initial_results_wait_minutes === 1 ? "minute" : "minutes"}. Queue pressure can delay it.</p>
+            <Alert role="note" class="mb-6 rounded-xl border-blue-200 bg-blue-50 p-4 leading-6 text-blue-900 dark:border-blue-900 dark:bg-blue-950/40 dark:text-blue-100">The first check is scheduled on the next monitoring poll and usually starts within about {data.monitoring.initial_results_wait_minutes} {data.monitoring.initial_results_wait_minutes === 1 ? "minute" : "minutes"}. Queue pressure can delay it.</Alert>
         {/if}
 
         <section class="grid gap-4 md:grid-cols-3" aria-label="Monitoring summary">
-            <article class="min-h-32 wg-glass-panel p-6"><p class="text-[0.6875rem] font-extrabold tracking-[0.16em] text-wg-text-muted uppercase">Current status</p><div class="mt-4 flex items-center gap-3"><span class={`size-3 rounded-full ${statusTone() === "healthy" ? "bg-emerald-500" : statusTone() === "danger" ? "bg-red-500" : "bg-amber-500"}`} aria-hidden="true"></span><p class="text-lg font-extrabold uppercase">{statusLabel()}</p>{#if data.detail.current_check.status_code !== null}<span class="text-sm text-wg-text-muted">HTTP {data.detail.current_check.status_code}</span>{/if}</div><p class="mt-3 text-sm text-wg-text-muted">Since {timestamp(data.detail.current_check.checked_at)}</p></article>
-            <article class="min-h-32 wg-glass-panel p-6"><p class="text-[0.6875rem] font-extrabold tracking-[0.16em] text-wg-text-muted uppercase">Last check</p><p class="mt-4 text-lg font-extrabold">{timestamp(data.detail.current_check.checked_at)}</p><p class="mt-3 text-sm text-wg-text-muted">{intervalLabel(data.detail.current_check.interval)}</p></article>
-            <article class="min-h-32 wg-glass-panel p-6"><div class="flex items-center justify-between gap-3"><p class="text-[0.6875rem] font-extrabold tracking-[0.16em] text-wg-text-muted uppercase">Last 24 hours</p><span class="text-lg font-extrabold text-wg-accent">—</span></div><div class="mt-4 flex h-7 gap-0.5" aria-label="Last 24 hours availability">{#each data.detail.heatmap.slice(0, 24) as point}<span class={`min-w-1 flex-1 rounded-sm ${heatmapClass(point)}`} aria-hidden="true"></span>{/each}</div><p class="mt-3 text-sm text-wg-text-muted">{data.detail.heatmap.length > 0 ? "No incidents in this period" : "No results in this period"}</p></article>
+            <Card.Root role="article" class="min-h-32 p-6"><p class="text-[0.6875rem] font-extrabold tracking-[0.16em] text-wg-text-muted uppercase">Current status</p><div class="mt-4 flex items-center gap-3"><span class={`size-3 rounded-full ${statusTone() === "healthy" ? "bg-emerald-500" : statusTone() === "danger" ? "bg-red-500" : "bg-amber-500"}`} aria-hidden="true"></span><p class="text-lg font-extrabold uppercase">{statusLabel()}</p>{#if data.detail.current_check.status_code !== null}<span class="text-sm text-wg-text-muted">HTTP {data.detail.current_check.status_code}</span>{/if}</div><p class="mt-3 text-sm text-wg-text-muted">Since {timestamp(data.detail.current_check.checked_at)}</p></Card.Root>
+            <Card.Root role="article" class="min-h-32 p-6"><p class="text-[0.6875rem] font-extrabold tracking-[0.16em] text-wg-text-muted uppercase">Last check</p><p class="mt-4 text-lg font-extrabold">{timestamp(data.detail.current_check.checked_at)}</p><p class="mt-3 text-sm text-wg-text-muted">{intervalLabel(data.detail.current_check.interval)}</p></Card.Root>
+            <Card.Root role="article" class="min-h-32 p-6"><div class="flex items-center justify-between gap-3"><p class="text-[0.6875rem] font-extrabold tracking-[0.16em] text-wg-text-muted uppercase">Last 24 hours</p><span class="text-lg font-extrabold text-wg-accent">—</span></div><div class="mt-4 flex h-7 gap-0.5" aria-label="Last 24 hours availability">{#each data.detail.heatmap.slice(0, 24) as point}<span class={`min-w-1 flex-1 rounded-sm ${heatmapClass(point)}`} aria-hidden="true"></span>{/each}</div><p class="mt-3 text-sm text-wg-text-muted">{data.detail.heatmap.length > 0 ? "No incidents in this period" : "No results in this period"}</p></Card.Root>
         </section>
 
         {#if data.detail.server_health_telemetry}
@@ -202,7 +219,7 @@
             <div class="min-w-0 space-y-6">
                 <section class="grid gap-4 md:grid-cols-3" aria-label="Availability periods">
                     {#each [["7", "Last 7 Days"], ["30", "Last 30 Days"], ["90", "Last 90 Days"]] as [days, label]}
-                        <article class="min-h-36 wg-glass-panel p-6"><h2 class="text-2xl leading-none font-extrabold">{label}</h2><p class="mt-2 text-sm font-bold text-wg-accent">{availability(days as "7" | "30" | "90")}</p><p class="mt-2 text-sm leading-6 text-wg-text-muted">{periodDescription(days as "7" | "30" | "90")}</p></article>
+                        <Card.Root role="article" class="min-h-36 p-6"><h2 class="text-2xl leading-none font-extrabold">{label}</h2><p class="mt-2 text-sm font-bold text-wg-accent">{availability(days as "7" | "30" | "90")}</p><p class="mt-2 text-sm leading-6 text-wg-text-muted">{periodDescription(days as "7" | "30" | "90")}</p></Card.Root>
                     {/each}
                 </section>
 
@@ -212,12 +229,12 @@
             </div>
 
             <aside class="grid gap-4" aria-label="Monitoring context">
-                <section class="overflow-hidden wg-glass-panel"><header class="border-b border-wg-border px-6 py-5"><h2 class="text-lg font-extrabold">Ownership and groups</h2><p class="mt-1 text-sm text-wg-text-muted">Understand where this monitoring belongs.</p></header><div class="grid gap-5 p-6 text-sm"><div><p class="text-[0.6875rem] font-extrabold tracking-[0.16em] text-wg-text-muted uppercase">Owner</p><p class="mt-1 font-extrabold">{data.detail.summary.ownership.name ?? "Private monitoring"}</p><p class="mt-1 text-wg-text-muted">{data.detail.summary.ownership.type === "team" ? "Team" : "Private"}</p></div><div><p class="text-[0.6875rem] font-extrabold tracking-[0.16em] text-wg-text-muted uppercase">Groups</p>{#if data.detail.summary.groups.length > 0}<div class="mt-3 flex flex-wrap gap-2">{#each data.detail.summary.groups as group}<Badge variant="outline" class="rounded-full bg-violet-50 px-2.5 py-1 text-xs font-bold text-wg-accent dark:bg-violet-950/50">{group.name}</Badge>{/each}</div>{:else}<p class="mt-2 text-wg-text-muted">No groups</p>{/if}</div></div></section>
-                {#if data.detail.ssl || data.detail.domain}<section class="overflow-hidden wg-glass-panel"><header class="border-b border-wg-border px-6 py-5"><h2 class="text-lg font-extrabold">Domain and SSL</h2></header><div class="p-6">{#if data.detail.ssl}<div class="flex items-start justify-between gap-3"><div><p class="text-sm font-extrabold">SSL certificate</p><p class="mt-1 text-sm text-wg-text-muted">{data.detail.ssl.valid ? `Valid until ${timestamp(data.detail.ssl.expiration)}` : "Certificate validation failed"}</p>{#if data.detail.ssl.issuer}<p class="mt-3 text-[0.6875rem] font-extrabold tracking-[0.12em] text-wg-text-muted uppercase">Issuer</p><p class="mt-1 break-words text-sm font-bold">{data.detail.ssl.issuer}</p>{/if}</div><span class={`mt-1 size-2.5 rounded-full ${data.detail.ssl.valid ? "bg-emerald-500" : "bg-red-500"}`}></span></div>{/if}{#if data.detail.domain}<div class="mt-5 border-t border-wg-border pt-5"><p class="text-sm font-extrabold">Domain registration</p><p class="mt-1 text-sm text-wg-text-muted">{data.detail.domain.valid ? `Valid until ${timestamp(data.detail.domain.expires_at)}` : "Domain validation failed"}</p>{#if data.detail.domain.registrar}<p class="mt-3 text-[0.6875rem] font-extrabold tracking-[0.12em] text-wg-text-muted uppercase">Registrar</p><p class="mt-1 break-words text-sm font-bold">{data.detail.domain.registrar}</p>{/if}</div>{/if}</div></section>{/if}
-                <section class="overflow-hidden wg-glass-panel"><header class="border-b border-wg-border px-6 py-5"><h2 class="text-lg font-extrabold">Monitoring locations</h2></header><div class="p-6">{#if checkLocations.length > 0}<MonitoringLocationList locations={checkLocations} />{:else}<p class="text-sm text-wg-text-muted">No specific regions configured.</p>{/if}</div></section>
-                <section class="overflow-hidden wg-glass-panel"><header class="border-b border-wg-border px-6 py-5"><h2 class="text-lg font-extrabold">Next maintenance</h2></header><div class="p-6">{#if data.detail.maintenance.starts_at}<p class="text-sm font-extrabold">{data.detail.maintenance.active ? "Maintenance active" : "Maintenance scheduled"}</p><p class="mt-1 text-sm text-wg-text-muted">Starts {timestamp(data.detail.maintenance.starts_at)}</p>{:else if data.detail.maintenance.has_recurring_window}<p class="text-sm text-wg-text-muted">A recurring maintenance window is configured.</p>{:else}<p class="text-sm text-wg-text-muted">No maintenance planned.</p>{/if}</div></section>
-                <section class="overflow-hidden wg-glass-panel"><header class="border-b border-wg-border px-6 py-5"><h2 class="text-lg font-extrabold">Notifications</h2></header><div class="p-6">{#if data.detail.summary.notification_channels.length > 0}<p class="text-[0.6875rem] font-extrabold tracking-[0.16em] text-wg-text-muted uppercase">Channels</p><div class="mt-3 flex flex-wrap gap-2">{#each data.detail.summary.notification_channels as channel}<Badge variant="neutral" class="rounded-full px-2.5 py-1 font-bold text-wg-text">{notificationChannelLabel(channel)}</Badge>{/each}</div>{:else}<p class="text-sm text-wg-text-muted">No channels enabled.</p>{/if}</div></section>
-                <section class="overflow-hidden wg-glass-panel"><header class="border-b border-wg-border px-6 py-5"><h2 class="text-lg font-extrabold">Status pages</h2></header><div class="p-6">{#if data.detail.summary.status_pages.length > 0}<ul class="m-0 grid list-none gap-2 p-0">{#each data.detail.summary.status_pages as statusPage}<li><a class="text-sm font-bold text-wg-accent no-underline hover:text-wg-accent-strong" href={appRoutes.statusPages}>{statusPage.name}</a></li>{/each}</ul>{:else}<p class="text-sm text-wg-text-muted">Not published on a status page.</p>{/if}</div></section>
+                <Card.Root as="section"><Card.Header class="block px-6 py-5"><Card.Title class="font-extrabold">Ownership and groups</Card.Title><p class="mt-1 text-sm text-wg-text-muted">Understand where this monitoring belongs.</p></Card.Header><Card.Content class="grid gap-5 p-6 text-sm"><div><p class="text-[0.6875rem] font-extrabold tracking-[0.16em] text-wg-text-muted uppercase">Owner</p><p class="mt-1 font-extrabold">{data.detail.summary.ownership.name ?? "Private monitoring"}</p><p class="mt-1 text-wg-text-muted">{data.detail.summary.ownership.type === "team" ? "Team" : "Private"}</p></div><div><p class="text-[0.6875rem] font-extrabold tracking-[0.16em] text-wg-text-muted uppercase">Groups</p>{#if data.detail.summary.groups.length > 0}<div class="mt-3 flex flex-wrap gap-2">{#each data.detail.summary.groups as group}<Badge variant="outline" class="rounded-full bg-violet-50 px-2.5 py-1 text-xs font-bold text-wg-accent dark:bg-violet-950/50">{group.name}</Badge>{/each}</div>{:else}<p class="mt-2 text-wg-text-muted">No groups</p>{/if}</div></Card.Content></Card.Root>
+                {#if data.detail.ssl || data.detail.domain}<Card.Root as="section"><Card.Header class="block px-6 py-5"><Card.Title class="font-extrabold">Domain and SSL</Card.Title></Card.Header><Card.Content class="p-6">{#if data.detail.ssl}<div class="flex items-start justify-between gap-3"><div><p class="text-sm font-extrabold">SSL certificate</p><p class="mt-1 text-sm text-wg-text-muted">{data.detail.ssl.valid ? `Valid until ${timestamp(data.detail.ssl.expiration)}` : "Certificate validation failed"}</p>{#if data.detail.ssl.issuer}<p class="mt-3 text-[0.6875rem] font-extrabold tracking-[0.12em] text-wg-text-muted uppercase">Issuer</p><p class="mt-1 break-words text-sm font-bold">{data.detail.ssl.issuer}</p>{/if}</div><span class={`mt-1 size-2.5 rounded-full ${data.detail.ssl.valid ? "bg-emerald-500" : "bg-red-500"}`}></span></div>{/if}{#if data.detail.domain}<div class="mt-5 border-t border-wg-border pt-5"><p class="text-sm font-extrabold">Domain registration</p><p class="mt-1 text-sm text-wg-text-muted">{data.detail.domain.valid ? `Valid until ${timestamp(data.detail.domain.expires_at)}` : "Domain validation failed"}</p>{#if data.detail.domain.registrar}<p class="mt-3 text-[0.6875rem] font-extrabold tracking-[0.12em] text-wg-text-muted uppercase">Registrar</p><p class="mt-1 break-words text-sm font-bold">{data.detail.domain.registrar}</p>{/if}</div>{/if}</Card.Content></Card.Root>{/if}
+                <Card.Root as="section"><Card.Header class="block px-6 py-5"><Card.Title class="font-extrabold">Monitoring locations</Card.Title></Card.Header><Card.Content class="p-6">{#if checkLocations.length > 0}<MonitoringLocationList locations={checkLocations} />{:else}<p class="text-sm text-wg-text-muted">No specific regions configured.</p>{/if}</Card.Content></Card.Root>
+                <Card.Root as="section"><Card.Header class="block px-6 py-5"><Card.Title class="font-extrabold">Next maintenance</Card.Title></Card.Header><Card.Content class="p-6">{#if data.detail.maintenance.starts_at}<p class="text-sm font-extrabold">{data.detail.maintenance.active ? "Maintenance active" : "Maintenance scheduled"}</p><p class="mt-1 text-sm text-wg-text-muted">Starts {timestamp(data.detail.maintenance.starts_at)}</p>{:else if data.detail.maintenance.has_recurring_window}<p class="text-sm text-wg-text-muted">A recurring maintenance window is configured.</p>{:else}<p class="text-sm text-wg-text-muted">No maintenance planned.</p>{/if}</Card.Content></Card.Root>
+                <Card.Root as="section"><Card.Header class="block px-6 py-5"><Card.Title class="font-extrabold">Notifications</Card.Title></Card.Header><Card.Content class="p-6">{#if data.detail.summary.notification_channels.length > 0}<p class="text-[0.6875rem] font-extrabold tracking-[0.16em] text-wg-text-muted uppercase">Channels</p><div class="mt-3 flex flex-wrap gap-2">{#each data.detail.summary.notification_channels as channel}<Badge variant="neutral" class="rounded-full px-2.5 py-1 font-bold text-wg-text">{notificationChannelLabel(channel)}</Badge>{/each}</div>{:else}<p class="text-sm text-wg-text-muted">No channels enabled.</p>{/if}</Card.Content></Card.Root>
+                <Card.Root as="section"><Card.Header class="block px-6 py-5"><Card.Title class="font-extrabold">Status pages</Card.Title></Card.Header><Card.Content class="p-6">{#if data.detail.summary.status_pages.length > 0}<ul class="m-0 grid list-none gap-2 p-0">{#each data.detail.summary.status_pages as statusPage}<li><a class="text-sm font-bold text-wg-accent no-underline hover:text-wg-accent-strong" href={appRoutes.statusPages}>{statusPage.name}</a></li>{/each}</ul>{:else}<p class="text-sm text-wg-text-muted">Not published on a status page.</p>{/if}</Card.Content></Card.Root>
             </aside>
         </div>
     </div>

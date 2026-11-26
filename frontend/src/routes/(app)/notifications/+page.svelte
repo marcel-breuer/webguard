@@ -1,4 +1,6 @@
 <script lang="ts">
+    import { Card as Surface } from "#lib/components/ui/card/index.ts";
+    import { Field, FieldLabel, FieldLegend, FieldSet } from "#lib/components/ui/field/index.ts";
     import { Alert } from "#lib/components/ui/alert/index.ts";
     import { FirstPartyApiError, requestFirstPartyApi } from "#lib/api/client.ts";
     import { formatDateTime, formatNumber } from "#lib/i18n/format.ts";
@@ -155,8 +157,8 @@
 
     <Card>
         <div class="flex flex-col gap-4 border-b border-wg-border pb-5 sm:flex-row sm:items-end sm:justify-between">
-            <div class="grid gap-2"><span class="text-sm font-bold">Show</span><div class="flex flex-wrap gap-2"><Button variant={showRead ? "secondary" : "primary"} onclick={() => { showRead = false; load(true); }}>Unread</Button><Button variant={showRead ? "primary" : "secondary"} onclick={() => { showRead = true; load(true); }}>All</Button></div></div>
-            <label class="grid gap-2 text-sm font-bold">Event type<Select value={eventType} onchange={(event) => { eventType = event.currentTarget.value; load(true); }}>{#each eventTypes as [value, label]}<option {value}>{label}</option>{/each}</Select></label>
+            <FieldSet class="min-w-0"><FieldLegend variant="label" class="mb-2 font-bold">Show</FieldLegend><div class="flex flex-wrap gap-2"><Button variant={showRead ? "secondary" : "primary"} onclick={() => { showRead = false; load(true); }}>Unread</Button><Button variant={showRead ? "primary" : "secondary"} onclick={() => { showRead = true; load(true); }}>All</Button></div></FieldSet>
+            <Field class="sm:w-auto"><FieldLabel for="notification-event-type" class="font-bold">Event type</FieldLabel><Select id="notification-event-type" value={eventType} onchange={(event) => { eventType = event.currentTarget.value; load(true); }}>{#each eventTypes as [value, label]}<option {value}>{label}</option>{/each}</Select></Field>
         </div>
 
         {#if errorMessage}<Alert variant="destructive" class="mt-5 text-sm font-semibold">{errorMessage}</Alert>{/if}
@@ -164,14 +166,14 @@
         {#if entries.length === 0 && !loading}
             <div class="mt-6"><EmptyState title={showRead ? "No notifications yet" : "No unread notifications"} description={showRead ? "New monitoring events and delivery failures will appear here." : "You're all caught up. Switch to all notifications to review earlier events."} /></div>
         {:else}
-            <div class="mt-6 divide-y divide-wg-border rounded-xl border border-wg-border">
+            <Surface variant="inset" class="mt-6 divide-y divide-wg-border rounded-xl border border-wg-border bg-transparent shadow-none">
                 {#each entries as entry (entry.id)}
                     <article class={`grid gap-4 p-4 sm:grid-cols-[1fr_auto] sm:items-center ${entry.read ? "opacity-70" : ""}`}>
                         <div class="min-w-0"><div class="flex flex-wrap items-center gap-2"><StatusBadge tone={tone(entry)} label={eventLabel(entry)} />{#if entry.delivery_status === "failed"}<StatusBadge tone="degraded" label="Delivery failed" />{/if}{#if entry.read}<span class="text-xs font-bold text-wg-text-muted">Read</span>{/if}</div><h2 class="mt-3 text-base font-bold"><a class="text-wg-text no-underline hover:text-wg-accent hover:underline" href={`/monitorings/${entry.monitoring.id}`}>{entry.monitoring.name}</a></h2>{#if !hasTechnicalMessage(entry)}<p class="mt-1 text-sm leading-6 text-wg-text-muted">{entry.message}</p>{/if}<p class="mt-2 text-xs font-semibold tracking-[0.03em] text-wg-text-muted"><a class="text-wg-text-muted underline decoration-wg-border underline-offset-2 hover:text-wg-accent" href={entry.monitoring.target} target="_blank" rel="noopener noreferrer">{entry.monitoring.target}</a> · {formatDate(entry.occurred_at)}</p></div>
                         {#if !entry.read}<Button variant="quiet" loading={markingRead === entry.id} onclick={() => markRead(entry)}>Mark as read</Button>{/if}
                     </article>
                 {/each}
-            </div>
+            </Surface>
             {#if meta.has_more}<div class="mt-6 flex justify-center"><Button variant="secondary" loading={loading} onclick={() => load(false)}>Load more</Button></div>{/if}
         {/if}
     </Card>

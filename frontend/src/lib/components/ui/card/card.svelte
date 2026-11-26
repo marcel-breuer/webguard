@@ -8,15 +8,23 @@
 		children,
 		as = "div",
 		size = "default",
+		variant = "default",
 		...restProps
-	}: WithElementRef<HTMLAttributes<HTMLElement>> & { as?: "div" | "section"; size?: "default" | "sm" } = $props();
+	}: WithElementRef<HTMLAttributes<HTMLElement>> & { as?: "div" | "section" | "li"; size?: "default" | "sm"; variant?: "default" | "inset" | "overlay" } = $props();
+
+	const surfaces = {
+		default: "wg-glass-panel",
+		inset: "wg-glass-inset",
+		overlay: "wg-glass-panel wg-glass-overlay wg-glass-dialog",
+	};
 </script>
 
 <svelte:element this={as}
 	bind:this={ref}
 	data-slot="card"
 	data-size={size}
-	class={cn("wg-glass-panel overflow-hidden", className)}
+	data-variant={variant}
+	class={cn(surfaces[variant], "overflow-hidden", className)}
 	{...restProps}
 >
 	{@render children?.()}

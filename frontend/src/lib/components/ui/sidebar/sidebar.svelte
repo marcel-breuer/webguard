@@ -1,21 +1,23 @@
 <script lang="ts">
 	import * as Sheet from "#lib/components/ui/sheet/index.ts";
 	import { cn, type WithElementRef } from "#lib/utils.ts";
-	import { SIDEBAR_WIDTH_MOBILE } from "./constants.js";
-	import { useSidebar } from "./context.svelte.js";
+	import { SIDEBAR_WIDTH_MOBILE } from "./constants.ts";
+	import { useSidebar } from "./context.svelte.ts";
 	import type { HTMLAttributes } from "svelte/elements";
 
 	let {
 		ref = $bindable(null),
 		side = "left",
+		as = "div",
 		variant = "sidebar",
 		collapsible = "offcanvas",
 		class: className,
 		children,
 		...restProps
-	}: WithElementRef<HTMLAttributes<HTMLDivElement>> & {
+	}: WithElementRef<HTMLAttributes<HTMLElement>> & {
+		as?: "div" | "aside";
 		side?: "left" | "right";
-		variant?: "sidebar" | "floating" | "inset";
+		variant?: "sidebar" | "floating" | "inset" | "navigation";
 		collapsible?: "offcanvas" | "icon" | "none";
 	} = $props();
 
@@ -23,16 +25,17 @@
 </script>
 
 {#if collapsible === "none"}
-	<div
+	<svelte:element this={as}
 		class={cn(
-			"flex h-full w-(--sidebar-width) flex-col bg-sidebar text-sidebar-foreground",
+			"flex h-full w-(--sidebar-width) flex-col",
+			variant === "navigation" ? "wg-glass-navigation text-purple-100" : "bg-sidebar text-sidebar-foreground",
 			className
 		)}
 		bind:this={ref}
 		{...restProps}
 	>
 		{@render children?.()}
-	</div>
+	</svelte:element>
 {:else if sidebar.isMobile}
 	<Sheet.Root bind:open={() => sidebar.openMobile, (v) => sidebar.setOpenMobile(v)} {...restProps}>
 		<Sheet.Content

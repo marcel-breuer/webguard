@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { Card as Surface } from "#lib/components/ui/card/index.ts";
     import * as Collapsible from "#lib/components/ui/collapsible/index.ts";
     import { Alert } from "#lib/components/ui/alert/index.ts";
     import { FirstPartyApiError, requestFirstPartyApi } from "#lib/api/client.ts";
@@ -48,7 +49,7 @@
     }
 </script>
 
-<div class="mt-4 rounded-xl border border-wg-border bg-wg-surface-muted/40 p-4">
+<Surface variant="inset" class="mt-4 rounded-xl border border-wg-border bg-wg-surface-muted/40 shadow-none p-4">
     <div class="flex flex-wrap items-center justify-between gap-3">
         <h3 class="font-bold">Probable cause</h3>
         <Button variant="quiet" class="min-h-9 px-3 py-1.5" loading={recomputing} onclick={recompute}>Recompute diagnosis</Button>
@@ -85,4 +86,4 @@
         <p class="mt-2 text-sm leading-6 text-wg-text-muted">No diagnosis is available for this incident yet.</p>
     {/if}
     {#if error}<Alert variant="destructive" class="mt-3 text-sm font-bold">{error}</Alert>{/if}
-</div>
+</Surface>

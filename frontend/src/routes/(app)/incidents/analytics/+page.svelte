@@ -1,4 +1,7 @@
 <script lang="ts">
+    import { Button as LinkButton } from "#lib/components/ui/button/index.ts";
+    import { Card as Surface } from "#lib/components/ui/card/index.ts";
+    import { Field, FieldGroup, FieldLabel } from "#lib/components/ui/field/index.ts";
     import * as Table from "#lib/components/ui/table/index.ts";
     import Button from "#lib/components/Button.svelte";
     import { formatDateTime, formatNumber } from "#lib/i18n/format.ts";
@@ -88,7 +91,7 @@
         <p class="mt-3 leading-6 text-wg-text-muted">Keep system health, monitoring groups, status pages, and incident patterns in one operational view.</p>
     </header>
 
-    <section class="wg-glass-panel p-5 sm:p-7" aria-labelledby="health-heading">
+    <Surface as="section" class="p-5 sm:p-7" aria-labelledby="health-heading">
         <div class="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
             <div><div class="flex items-center gap-3"><StatusBadge tone={stateTone(analytics.overview.overall_state)} label={stateLabel(analytics.overview.overall_state)} /><h2 id="health-heading" class="text-xl font-bold">Service health</h2></div><p class="mt-2 text-sm text-wg-text-muted">Updated with the latest monitoring results.</p></div>
             <dl class="grid grid-cols-2 gap-x-7 gap-y-3 text-sm sm:grid-cols-3 lg:grid-cols-6">
@@ -97,27 +100,29 @@
                 {/each}
             </dl>
         </div>
-    </section>
+    </Surface>
 
     <section class="mt-6 grid gap-6 xl:grid-cols-2">
         <Card title="Monitoring groups" description="Operational health across your reusable monitoring groups.">
             {#if analytics.groups.length === 0}<p class="text-sm text-wg-text-muted">No monitoring groups yet.</p>{:else}<div class="divide-y divide-wg-border">{#each analytics.groups as group (group.id)}<a class="flex items-center justify-between gap-4 py-3 text-wg-text no-underline transition hover:text-wg-accent" href={`/monitorings?group_id=${group.id}`}><div class="min-w-0"><p class="truncate font-bold">{group.name}</p><p class="mt-1 text-sm text-wg-text-muted">{formatNumber(group.monitoring_count)} monitorings · {formatNumber(group.healthy)} healthy{group.down > 0 ? ` · ${formatNumber(group.down)} down` : ""}</p></div><StatusBadge tone={stateTone(group.state)} label={stateLabel(group.state)} /></a>{/each}</div>{/if}
         </Card>
         <Card title="Status pages" description="Publication and component health at a glance.">
-            {#if analytics.status_pages.length === 0}<p class="text-sm text-wg-text-muted">No status pages yet.</p>{:else}<div class="divide-y divide-wg-border">{#each analytics.status_pages as statusPage (statusPage.id)}<div class="flex items-center justify-between gap-4 py-3"><div class="min-w-0"><a class="truncate font-bold text-wg-text no-underline hover:text-wg-accent" href={`/status-pages/${statusPage.id}`}>{statusPage.name}</a><p class="mt-1 text-sm text-wg-text-muted">{formatNumber(statusPage.component_count)} components · {formatNumber(statusPage.total)} monitorings</p></div><div class="flex shrink-0 items-center gap-2"><StatusBadge tone={statusPage.is_public ? "healthy" : "paused"} label={statusPage.is_public ? "Public" : "Private"} /><a class="text-sm font-bold text-wg-accent no-underline" href={`/status-pages/${statusPage.id}`}>Open</a></div></div>{/each}</div>{/if}
+            {#if analytics.status_pages.length === 0}<p class="text-sm text-wg-text-muted">No status pages yet.</p>{:else}<div class="divide-y divide-wg-border">{#each analytics.status_pages as statusPage (statusPage.id)}<div class="flex items-center justify-between gap-4 py-3"><div class="min-w-0"><a class="truncate font-bold text-wg-text no-underline hover:text-wg-accent" href={`/status-pages/${statusPage.id}`}>{statusPage.name}</a><p class="mt-1 text-sm text-wg-text-muted">{formatNumber(statusPage.component_count)} components · {formatNumber(statusPage.total)} monitorings</p></div><div class="flex shrink-0 items-center gap-2"><StatusBadge tone={statusPage.is_public ? "healthy" : "paused"} label={statusPage.is_public ? "Public" : "Private"} /><LinkButton variant="link" class="min-h-0 border-0 p-0 font-bold tracking-normal text-wg-accent no-underline" href={`/status-pages/${statusPage.id}`}>Open</LinkButton></div></div>{/each}</div>{/if}
         </Card>
     </section>
 
     <section class="mt-8" aria-labelledby="incidents-heading">
         <div class="mb-5"><p class="text-[0.8125rem] font-extrabold tracking-[0.1em] text-wg-accent uppercase">Analytics</p><h2 id="incidents-heading" class="mt-1 text-2xl font-bold">Incidents</h2><p class="mt-2 text-sm leading-6 text-wg-text-muted">Incident count includes incidents opened in the selected period. MTTR is the average time between down and recovery for resolved incidents.</p></div>
         <Card title="Filter incidents" description="Narrow the operational view without a separate submit step.">
-            <form class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4" method="GET" action="/incidents/analytics">
-                <label class="grid gap-2 text-sm font-bold"><span>Period</span><Select name="days" value={String(analytics.filters.days)}><option value="30">Last 30 days</option><option value="90">Last 90 days</option><option value="365">Last 365 days</option></Select></label>
-                <label class="grid gap-2 text-sm font-bold"><span>Type</span><Select name="incident_type"><option value="">All</option>{#each analytics.filter_options.incident_types as option}<option value={option.value} selected={analytics.filters.incident_type === option.value}>{option.label}</option>{/each}</Select></label>
-                <label class="grid gap-2 text-sm font-bold"><span>Severity</span><Select name="severity"><option value="">All</option>{#each analytics.filter_options.severities as option}<option value={option.value} selected={analytics.filters.severity === option.value}>{option.label}</option>{/each}</Select></label>
-                <label class="grid gap-2 text-sm font-bold"><span>Customer impact</span><Select name="customer_impact"><option value="">All</option>{#each analytics.filter_options.customer_impacts as option}<option value={option.value} selected={analytics.filters.customer_impact === option.value}>{option.label}</option>{/each}</Select></label>
-                <label class="grid gap-2 text-sm font-bold sm:col-span-2 lg:col-span-3"><span>Affected service</span><Input name="affected_service" value={analytics.filters.affected_service ?? ""} type="search" /></label>
-                <div class="flex items-end"><Button class="w-full" type="submit">Apply filters</Button></div>
+            <form method="GET" action="/incidents/analytics">
+                <FieldGroup class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                    <Field><FieldLabel for="incidents-days" class="font-bold">Period</FieldLabel><Select id="incidents-days" name="days" value={String(analytics.filters.days)}><option value="30">Last 30 days</option><option value="90">Last 90 days</option><option value="365">Last 365 days</option></Select></Field>
+                    <Field><FieldLabel for="incidents-incident_type" class="font-bold">Type</FieldLabel><Select id="incidents-incident_type" name="incident_type"><option value="">All</option>{#each analytics.filter_options.incident_types as option}<option value={option.value} selected={analytics.filters.incident_type === option.value}>{option.label}</option>{/each}</Select></Field>
+                    <Field><FieldLabel for="incidents-severity" class="font-bold">Severity</FieldLabel><Select id="incidents-severity" name="severity"><option value="">All</option>{#each analytics.filter_options.severities as option}<option value={option.value} selected={analytics.filters.severity === option.value}>{option.label}</option>{/each}</Select></Field>
+                    <Field><FieldLabel for="incidents-customer_impact" class="font-bold">Customer impact</FieldLabel><Select id="incidents-customer_impact" name="customer_impact"><option value="">All</option>{#each analytics.filter_options.customer_impacts as option}<option value={option.value} selected={analytics.filters.customer_impact === option.value}>{option.label}</option>{/each}</Select></Field>
+                    <Field class="sm:col-span-2 lg:col-span-3"><FieldLabel for="incidents-affected_service" class="font-bold">Affected service</FieldLabel><Input id="incidents-affected_service" name="affected_service" value={analytics.filters.affected_service ?? ""} type="search" /></Field>
+                    <div class="flex items-end"><Button class="w-full" type="submit">Apply filters</Button></div>
+                </FieldGroup>
                 <input name="sort" type="hidden" value={analytics.filters.sort} /><input name="direction" type="hidden" value={analytics.filters.direction} />
             </form>
         </Card>

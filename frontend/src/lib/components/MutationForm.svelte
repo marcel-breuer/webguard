@@ -1,4 +1,5 @@
 <script lang="ts" generics="T">
+    import { Button as ActionLink } from "#lib/components/ui/button/index.ts";
     import { Alert } from "#lib/components/ui/alert/index.ts";
     import { FirstPartyApiError, requestFirstPartyApi } from "#lib/api/client.ts";
     import Button from "#lib/components/Button.svelte";
@@ -79,7 +80,7 @@
         >
             {message}
         </Alert>
-        {#if sessionRecovery}<a class="text-sm font-bold text-wg-accent no-underline hover:underline" href="/login?expired=1">Sign in again</a>{/if}
+        {#if sessionRecovery}<ActionLink variant="link" class="min-h-0 justify-start border-0 p-0 font-bold tracking-normal text-wg-accent no-underline" href="/login?expired=1">Sign in again</ActionLink>{/if}
     {/if}
 
     <Button type="submit" disabled={submitDisabled} loading={submitting}>{submitLabel}</Button>

@@ -50,14 +50,13 @@ it('edits and then deletes a monitoring from its details page', function (): voi
         'name' => 'Edit me',
         'target' => 'https://edit.example.test',
     ]);
-    $openActions = 'function() { document.querySelector("summary[aria-label=\'Monitoring actions\']").parentElement.open = true; return true; }';
 
     $page = BrowserWorld::signedInAt($user, '/monitorings/' . $monitoring->id);
     $inner = $page->page();
     BrowserWorld::waitForText($page, 'Edit me');
 
-    $page->script($openActions);
-    $inner->getByRole('button', ['name' => 'Edit monitoring'])->click();
+    $inner->getByRole('button', ['name' => 'Monitoring actions'])->press('Enter');
+    $inner->getByRole('menuitem', ['name' => 'Edit monitoring'])->click();
     $dialog = $inner->locator('[role="dialog"]');
     $dialog->locator('input[name="name"]')->fill('Edited name');
     $dialog->getByRole('button', ['name' => 'Update'])->click();
@@ -66,8 +65,8 @@ it('edits and then deletes a monitoring from its details page', function (): voi
     expect($monitoring->fresh()->name)->toBe('Edited name');
 
     $page->script('function() { window.confirm = () => true; return true; }');
-    $page->script($openActions);
-    $inner->getByRole('button', ['name' => 'Delete monitoring'])->click();
+    $inner->getByRole('button', ['name' => 'Monitoring actions'])->press('Enter');
+    $inner->getByRole('menuitem', ['name' => 'Delete monitoring'])->click();
 
     BrowserWorld::waitForPath($page, '/monitorings');
     expect(Monitoring::query()->whereKey($monitoring->id)->exists())->toBeFalse();

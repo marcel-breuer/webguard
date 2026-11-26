@@ -18,7 +18,7 @@
 </script>
 
 <main class="mx-auto flex min-h-screen w-[min(36rem,calc(100%_-_2rem))] items-center py-8 sm:py-12">
-    <Card.Root as="section" class="w-full wg-glass-overlay wg-glass-dialog">
+    <Card.Root as="section" variant="overlay" class="w-full">
         <Card.Content class="p-6 sm:p-10">
             <div class="flex items-center justify-between gap-4">
                 <a class="inline-flex items-center gap-3 text-wg-text no-underline" href="/login" aria-label="WebGuard login">

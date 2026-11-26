@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { Button as LinkButton } from "#lib/components/ui/button/index.ts";
     import { Badge } from "#lib/components/ui/badge/index.ts";
     import * as Alert from "#lib/components/ui/alert/index.ts";
     import * as Card from "#lib/components/ui/card/index.ts";
@@ -55,7 +56,7 @@
         </Card.Header>
 
         <ol class="mt-5 grid list-none gap-3 p-0 md:grid-cols-2">
-            <li class="wg-glass-inset p-4">
+            <Card.Root as="li" variant="inset" class="overflow-visible p-4">
                 <div class="flex items-start justify-between gap-3">
                     <div>
                         <h3 class="m-0 text-sm font-bold">1. Add your first website</h3>
@@ -68,12 +69,12 @@
                 {#if !hasActiveMonitoring}
                     <Button class="mt-4" type="button" onclick={onAddWebsite}>Add your website</Button>
                 {:else if firstMonitoringId}
-                    <a class="mt-4 inline-flex rounded-sm text-sm font-bold text-wg-accent underline underline-offset-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-wg-focus" href={`/monitorings/${firstMonitoringId}`}>View your first check</a>
+                    <LinkButton variant="link" class="mt-4 min-h-0 rounded-sm border-0 p-0 font-bold tracking-normal text-wg-accent underline underline-offset-2" href={`/monitorings/${firstMonitoringId}`}>View your first check</LinkButton>
                     <p class="mb-0 mt-2 text-sm leading-5 text-wg-text-muted">The details page shows when the first result is expected.</p>
                 {/if}
-            </li>
+            </Card.Root>
 
-            <li class="wg-glass-inset p-4">
+            <Card.Root as="li" variant="inset" class="overflow-visible p-4">
                 <div class="flex items-start justify-between gap-3">
                     <div>
                         <h3 class="m-0 text-sm font-bold">2. Set up and test alerts</h3>
@@ -86,9 +87,9 @@
                 {#if notificationTested}
                     <p class="mb-0 mt-4 text-sm font-semibold text-emerald-700 dark:text-emerald-300">Your test notification was delivered successfully.</p>
                 {:else}
-                    <a class="mt-4 inline-flex rounded-sm text-sm font-bold text-wg-accent underline underline-offset-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-wg-focus" href="/profile/notifications">Open notification settings</a>
+                    <LinkButton variant="link" class="mt-4 min-h-0 rounded-sm border-0 p-0 font-bold tracking-normal text-wg-accent underline underline-offset-2" href="/profile/notifications">Open notification settings</LinkButton>
                 {/if}
-            </li>
+            </Card.Root>
         </ol>
 
         {#if canComplete}
