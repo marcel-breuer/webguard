@@ -260,7 +260,7 @@ body {
 @supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) and (background: color-mix(in srgb, white, transparent)) {
     :root {
         --wg-glass-fill: color-mix(in srgb, var(--wg-glass-solid) 52%, transparent);
-        --wg-glass-raised-fill: color-mix(in srgb, var(--wg-glass-solid) 52%, transparent);
+        --wg-glass-raised-fill: color-mix(in srgb, var(--wg-glass-solid) 84%, transparent);
         --wg-glass-inset-fill: color-mix(in srgb, var(--wg-glass-tint) 38%, transparent);
         --wg-glass-blur: blur(28px) saturate(180%);
         --wg-navigation-fill: color-mix(in srgb, var(--wg-navigation) 52%, transparent);
@@ -268,7 +268,7 @@ body {
 
     :root.dark {
         --wg-glass-fill: rgb(255 255 255 / 7%);
-        --wg-glass-raised-fill: rgb(255 255 255 / 7%);
+        --wg-glass-raised-fill: color-mix(in srgb, var(--wg-glass-solid) 82%, transparent);
         --wg-glass-inset-fill: rgb(255 255 255 / 5%);
         --wg-glass-edge: rgb(255 255 255 / 22%);
         --wg-glass-rim: rgb(255 255 255 / 8%);
