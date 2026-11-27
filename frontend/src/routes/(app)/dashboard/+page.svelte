@@ -188,7 +188,7 @@
             <h1 class="mt-2 text-[clamp(2rem,6vw,3rem)] leading-[1.1] font-semibold">Dashboard</h1>
             <p class="mt-3 max-w-2xl leading-6 text-wg-text-muted">Check which websites are working, which need attention, and when they were last checked.</p>
         </div>
-        {#if dashboard?.capabilities.can_create_monitoring && dashboard.summary.total > 0}
+        {#if dashboard?.capabilities.can_create_monitoring && dashboard.summary.total > 0 && !onboardingVisible}
             <Button type="button" loading={createLoading} onclick={openCreateModal}>Add your website</Button>
         {/if}
     </header>
@@ -218,14 +218,14 @@
             </EmptyState>
         {/if}
     {:else}
-        <Card title="Website health" titleId="health-heading" description={healthMessage()} class="border-l-4 border-l-wg-accent">
+        <Card title="Website health" titleId="health-heading" description={healthMessage()} class={`border-l-4 ${healthTone() === "danger" ? "border-l-wg-status-down-foreground" : healthTone() === "degraded" ? "border-l-wg-status-degraded-foreground" : "border-l-wg-status-up-foreground"}`}>
             {#snippet actions()}<StatusBadge tone={healthTone()} label={healthBadgeLabel()} />{/snippet}
-            <p class="mb-4 mt-0 text-sm font-bold text-wg-text-muted">{formatNumber(dashboard.summary.total)} <span>websites</span></p>
+            <p class="mb-4 mt-0 text-sm font-semibold text-wg-text-muted"><span class="font-bold tabular-nums text-wg-text">{formatNumber(dashboard.summary.total)}</span> <span>websites</span></p>
             <dl class="grid grid-cols-2 gap-3 sm:grid-cols-5">
                 {#each [["healthy", "Working"], ["down", "Down"], ["unknown", "Needs a check"], ["paused", "Paused"], ["maintenance", "Maintenance"]] as [key, label]}
-                    <Surface variant="inset" class="rounded-xl border-0 bg-wg-surface-muted p-3 shadow-none">
+                    <Surface variant="inset" class={`rounded-xl border-0 bg-wg-surface-muted p-3 shadow-none ${key === "down" && dashboard.summary.down > 0 ? "ring-1 ring-wg-status-down-foreground/30" : key === "unknown" && dashboard.summary.unknown > 0 ? "ring-1 ring-wg-status-degraded-foreground/30" : ""}`}>
                         <dt class="text-xs font-bold text-wg-text-muted">{label}</dt>
-                        <dd class="mt-1 text-xl font-extrabold">{formatNumber(dashboard.summary[key as keyof typeof dashboard.summary])}</dd>
+                        <dd class={`mt-1 text-2xl font-bold tabular-nums ${key === "down" && dashboard.summary.down > 0 ? "text-wg-status-down-foreground" : key === "unknown" && dashboard.summary.unknown > 0 ? "text-wg-status-degraded-foreground" : "text-wg-text"}`}>{formatNumber(dashboard.summary[key as keyof typeof dashboard.summary])}</dd>
                     </Surface>
                 {/each}
             </dl>

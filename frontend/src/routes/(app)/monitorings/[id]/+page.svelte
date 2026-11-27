@@ -20,7 +20,7 @@
     import StatusBadge from "#lib/components/StatusBadge.svelte";
     import NavIcon from "#lib/components/NavIcon.svelte";
     import { notificationChannelLabel } from "#lib/notification-channels.ts";
-    import type { MonitoringDetailData, MonitoringFormOptions, MonitoringHeatmapPoint, MonitoringMutationResult, MonitoringSummary } from "#lib/api/monitoring.ts";
+    import type { MonitoringDetailData, MonitoringFormOptions, MonitoringMutationResult, MonitoringSummary } from "#lib/api/monitoring.ts";
 
     interface Props {
         data: {
@@ -40,6 +40,10 @@
     let editLoading = $state(false);
     let editOpen = $state(false);
     let error = $state("");
+
+    function text(value: string): string {
+        return translate(value, data.locale, data.messages);
+    }
 
     const linkedTarget = $derived(targetUrl(data.monitoring.target));
     const availabilityPeriods = $derived(data.detail.availability_periods);
@@ -96,11 +100,6 @@
         if (!period?.has_data) return "No availability data yet";
         const incidents = period.downtime.incidents_count;
         return `${formatNumber(incidents)} ${incidents === 1 ? "incident" : "incidents"}, ${formatPercentage(period.downtime.percentage ?? 0)} downtime`;
-    }
-
-    function heatmapClass(point: MonitoringHeatmapPoint): string {
-        if (point.uptime === point.downtime) return "bg-wg-surface-muted";
-        return point.uptime > point.downtime ? "bg-emerald-500" : "bg-red-500";
     }
 
     async function remove(): Promise<void> {
@@ -216,9 +215,18 @@
         {/if}
 
         <section class="grid gap-4 md:grid-cols-3" aria-label="Monitoring summary">
-            <Card.Root role="article" class={`min-h-32 border-l-4 p-6 ${statusTone() === "healthy" ? "border-l-wg-status-up-foreground" : statusTone() === "danger" ? "border-l-wg-status-down-foreground" : "border-l-wg-status-degraded-foreground"}`}><p class="text-sm font-medium text-wg-text-muted">Current status</p><div class="mt-4 flex items-center gap-3"><StatusBadge tone={statusTone()} label={statusLabel()} />{#if data.detail.current_check.status_code !== null}<span class="text-sm tabular-nums text-wg-text-muted">HTTP {data.detail.current_check.status_code}</span>{/if}</div><p class="mt-3 text-sm text-wg-text-muted">Since {timestamp(data.detail.current_check.checked_at)}</p></Card.Root>
-            <Card.Root role="article" class="min-h-32 p-6"><p class="text-sm font-medium text-wg-text-muted">Last check</p><p class="mt-4 text-lg font-semibold tabular-nums">{timestamp(data.detail.current_check.checked_at)}</p><p class="mt-3 text-sm text-wg-text-muted">{intervalLabel(data.detail.current_check.interval)}</p></Card.Root>
-            <Card.Root role="article" class="min-h-32 p-6"><div class="flex items-center justify-between gap-3"><p class="text-sm font-medium text-wg-text-muted">Last 24 hours</p><span class="text-lg font-semibold tabular-nums">{lastDayAvailability() ?? "—"}</span></div><div class="mt-4 flex h-7 gap-0.5" aria-label="Last 24 hours availability">{#each data.detail.heatmap.slice(0, 24) as point}<span class={`min-w-1 flex-1 rounded-sm ${heatmapClass(point)}`} aria-hidden="true"></span>{/each}</div><p class="mt-3 text-sm text-wg-text-muted">{lastDayAvailability() === null ? "No results in this period" : "Availability across recorded checks"}</p></Card.Root>
+            <Card.Root role="article" class={`md:col-span-3 border-l-4 p-5 sm:p-6 ${statusTone() === "healthy" ? "border-l-wg-status-up-foreground" : statusTone() === "danger" ? "border-l-wg-status-down-foreground" : "border-l-wg-status-degraded-foreground"}`}>
+                <div class="flex flex-wrap items-start justify-between gap-4">
+                    <div><p class="text-sm font-medium text-wg-text-muted">Current status</p><div class="mt-2 flex flex-wrap items-center gap-3"><StatusBadge tone={statusTone()} label={statusLabel()} />{#if data.detail.current_check.status_code !== null}<span class="text-sm tabular-nums text-wg-text-muted">HTTP {data.detail.current_check.status_code}</span>{/if}</div><p class="mt-2 text-sm text-wg-text-muted">Since {timestamp(data.detail.current_check.checked_at)}</p></div>
+                    {#if data.detail.maintenance.active}<div class="rounded-lg bg-wg-status-maintenance px-3 py-2 text-sm font-semibold text-wg-status-maintenance-foreground">{text("Maintenance in progress")}</div>{/if}
+                </div>
+                <dl class="mt-5 grid grid-cols-2 gap-4 border-t border-wg-border pt-4 sm:grid-cols-4">
+                    <div><dt class="text-sm text-wg-text-muted">{text("Uptime")} · {text("Last 90 days")}</dt><dd class="mt-1 text-xl font-semibold tabular-nums">{availability("90")}</dd></div>
+                    <div><dt class="text-sm text-wg-text-muted">{text("Average response time")}</dt><dd class="mt-1 text-xl font-semibold tabular-nums">{data.detail.response_times.aggregated.avg === null ? "—" : `${formatNumber(Math.round(data.detail.response_times.aggregated.avg))} ms`}</dd></div>
+                    <div><dt class="text-sm text-wg-text-muted">{text("Last 24 hours")}</dt><dd class="mt-1 text-xl font-semibold tabular-nums">{lastDayAvailability() ?? "—"}</dd></div>
+                    <div class="col-span-2 sm:col-span-1"><dt class="text-sm text-wg-text-muted">{text("Last check")}</dt><dd class="mt-1 text-base font-semibold tabular-nums">{timestamp(data.detail.current_check.checked_at)}</dd><p class="mt-1 text-xs text-wg-text-muted">{intervalLabel(data.detail.current_check.interval)}</p></div>
+                </dl>
+            </Card.Root>
         </section>
 
         {#if data.detail.server_health_telemetry}
