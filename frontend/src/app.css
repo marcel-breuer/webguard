@@ -14,6 +14,8 @@
     --color-wg-accent: var(--wg-accent);
     --color-wg-accent-strong: var(--wg-accent-strong);
     --color-wg-accent-contrast: var(--wg-accent-contrast);
+    --color-wg-accent-soft: var(--wg-accent-soft);
+    --color-wg-link: var(--wg-link);
     --color-wg-danger: var(--wg-danger);
     --color-wg-focus: var(--wg-focus);
     --color-wg-status-up: var(--wg-status-up);
@@ -54,18 +56,42 @@
 :root {
     color-scheme: light;
     --wg-font-sans: "Sen", ui-sans-serif, system-ui, sans-serif;
-    --wg-canvas: #f7f7f8;
-    --wg-surface: #ffffff;
-    --wg-surface-muted: #f0f0f2;
-    --wg-text: #1b1a1d;
-    --wg-text-muted: #57545d;
-    --wg-border: #d8d6dc;
-    --wg-accent: #7e22ce;
-    --wg-accent-strong: #6b21a8;
-    --wg-accent-contrast: #ffffff;
+    --wg-brand-50: #faf5ff;
+    --wg-brand-100: #f3e8ff;
+    --wg-brand-200: #e9d5ff;
+    --wg-brand-300: #d8b4fe;
+    --wg-brand-400: #c084fc;
+    --wg-brand-500: #a855f7;
+    --wg-brand-600: #9333ea;
+    --wg-brand-700: #7e22ce;
+    --wg-brand-800: #6b21a8;
+    --wg-brand-900: #581c87;
+    --wg-white: #fbfaff;
+    --wg-slate-50: #f5f3fa;
+    --wg-slate-100: #eceaf3;
+    --wg-slate-200: #dcd9e8;
+    --wg-slate-300: #c5c3d6;
+    --wg-slate-400: #9292ae;
+    --wg-slate-500: #686b86;
+    --wg-slate-600: #50546d;
+    --wg-slate-700: #393d56;
+    --wg-slate-800: #292d45;
+    --wg-slate-900: #1d2036;
+    --wg-slate-950: #131629;
+    --wg-canvas: var(--wg-slate-50);
+    --wg-surface: var(--wg-white);
+    --wg-surface-muted: var(--wg-slate-100);
+    --wg-text: var(--wg-slate-900);
+    --wg-text-muted: #474b64;
+    --wg-border: var(--wg-slate-200);
+    --wg-accent: var(--wg-brand-600);
+    --wg-accent-strong: var(--wg-brand-700);
+    --wg-accent-contrast: var(--wg-white);
+    --wg-accent-soft: var(--wg-brand-100);
+    --wg-link: var(--wg-brand-700);
     --wg-danger: #b91c1c;
-    --wg-focus: #7e22ce;
-    --wg-shadow: 0 8px 24px rgb(20 18 24 / 7%);
+    --wg-focus: var(--wg-brand-500);
+    --wg-shadow: 0 8px 32px rgb(88 28 135 / 12%);
     --wg-status-up: #e8f5ed;
     --wg-status-up-foreground: #155b36;
     --wg-status-down: #fff0ef;
@@ -75,8 +101,8 @@
     --wg-status-maintenance: #edf0f4;
     --wg-status-maintenance-foreground: #3d4a5b;
     /* Solid fallbacks are progressively enhanced by the translucent glass tokens below. */
-    --wg-glass-solid: #ffffff;
-    --wg-glass-tint: #f1f0f3;
+    --wg-glass-solid: var(--wg-white);
+    --wg-glass-tint: #f5f0fc;
     --wg-glass-fill: var(--wg-glass-solid);
     --wg-glass-raised-fill: var(--wg-glass-solid);
     --wg-glass-inset-fill: var(--wg-glass-tint);
@@ -89,7 +115,7 @@
     --wg-glass-radius-dialog: 24px;
     --wg-glass-radius-control: 0.625rem;
     --wg-glass-ease: 180ms ease-out;
-    --wg-navigation: #ffffff;
+    --wg-navigation: var(--wg-white);
     --wg-navigation-edge: rgb(255 255 255 / 50%);
 
     /*
@@ -118,17 +144,19 @@
 
 :root.dark {
     color-scheme: dark;
-    --wg-canvas: #141315;
-    --wg-surface: #1b1a1d;
-    --wg-surface-muted: #242327;
-    --wg-text: #f1eff3;
-    --wg-text-muted: #b9b5bd;
-    --wg-border: #3b3940;
-    --wg-accent: #d0a5f4;
-    --wg-accent-strong: #e2c8fa;
-    --wg-accent-contrast: #24152f;
+    --wg-canvas: var(--wg-slate-950);
+    --wg-surface: var(--wg-slate-900);
+    --wg-surface-muted: var(--wg-slate-800);
+    --wg-text: var(--wg-slate-50);
+    --wg-text-muted: var(--wg-slate-300);
+    --wg-border: var(--wg-slate-700);
+    --wg-accent: var(--wg-brand-400);
+    --wg-accent-strong: var(--wg-brand-300);
+    --wg-accent-contrast: var(--wg-slate-950);
+    --wg-accent-soft: var(--wg-slate-800);
+    --wg-link: var(--wg-brand-300);
     --wg-danger: #ffaaa6;
-    --wg-focus: #dfb9ff;
+    --wg-focus: var(--wg-brand-500);
     --wg-shadow: 0 8px 24px rgb(0 0 0 / 24%);
     --wg-status-up: #183225;
     --wg-status-up-foreground: #9ee2ba;
@@ -138,12 +166,12 @@
     --wg-status-degraded-foreground: #f3d27e;
     --wg-status-maintenance: #252a33;
     --wg-status-maintenance-foreground: #c4cad4;
-    --wg-glass-solid: #1b1a1d;
-    --wg-glass-tint: #242327;
+    --wg-glass-solid: var(--wg-slate-900);
+    --wg-glass-tint: var(--wg-slate-950);
     --wg-glass-edge: rgb(255 255 255 / 22%);
     --wg-glass-rim: rgb(255 255 255 / 8%);
     --wg-glass-shadow: 0 8px 32px rgb(0 0 0 / 35%);
-    --wg-navigation: #1b1a1d;
+    --wg-navigation: var(--wg-slate-900);
     --wg-navigation-edge: rgb(255 255 255 / 8%);
 }
 
@@ -171,17 +199,18 @@ body {
     color: var(--wg-text);
     font-family: var(--wg-font-sans);
     background-image:
-        radial-gradient(60rem 40rem at 12% 8%, color-mix(in srgb, var(--color-purple-300) 38%, transparent), transparent 70%),
-        radial-gradient(52rem 38rem at 92% 28%, color-mix(in srgb, var(--color-purple-200) 42%, transparent), transparent 70%),
-        radial-gradient(56rem 40rem at 30% 92%, color-mix(in srgb, var(--color-purple-400) 26%, transparent), transparent 70%);
+        linear-gradient(color-mix(in srgb, var(--wg-brand-100) 70%, transparent), transparent 80%),
+        radial-gradient(60rem 40rem at 12% 8%, color-mix(in srgb, var(--wg-brand-300) 45%, transparent), transparent 70%),
+        radial-gradient(52rem 38rem at 92% 28%, color-mix(in srgb, var(--wg-brand-200) 45%, transparent), transparent 70%),
+        radial-gradient(56rem 40rem at 30% 92%, color-mix(in srgb, var(--wg-brand-400) 40%, transparent), transparent 70%);
     background-attachment: fixed;
 }
 
 :root.dark body {
     background-image:
-        radial-gradient(60rem 40rem at 12% 8%, color-mix(in srgb, var(--color-purple-700) 38%, transparent), transparent 70%),
-        radial-gradient(52rem 38rem at 92% 28%, color-mix(in srgb, var(--color-purple-800) 42%, transparent), transparent 70%),
-        radial-gradient(56rem 40rem at 30% 92%, color-mix(in srgb, var(--color-purple-600) 26%, transparent), transparent 70%);
+        radial-gradient(60rem 40rem at 12% 8%, color-mix(in srgb, var(--wg-brand-700) 42%, transparent), transparent 70%),
+        radial-gradient(52rem 38rem at 92% 28%, color-mix(in srgb, var(--wg-brand-800) 46%, transparent), transparent 70%),
+        radial-gradient(56rem 40rem at 30% 92%, color-mix(in srgb, var(--wg-brand-600) 26%, transparent), transparent 70%);
 }
 
 /* Shared surface levels: quiet chrome, raised panels and inset controls. */
@@ -259,11 +288,11 @@ body {
 
 @supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) and (background: color-mix(in srgb, white, transparent)) {
     :root {
-        --wg-glass-fill: color-mix(in srgb, var(--wg-glass-solid) 52%, transparent);
-        --wg-glass-raised-fill: color-mix(in srgb, var(--wg-glass-solid) 84%, transparent);
-        --wg-glass-inset-fill: color-mix(in srgb, var(--wg-glass-tint) 38%, transparent);
+        --wg-glass-fill: color-mix(in srgb, var(--wg-glass-solid) 56%, transparent);
+        --wg-glass-raised-fill: color-mix(in srgb, var(--wg-glass-solid) 60%, transparent);
+        --wg-glass-inset-fill: color-mix(in srgb, var(--wg-brand-50) 38%, transparent);
         --wg-glass-blur: blur(28px) saturate(180%);
-        --wg-navigation-fill: color-mix(in srgb, var(--wg-navigation) 52%, transparent);
+        --wg-navigation-fill: color-mix(in srgb, var(--wg-navigation) 56%, transparent);
     }
 
     :root.dark {
@@ -278,9 +307,10 @@ body {
     }
 }
 
-/* The active item reads as an inset layer over the navigation glass. */
+/* Keep selected navigation clearly legible over the translucent sidebar. */
 .wg-glass-navigation [data-active="true"] {
-    background-color: var(--wg-glass-inset-fill);
+    background-color: var(--wg-accent);
+    color: var(--wg-accent-contrast);
 }
 
 /* The mobile sheet hosts its own glass navigation surface. */

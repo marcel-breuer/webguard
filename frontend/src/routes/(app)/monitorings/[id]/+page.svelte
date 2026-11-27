@@ -215,7 +215,7 @@
         {/if}
 
         <section class="grid gap-4 md:grid-cols-3" aria-label="Monitoring summary">
-            <Card.Root role="article" class={`md:col-span-3 border-l-4 p-5 sm:p-6 ${statusTone() === "healthy" ? "border-l-wg-status-up-foreground" : statusTone() === "danger" ? "border-l-wg-status-down-foreground" : "border-l-wg-status-degraded-foreground"}`}>
+            <Card.Root role="article" class={`md:col-span-3 p-5 sm:p-6`}>
                 <div class="flex flex-wrap items-start justify-between gap-4">
                     <div><p class="text-sm font-medium text-wg-text-muted">Current status</p><div class="mt-2 flex flex-wrap items-center gap-3"><StatusBadge tone={statusTone()} label={statusLabel()} />{#if data.detail.current_check.status_code !== null}<span class="text-sm tabular-nums text-wg-text-muted">HTTP {data.detail.current_check.status_code}</span>{/if}</div><p class="mt-2 text-sm text-wg-text-muted">Since {timestamp(data.detail.current_check.checked_at)}</p></div>
                     {#if data.detail.maintenance.active}<div class="rounded-lg bg-wg-status-maintenance px-3 py-2 text-sm font-semibold text-wg-status-maintenance-foreground">{text("Maintenance in progress")}</div>{/if}

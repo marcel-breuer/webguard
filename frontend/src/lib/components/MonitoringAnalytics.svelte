@@ -250,7 +250,7 @@
                 labels: points.map((point) => responseTimeAxisLabel(point.date)),
                 datasets: [
                     { label: "Min. Response Time", data: points.map((point) => point.min ?? point.avg), borderColor: range, borderWidth: 1.5, borderDash: [4, 4], pointRadius: 0, pointHoverRadius: 4, tension: 0.35 },
-                    { label: "Avg. Response Time", data: points.map((point) => point.avg), borderColor: accent, backgroundColor: accent, borderWidth: 2.5, pointRadius: 0, pointHoverRadius: 4, tension: 0.35 },
+                    { label: "Avg. Response Time", data: points.map((point) => point.avg), borderColor: accent, backgroundColor: "rgb(147 51 234 / 12%)", borderWidth: 2.5, pointRadius: 0, pointHoverRadius: 4, tension: 0.35, fill: true },
                     { label: "Max. Response Time", data: points.map((point) => point.max ?? point.avg), borderColor: range, borderWidth: 1.5, borderDash: [2, 3], pointRadius: 0, pointHoverRadius: 4, tension: 0.35 },
                 ],
             },
