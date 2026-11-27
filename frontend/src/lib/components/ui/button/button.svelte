@@ -4,7 +4,7 @@
 	import type { HTMLAnchorAttributes, HTMLButtonAttributes } from "svelte/elements";
 
 	export const buttonVariants = tv({
-		base: "inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border px-4 py-2.5 text-sm leading-5 font-medium tracking-normal transition-[background-color,border-color,box-shadow,color,transform] duration-150 ease-out active:translate-y-px focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-wg-focus disabled:cursor-not-allowed disabled:opacity-60",
+		base: "inline-flex min-h-11 items-center justify-center gap-2 rounded-[10px] border px-4 py-2.5 text-sm leading-5 font-medium tracking-normal transition-[background-color,border-color,color,opacity,transform] duration-[180ms] ease-out active:translate-y-px focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-wg-focus disabled:cursor-not-allowed disabled:opacity-60",
 		variants: {
 			variant: {
 				default: "border-wg-accent bg-wg-accent text-wg-accent-contrast enabled:hover:bg-wg-accent-strong",
@@ -13,7 +13,7 @@
 				ghost: "text-wg-text enabled:hover:border-wg-focus enabled:hover:bg-wg-surface-muted",
 				destructive: "border-wg-danger bg-wg-danger text-white dark:text-slate-950 enabled:hover:brightness-95",
 				dismiss: "",
-				link: "text-primary underline-offset-4 hover:underline",
+				link: "text-wg-link underline-offset-4 hover:underline",
 			},
 			size: {
 				default: "",

@@ -26,7 +26,7 @@
 	data-slot="card"
 	data-size={size}
 	data-variant={variant}
-	class={cn(surfaces[variant], "overflow-hidden", className)}
+	class={cn(surfaces[variant], "overflow-hidden wg-glass-lift", className)}
 	{...restProps}
 >
 	{@render children?.()}

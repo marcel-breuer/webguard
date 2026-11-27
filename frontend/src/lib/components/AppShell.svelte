@@ -248,7 +248,7 @@
     <Sidebar.MenuItem>
         <Sidebar.MenuButton isActive={isActive(item.href)} data-active={isActive(item.href) ? "true" : undefined} tooltipContent={compact ? label : undefined}
             tooltipContentProps={{ role: "tooltip", portalProps: { to: "#localized-app" } }}
-            class={`mt-1 min-h-10 overflow-visible rounded-lg border border-transparent font-medium text-wg-text-muted no-underline transition-colors hover:border-wg-border hover:bg-wg-surface-muted hover:text-wg-text data-active:border-wg-border data-active:bg-wg-surface data-active:text-wg-text data-active:shadow-[inset_2px_0_0_var(--wg-accent)] ${compact ? "justify-center px-0" : "gap-3 px-3"}`}>
+            class={`mt-1 min-h-10 overflow-visible rounded-full border border-transparent font-medium text-wg-text-muted no-underline transition-[color,background-color,border-color] duration-[180ms] ease-out hover:border-wg-border hover:bg-wg-accent-soft hover:text-wg-text data-active:border-transparent data-active:bg-wg-accent data-active:text-wg-accent-contrast data-active:hover:bg-wg-accent-strong ${compact ? "justify-center px-0" : "gap-3 px-3"}`}>
             {#snippet child({ props })}
                 <a {...props} href={item.href} aria-current={isActive(item.href) ? "page" : undefined} aria-label={label} onclick={closeMobileNavigation}>
                     <span class="relative grid size-5 shrink-0 place-items-center">
