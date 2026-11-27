@@ -43,6 +43,7 @@ return [
         'Last 365 days' => 'Letzte 365 Tage',
         'Light' => 'Hell',
         'Load more' => 'Mehr laden',
+        'Loading' => 'Wird geladen',
         'Maximum' => 'Maximum',
         'Minimum' => 'Minimum',
         'Monthly' => 'Monatlich',

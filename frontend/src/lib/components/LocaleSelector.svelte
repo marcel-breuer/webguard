@@ -61,7 +61,7 @@
 </script>
 
 <DropdownMenu.Root bind:open onOpenChange={handleOpenChange}>
-    <DropdownMenu.Trigger class={`grid size-11 place-items-center rounded-[0.65rem] border focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-wg-focus ${variant === "surface" ? "border-wg-border bg-wg-surface text-wg-text" : "border-purple-700 text-purple-100"}`} aria-label="Language" title="Language">
+    <DropdownMenu.Trigger class={`grid size-11 place-items-center rounded-[0.65rem] border focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-wg-focus ${variant === "surface" ? "border-wg-border bg-wg-surface text-wg-text" : "border-wg-border bg-wg-surface text-wg-text-muted hover:text-wg-text"}`} aria-label="Language" title="Language">
         <NavIcon name="globe" />
     </DropdownMenu.Trigger>
     <DropdownMenu.Content variant="glass" preventScroll={false} portalProps={{ disabled: true }} align={menuAlign === "right" ? "end" : "start"} side={menuPlacement === "below" ? "bottom" : "top"} sideOffset={8} class="w-48 gap-2 p-2" aria-label="Language" aria-busy={saving}>

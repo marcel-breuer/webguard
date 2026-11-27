@@ -121,10 +121,10 @@
 </script>
 
 <GuestAuthLayout title={mode === "register" ? "Create your account" : "Welcome to WebGuard"} description={mode === "register" ? "Start monitoring the services your team depends on." : "Sign in to manage your monitorings, status pages, and notifications."} initialLocale={initialLocale} showPreferences={showPreferences}>
-    <Surface variant="inset" class="mb-7 grid grid-cols-3 gap-2 overflow-visible rounded-xl border-0 bg-wg-surface-muted p-1.5 shadow-none" aria-label="Authentication mode">
-        <Button variant={mode === "login" ? "primary" : "quiet"} onclick={() => selectMode("login")}>Sign in</Button>
-        <Button variant={mode === "register" ? "primary" : "quiet"} onclick={() => selectMode("register")}>Register</Button>
-        <Button variant={mode === "demo" ? "primary" : "quiet"} loading={loadingDemo} onclick={() => selectMode("demo")}>Demo</Button>
+    <Surface variant="inset" class="mb-6 grid grid-cols-3 gap-2 overflow-visible rounded-xl border-0 bg-wg-surface-muted p-1.5 shadow-none" aria-label="Authentication mode">
+        <Button variant={mode === "login" ? "primary" : "quiet"} aria-pressed={mode === "login"} onclick={() => selectMode("login")}>Sign in</Button>
+        <Button variant={mode === "register" ? "primary" : "quiet"} aria-pressed={mode === "register"} onclick={() => selectMode("register")}>Register</Button>
+        <Button variant={mode === "demo" ? "primary" : "quiet"} aria-pressed={mode === "demo"} loading={loadingDemo} onclick={() => selectMode("demo")}>Demo</Button>
     </Surface>
 
     {#if message}
@@ -134,7 +134,7 @@
     {/if}
 
     <form onsubmit={submit} novalidate>
-        <FieldGroup class="grid gap-5">
+        <FieldGroup class="grid gap-4">
             {#if mode === "register"}
                 <Field label="Name" required error={errorFor("name")}><Input name="name" autocomplete="name" required /></Field>
             {/if}
@@ -146,7 +146,7 @@
             {:else}
                 <Field label="Confirm password" required error={errorFor("password_confirmation")}><Input name="password_confirmation" type="password" autocomplete="new-password" required /></Field>
                 <Label class="flex items-start gap-3 text-sm leading-6 text-wg-text-muted"><Checkbox class="mt-1" name="terms" value="1" required /><span>I agree to the <a class="font-bold text-wg-accent" href={options.terms_url} target="_blank" rel="noopener">terms of use</a> and <a class="font-bold text-wg-accent" href={options.privacy_url} target="_blank" rel="noopener">privacy policy</a>.</span></Label>
-                <Field label="Security check" required error={errorFor("captcha")}><div class="flex flex-col gap-3 sm:flex-row sm:items-center"><img class="h-[54px] w-[220px] rounded-md border border-wg-border object-cover" src={captchaUrl} alt="Security check" /><Button type="button" variant="secondary" onclick={() => (captchaNonce = Date.now())}>Reload</Button></div><Input name="captcha" autocomplete="off" inputmode="text" required /></Field>
+                <Field label="Security check" required error={errorFor("captcha")}><div class="flex flex-col gap-3 sm:flex-row sm:items-center"><img class="h-14 w-[220px] rounded-lg border border-wg-border object-cover" src={captchaUrl} alt="Security check" /><Button type="button" variant="secondary" onclick={() => (captchaNonce = Date.now())}>Reload</Button></div><Input name="captcha" autocomplete="off" inputmode="text" required /></Field>
             {/if}
             <Button type="submit" loading={submitting}>{mode === "register" ? "Create account" : "Sign in"}</Button>
         </FieldGroup>

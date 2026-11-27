@@ -45,4 +45,4 @@
 </script>
 
 <Toaster id={regionId} containerAriaLabel="Notifications" position="bottom-right" expand
-    visibleToasts={Math.max(1, items.length)} gap={12} offset={16} />
+    visibleToasts={Math.max(1, items.length)} gap={8} offset={16} />

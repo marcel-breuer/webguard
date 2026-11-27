@@ -23,7 +23,7 @@
             <div class="flex items-center justify-between gap-4">
                 <a class="inline-flex items-center gap-3 text-wg-text no-underline" href="/login" aria-label="WebGuard login">
                     <img class="size-10 rounded-xl bg-white object-contain p-0.5" src="/brand/webguard-logo.png" alt="" />
-                    <span class="font-extrabold tracking-tight">WebGuard</span>
+                    <span class="font-semibold">WebGuard</span>
                 </a>
                 {#if showPreferences}
                     <div class="flex shrink-0 gap-2" aria-label="Page preferences">
@@ -33,8 +33,8 @@
                 {/if}
             </div>
             <header class="mt-8">
-                <h1 class="text-3xl font-bold tracking-tight sm:text-4xl">{title}</h1>
-                <p class="mt-3 leading-6 text-wg-text-muted">{description}</p>
+                <h1 class="text-3xl leading-tight font-semibold sm:text-4xl">{title}</h1>
+                <p class="mt-3 text-sm leading-6 text-wg-text-muted">{description}</p>
             </header>
             <div class="mt-8">{@render children?.()}</div>
         </Card.Content>

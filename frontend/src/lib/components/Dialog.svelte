@@ -17,6 +17,7 @@
 </script>
 
 <script lang="ts">
+    import XIcon from "@lucide/svelte/icons/x";
     import * as Dialog from "#lib/components/ui/dialog/index.ts";
     import type { Snippet } from "svelte";
 
@@ -79,9 +80,9 @@
                 {#if description}<Dialog.Description>{description}</Dialog.Description>{/if}
             </div>
             <Dialog.Close
-                class="inline-grid size-9 shrink-0 place-items-center rounded-md border border-wg-border bg-transparent text-2xl leading-none text-wg-text enabled:hover:bg-wg-surface-muted"
+                class="inline-grid size-10 shrink-0 place-items-center rounded-lg border border-wg-border bg-transparent text-wg-text transition-colors enabled:hover:bg-wg-surface-muted"
                 aria-label={closeLabel}
-            >×</Dialog.Close>
+            ><XIcon class="size-[18px]" /></Dialog.Close>
         </Dialog.Header>
         <div class="min-h-0 overflow-auto p-4 sm:p-6">{@render children?.()}</div>
     </Dialog.Content>
