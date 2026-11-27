@@ -24,11 +24,11 @@
 <main class="mx-auto w-[min(70rem,calc(100%_-_2rem))] py-6 sm:py-12">
     <header class="mb-8 flex flex-col items-start justify-between gap-4 sm:flex-row">
         <div>
-            <p class="m-0 text-[0.8125rem] font-extrabold tracking-[0.1em] text-wg-accent uppercase">Collaboration</p>
+            <p class="m-0 text-sm font-semibold text-wg-text-muted">Collaboration</p>
             <h1 class="mt-2 text-[clamp(2rem,6vw,3rem)] leading-[1.1] font-bold">Teams</h1>
             <span class="mt-3 block text-wg-text-muted">Manage the monitorings and members you collaborate with.</span>
         </div>
-        <Button onclick={() => (createOpen = true)}>Create team</Button>
+        <Button class="w-full sm:w-auto" onclick={() => (createOpen = true)}>Create team</Button>
     </header>
     {#if teams.length === 0}
         <EmptyState title="No teams yet" description="Create a team to share monitoring ownership and collaborate with colleagues." />

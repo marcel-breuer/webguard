@@ -74,9 +74,9 @@
 
 <main class="mx-auto w-[min(78rem,calc(100%_-_2rem))] py-6 sm:py-12">
     <header class="mb-8">
-        <p class="m-0 text-[0.8125rem] font-extrabold tracking-[0.1em] text-wg-accent uppercase">Administration</p>
+        <p class="m-0 text-sm font-semibold text-wg-text-muted">Administration</p>
         <h1 class="mt-2 text-[clamp(2rem,6vw,3rem)] leading-[1.1] font-bold">API access</h1>
-        <p class="mt-3 leading-6 text-wg-text-muted">Review recent authenticated API usage without exposing credentials.</p>
+        <p class="mt-3 max-w-2xl leading-6 text-wg-text-muted">Review recent authenticated API usage without exposing credentials.</p>
     </header>
 
     <GlassCard class="mb-5 overflow-visible p-5">
@@ -97,7 +97,7 @@
                 <Select id={`${filterId}-per_page`} name="per_page" value={String(filters.perPage)}><option value="10">10</option><option value="25">25</option><option value="50">50</option><option value="100">100</option></Select>
             </FilterField>
 
-            <div class="flex gap-3"><Button type="submit">Apply</Button><ActionLink variant="outline" class="no-underline" href={appRoutes.adminApi}>Reset</ActionLink></div>
+            <div class="flex flex-col gap-2 sm:flex-row sm:gap-3"><Button type="submit">Apply</Button><ActionLink variant="outline" class="no-underline" href={appRoutes.adminApi}>Reset</ActionLink></div>
 
             <input name="sort" type="hidden" value={filters.sort} /><input name="direction" type="hidden" value={filters.direction} />
 

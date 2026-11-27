@@ -50,7 +50,7 @@
 <main class="mx-auto w-[min(58rem,calc(100%_-_2rem))] py-6 sm:py-12">
     <header class="mb-8">
         <a class="text-sm font-bold text-wg-accent no-underline hover:underline" href={appRoutes.profile}>← Profile settings</a>
-        <p class="mt-5 mb-0 text-[0.8125rem] font-extrabold tracking-[0.1em] text-wg-accent uppercase">Notifications</p>
+        <p class="mt-5 mb-0 text-sm font-semibold text-wg-text-muted">Notifications</p>
         <h1 class="mt-2 text-[clamp(2rem,6vw,3rem)] leading-[1.1] font-bold">Notification settings</h1>
         <p class="mt-3 max-w-2xl leading-6 text-wg-text-muted">Choose where WebGuard should send alerts. Monitor-specific channel selection remains available on each monitoring.</p>
     </header>
