@@ -127,4 +127,4 @@
     </div>
 </main>
 
-{#snippet Updates(updates: typeof data.incidents[number]["updates"])}{#if updates.length > 0}<div class="mt-3 grid gap-3">{#each updates as update, updateIndex (`${update.published_at}-${updateIndex}`)}<div class="border-l-2 border-wg-accent pl-3"><p class="text-sm font-semibold">{updateStatusLabel(update.status)}</p><p class="mt-1 text-sm leading-6 text-wg-text-muted">{update.message}</p><p class="mt-1 text-xs text-wg-text-muted">{dateTime(update.published_at)}</p></div>{/each}</div>{/if}{/snippet}
+{#snippet Updates(updates: typeof data.incidents[number]["updates"])}{#if updates.length > 0}<div class="mt-3 grid gap-3">{#each updates as update, updateIndex (`${update.published_at}-${updateIndex}`)}<div class="rounded-lg bg-wg-surface-muted p-3"><p class="flex items-center gap-2 text-sm font-semibold"><span class="size-2 shrink-0 rounded-full bg-wg-accent" aria-hidden="true"></span>{updateStatusLabel(update.status)}</p><p class="mt-1 text-sm leading-6 text-wg-text-muted">{update.message}</p><p class="mt-1 text-xs text-wg-text-muted">{dateTime(update.published_at)}</p></div>{/each}</div>{/if}{/snippet}

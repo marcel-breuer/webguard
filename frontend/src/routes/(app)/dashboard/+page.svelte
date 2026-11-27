@@ -218,7 +218,7 @@
             </EmptyState>
         {/if}
     {:else}
-        <Card title="Website health" titleId="health-heading" description={healthMessage()} class={`border-l-4 ${healthTone() === "danger" ? "border-l-wg-status-down-foreground" : healthTone() === "degraded" ? "border-l-wg-status-degraded-foreground" : "border-l-wg-status-up-foreground"}`}>
+        <Card title="Website health" titleId="health-heading" description={healthMessage()}>
             {#snippet actions()}<StatusBadge tone={healthTone()} label={healthBadgeLabel()} />{/snippet}
             <p class="mb-4 mt-0 text-sm font-semibold text-wg-text-muted"><span class="font-bold tabular-nums text-wg-text">{formatNumber(dashboard.summary.total)}</span> <span>websites</span></p>
             <dl class="grid grid-cols-2 gap-3 sm:grid-cols-5">
