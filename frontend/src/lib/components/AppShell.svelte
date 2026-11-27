@@ -187,7 +187,7 @@
 
     <Sidebar.Content class="px-3 py-4">
         <nav>
-            <Sidebar.MenuButton class={`min-h-10 rounded-lg border border-wg-border bg-wg-surface text-wg-text-muted hover:bg-wg-surface-muted hover:text-wg-text ${compact ? "justify-center px-0" : "gap-3 px-3"}`}
+            <Sidebar.MenuButton class={`wg-glass-control min-h-10 rounded-lg border border-wg-border text-wg-text-muted hover:bg-wg-surface-muted hover:text-wg-text ${compact ? "justify-center px-0" : "gap-3 px-3"}`}
                 aria-label="Search monitorings" aria-keyshortcuts="Meta+K" aria-haspopup="dialog"
                 tooltipContent={compact ? "Search monitorings" : undefined} tooltipContentProps={{ role: "tooltip", portalProps: { to: "#localized-app" } }} onclick={openMonitoringSearch}>
                 <NavIcon name="search" />
