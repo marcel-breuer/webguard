@@ -82,7 +82,7 @@
     --wg-surface: var(--wg-white);
     --wg-surface-muted: var(--wg-slate-100);
     --wg-text: var(--wg-slate-900);
-    --wg-text-muted: var(--wg-slate-600);
+    --wg-text-muted: #474b64;
     --wg-border: var(--wg-slate-200);
     --wg-accent: var(--wg-brand-600);
     --wg-accent-strong: var(--wg-brand-700);
@@ -199,10 +199,10 @@ body {
     color: var(--wg-text);
     font-family: var(--wg-font-sans);
     background-image:
-        linear-gradient(color-mix(in srgb, var(--wg-brand-100) 16%, transparent), transparent 80%),
-        radial-gradient(60rem 40rem at 12% 8%, color-mix(in srgb, var(--wg-brand-300) 38%, transparent), transparent 70%),
-        radial-gradient(52rem 38rem at 92% 28%, color-mix(in srgb, var(--wg-brand-200) 42%, transparent), transparent 70%),
-        radial-gradient(56rem 40rem at 30% 92%, color-mix(in srgb, var(--wg-brand-400) 32%, transparent), transparent 70%);
+        linear-gradient(color-mix(in srgb, var(--wg-brand-100) 70%, transparent), transparent 80%),
+        radial-gradient(60rem 40rem at 12% 8%, color-mix(in srgb, var(--wg-brand-300) 45%, transparent), transparent 70%),
+        radial-gradient(52rem 38rem at 92% 28%, color-mix(in srgb, var(--wg-brand-200) 45%, transparent), transparent 70%),
+        radial-gradient(56rem 40rem at 30% 92%, color-mix(in srgb, var(--wg-brand-400) 40%, transparent), transparent 70%);
     background-attachment: fixed;
 }
 
