@@ -389,7 +389,7 @@ class DemoScreenshotSeeder extends Seeder
         ], JSON_THROW_ON_ERROR) : null;
 
         return [
-            'id' => $this->id('response:' . $key . ':' . $location . ':' . $checkedAt->format('YmdHi')),
+            'id' => $this->timeOrderedId('response:' . $key . ':' . $location . ':' . $checkedAt->format('YmdHi'), $checkedAt),
             'monitoring_id' => $monitoringId,
             'location_code' => $location,
             'status' => $status->value,
@@ -544,7 +544,10 @@ class DemoScreenshotSeeder extends Seeder
                 'recurrence' => $key === 'upcoming' ? 'weekly' : 'monthly',
                 'repeat_until' => null,
                 'timezone' => 'Europe/Berlin',
-                'enabled' => true,
+                // Keep the past entry visible in history without matching the
+                // scalar "has enabled maintenance windows" subquery for every
+                // monitoring in this group alongside the upcoming window.
+                'enabled' => $key === 'upcoming',
                 'created_at' => $now,
                 'updated_at' => $now,
             ]);
@@ -743,5 +746,19 @@ class DemoScreenshotSeeder extends Seeder
         }
 
         return $this->ids[$key] = $encoded;
+    }
+
+    private function timeOrderedId(string $key, Carbon $timestamp): string
+    {
+        $alphabet = '0123456789ABCDEFGHJKMNPQRSTVWXYZ';
+        $milliseconds = $timestamp->getTimestampMs();
+        $time = '';
+
+        for ($index = 0; $index < 10; $index++) {
+            $time = $alphabet[$milliseconds % 32] . $time;
+            $milliseconds = intdiv($milliseconds, 32);
+        }
+
+        return $time . substr($this->id($key), 10);
     }
 }
