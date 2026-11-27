@@ -6,6 +6,7 @@ namespace Tests\Feature\Queries;
 
 use App\Enums\MonitoringStatus;
 use App\Enums\MonitoringType;
+use App\Models\MaintenanceWindow;
 use App\Models\Monitoring;
 use App\Models\MonitoringResponse;
 use App\Models\Package;
@@ -53,5 +54,27 @@ class MonitoringOverviewQueryTest extends TestCase
         $this->assertArrayHasKey('has_enabled_maintenance_windows', $result->getAttributes());
         $this->assertSame(503, $result->latestResponseResult->http_status_code);
         $this->assertSame('down', resolve(MonitoringStateResolver::class)->status($result));
+    }
+
+    public function test_maintenance_window_projection_handles_multiple_enabled_windows(): void
+    {
+        Package::factory()->create();
+        $user = User::factory()->create();
+        $monitoring = Monitoring::factory()->for($user)->create();
+
+        foreach ([now()->addDays(2), now()->addDays(9)] as $startsAt) {
+            MaintenanceWindow::query()->create([
+                'monitoring_id' => $monitoring->id,
+                'starts_at' => $startsAt,
+                'duration_minutes' => 60,
+                'recurrence' => 'weekly',
+                'timezone' => 'UTC',
+                'enabled' => true,
+            ]);
+        }
+
+        $result = resolve(MonitoringOverviewQuery::class)->monitoringsFor($user)->firstOrFail();
+
+        $this->assertTrue((bool) $result->getAttribute('has_enabled_maintenance_windows'));
     }
 }

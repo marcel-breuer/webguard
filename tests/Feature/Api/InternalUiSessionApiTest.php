@@ -89,7 +89,7 @@ class InternalUiSessionApiTest extends TestCase
         ]);
     }
 
-    public function test_appearance_contract_validates_the_theme_and_rejects_demo_users(): void
+    public function test_appearance_contract_validates_the_theme_and_allows_demo_preferences(): void
     {
         Package::factory()->create();
         $member = User::factory()->create();
@@ -102,7 +102,13 @@ class InternalUiSessionApiTest extends TestCase
 
         $this->actingAs($demoUser)
             ->patchJson(route('app.appearance.update'), ['theme' => 'dark'])
-            ->assertForbidden();
+            ->assertOk()
+            ->assertJsonPath('data.theme', 'dark');
+
+        $this->assertDatabaseHas('users', [
+            'id' => $demoUser->id,
+            'theme' => 'dark',
+        ]);
     }
 
     public function test_authenticated_user_can_update_their_locale_for_the_sveltekit_sidebar(): void
@@ -121,6 +127,33 @@ class InternalUiSessionApiTest extends TestCase
         $this->assertDatabaseHas('users', [
             'id' => $user->id,
             'locale' => 'de',
+        ]);
+    }
+
+    public function test_demo_user_can_update_language_and_theme_but_not_profile_preferences(): void
+    {
+        Package::factory()->create();
+        $demoUser = User::factory()->create(['role' => UserRole::DEMO, 'locale' => 'en', 'theme' => 'light']);
+
+        $this->actingAs($demoUser)
+            ->patchJson(route('app.locale.update'), ['locale' => 'de'])
+            ->assertOk()
+            ->assertJsonPath('data.locale', 'de')
+            ->assertPlainCookie('webguard_locale', 'de');
+
+        $this->actingAs($demoUser)
+            ->patchJson(route('app.appearance.update'), ['theme' => 'dark'])
+            ->assertOk()
+            ->assertJsonPath('data.theme', 'dark');
+
+        $this->actingAs($demoUser)
+            ->patchJson(route('app.profile.preferences.update'), ['locale' => 'de', 'format_locale' => null])
+            ->assertForbidden();
+
+        $this->assertDatabaseHas('users', [
+            'id' => $demoUser->id,
+            'locale' => 'de',
+            'theme' => 'dark',
         ]);
     }
 

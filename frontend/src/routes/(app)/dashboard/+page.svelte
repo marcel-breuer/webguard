@@ -8,6 +8,7 @@
     import { FirstPartyApiError, requestFirstPartyApi } from "#lib/api/client.ts";
     import { appRoutes } from "#lib/routes.ts";
     import { formatDateTime, formatNumber } from "#lib/i18n/format.ts";
+    import { translate } from "#lib/i18n/localize.ts";
     import Button from "#lib/components/Button.svelte";
     import Card from "#lib/components/Card.svelte";
     import Dialog from "#lib/components/Dialog.svelte";
@@ -185,7 +186,7 @@
     <header class="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
             <p class="m-0 text-sm font-medium text-wg-text-muted">Your monitoring overview</p>
-            <h1 class="mt-2 text-[clamp(2rem,6vw,3rem)] leading-[1.1] font-semibold">Welcome back, {data.session.user.name}</h1>
+            <h1 class="mt-2 text-[clamp(2rem,6vw,3rem)] leading-[1.1] font-semibold">{translate("Welcome back,", data.locale, data.messages)} {data.session.user.name}</h1>
             <p class="mt-3 max-w-2xl leading-6 text-wg-text-muted">Check which websites are working, which need attention, and when they were last checked.</p>
         </div>
         {#if dashboard?.capabilities.can_create_monitoring && dashboard.summary.total > 0 && !onboardingVisible}

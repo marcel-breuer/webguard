@@ -37,6 +37,12 @@ class FrontendTranslationApiTest extends TestCase
             ->assertJsonPath('data.messages.Service operations', 'Betrieb')
             ->assertJsonPath('data.messages.Create monitoring', 'Überwachung erstellen')
             ->assertJsonPath('data.messages.Checked every :value minutes', 'Alle :value Minuten geprüft')
+            ->assertJsonPath('data.messages.Scheduled regional maintenance', 'Geplante regionale Wartung')
+            ->assertJsonPath('data.messages.Customer-facing services', 'Kundenservices')
+            ->assertJsonPath('data.messages.Announcement', 'Ankündigung')
+            ->assertJsonPath('data.messages.WebGuard Status', 'WebGuard-Status')
+            ->assertJsonPath('data.messages.Service components', 'Dienstkomponenten')
+            ->assertJsonPath('data.messages.Heartbeat', 'Heartbeat')
             ->assertJsonMissingPath('data.messages.dynamic');
     }
 

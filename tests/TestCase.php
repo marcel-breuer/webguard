@@ -6,8 +6,8 @@ namespace Tests;
 
 require_once __DIR__ . '/Support/PubliclyRoutableUrlDnsStub.php';
 
+use App\Http\Middleware\PreventRequestForgeryExceptBearer;
 use Illuminate\Cache\RateLimiter;
-use Illuminate\Foundation\Http\Middleware\PreventRequestForgery;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 use Illuminate\Support\Facades\Cache;
@@ -22,7 +22,7 @@ abstract class TestCase extends BaseTestCase
     {
         parent::setUp();
         $this->withoutVite();
-        $this->withoutMiddleware(PreventRequestForgery::class);
+        $this->withoutMiddleware(PreventRequestForgeryExceptBearer::class);
 
         config([
             'cache.default' => 'array',
