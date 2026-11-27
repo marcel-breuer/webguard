@@ -130,10 +130,10 @@
             data: {
                 labels: historyTelemetry.data.map((point) => axisLabel(point.checked_at)),
                 datasets: [
-                    { label: "CPU", data: historyTelemetry.data.map((point) => point.cpu_usage_percent), borderColor: "#8b5cf6", backgroundColor: "#8b5cf6", borderWidth: 2.5, pointRadius, pointHoverRadius: 4, tension: 0.35 },
-                    { label: "RAM", data: historyTelemetry.data.map((point) => point.ram_usage_percent), borderColor: "#0ea5e9", backgroundColor: "#0ea5e9", borderWidth: 2.5, pointRadius, pointHoverRadius: 4, tension: 0.35 },
-                    { label: "Storage", data: historyTelemetry.data.map((point) => point.storage_usage_percent), borderColor: "#10b981", backgroundColor: "#10b981", borderWidth: 2.5, pointRadius, pointHoverRadius: 4, tension: 0.35 },
-                    { label: "Load", data: historyTelemetry.data.map((point) => point.normalized_load), borderColor: "#f59e0b", backgroundColor: "#f59e0b", borderWidth: 2, borderDash: [5, 4], pointRadius, pointHoverRadius: 4, tension: 0.35, yAxisID: "load" },
+                    { label: "CPU", data: historyTelemetry.data.map((point) => point.cpu_usage_percent), borderColor: chartColor("--wg-accent", "#7e22ce"), backgroundColor: chartColor("--wg-accent", "#7e22ce"), borderWidth: 2.5, pointRadius, pointHoverRadius: 4, tension: 0.35 },
+                    { label: "RAM", data: historyTelemetry.data.map((point) => point.ram_usage_percent), borderColor: chartColor("--wg-status-degraded-foreground", "#694500"), backgroundColor: chartColor("--wg-status-degraded-foreground", "#694500"), borderWidth: 2.5, pointRadius, pointHoverRadius: 4, tension: 0.35 },
+                    { label: "Storage", data: historyTelemetry.data.map((point) => point.storage_usage_percent), borderColor: chartColor("--wg-status-up-foreground", "#155b36"), backgroundColor: chartColor("--wg-status-up-foreground", "#155b36"), borderWidth: 2.5, pointRadius, pointHoverRadius: 4, tension: 0.35 },
+                    { label: "Load", data: historyTelemetry.data.map((point) => point.normalized_load), borderColor: chartColor("--wg-text-muted", "#64748b"), backgroundColor: chartColor("--wg-text-muted", "#64748b"), borderWidth: 2, borderDash: [5, 4], pointRadius, pointHoverRadius: 4, tension: 0.35, yAxisID: "load" },
                 ],
             },
             options: {
@@ -269,16 +269,16 @@
 {#snippet metricCard(label: string, value: number | null, threshold: number | null, format: (value: number | null) => string)}
     {@const state = metricState(value, threshold)}
     {@const status = statusText(state)}
-    <Surface class={`relative p-5 transition-transform duration-150 ease-out hover:-translate-y-0.5 ${cardTone(state)}`}>
+    <Surface class={`relative p-5 ${cardTone(state)}`}>
         <span class={`absolute inset-x-0 top-0 h-1 ${accentTone(state)}`}></span>
-        <dt class="flex items-center justify-between text-[0.6875rem] font-extrabold tracking-[0.14em] text-wg-text-muted uppercase">
+        <dt class="flex items-center justify-between text-xs font-medium text-wg-text-muted">
             {label}
             <Tooltip.Root>
                 <Tooltip.Trigger class={`size-2 rounded-full focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-wg-focus ${accentTone(state)}`} aria-label={status} />
                 <Tooltip.Content portalProps={{ to: "#localized-app" }}>{status}</Tooltip.Content>
             </Tooltip.Root>
         </dt>
-        <dd class="mt-5 text-4xl leading-none font-extrabold tracking-tight tabular-nums">{format(value)}</dd>
+        <dd class="mt-5 text-4xl leading-none font-semibold tabular-nums">{format(value)}</dd>
         <dd class="mt-5 flex items-center justify-between border-t border-wg-border/70 pt-3 text-sm text-wg-text-muted">
             <span>Limit</span><span class="font-bold text-wg-text">{format(threshold)}</span>
         </dd>
@@ -291,7 +291,7 @@
         <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div class="flex items-center gap-3">
                 <span class="flex size-10 shrink-0 items-center justify-center rounded-xl bg-wg-accent/10" aria-hidden="true"><span class="size-2.5 rounded-full bg-wg-accent ring-4 ring-wg-accent/15"></span></span>
-                <div><p class="text-[0.6875rem] font-extrabold tracking-[0.16em] text-wg-accent uppercase">Live server metrics</p><h2 id="server-health-heading" class="mt-0.5 text-2xl font-extrabold tracking-tight">Server health</h2></div>
+                <div><p class="text-sm font-medium text-wg-text-muted">Live server metrics</p><h2 id="server-health-heading" class="mt-0.5 text-2xl font-semibold">Server health</h2></div>
             </div>
             <div class="flex flex-wrap items-center gap-2"><Badge variant="neutral" class="w-fit rounded-full px-3 py-1.5 text-sm leading-normal font-medium">{latest ? `Last report ${timestamp(latest.checked_at)}` : "Waiting for the first server report"}</Badge><Select width="compact" density="compact" value={String(summaryPeriod)} onchange={changeSummaryPeriod} disabled={summaryLoading} class="font-semibold text-wg-text-muted" aria-label="Server health metrics period"><option value="1">Last 24 hours</option><option value="7">Last 7 days</option><option value="30">Last 30 days</option></Select></div>
         </div>
@@ -310,7 +310,7 @@
         <Surface class="mt-4 p-6 text-sm leading-6 text-wg-text-muted">Server metrics will appear after the monitoring receives its first report.</Surface>
     {/if}
 
-    <div class="mt-7 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"><div><p class="text-[0.6875rem] font-extrabold tracking-[0.14em] text-wg-text-muted uppercase">Telemetry trend</p><h3 class="mt-0.5 text-xl font-extrabold tracking-tight">Utilization history</h3></div><Select width="compact" density="compact" value={String(historyPeriod)} onchange={changeHistoryPeriod} disabled={historyLoading} class="font-semibold text-wg-text-muted" aria-label="Server health history period"><option value="1">Last 24 hours</option><option value="7">Last 7 days</option><option value="30">Last 30 days</option></Select></div>
+    <div class="mt-7 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"><div><p class="text-sm font-medium text-wg-text-muted">Telemetry trend</p><h3 class="mt-0.5 text-xl font-semibold">Utilization history</h3></div><Select width="compact" density="compact" value={String(historyPeriod)} onchange={changeHistoryPeriod} disabled={historyLoading} class="font-medium text-wg-text-muted" aria-label="Server health history period"><option value="1">Last 24 hours</option><option value="7">Last 7 days</option><option value="30">Last 30 days</option></Select></div>
     <Surface role="article" class="mt-3 overflow-hidden">
         <div class="flex items-center justify-between gap-3 bg-wg-surface-muted/50 px-5 py-3 text-xs font-bold text-wg-text-muted"><span>CPU · RAM · Storage · Load</span><span class="flex items-center gap-2"><span class="size-2 rounded-full bg-emerald-500"></span>{historyLoading ? "Updating" : "Reported values"}</span></div>
         <Separator class="bg-wg-border" />

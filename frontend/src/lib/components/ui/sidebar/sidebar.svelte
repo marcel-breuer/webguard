@@ -28,7 +28,7 @@
 	<svelte:element this={as}
 		class={cn(
 			"flex h-full w-(--sidebar-width) flex-col",
-			variant === "navigation" ? "wg-glass-navigation text-purple-100" : "bg-sidebar text-sidebar-foreground",
+			variant === "navigation" ? "wg-glass-navigation text-wg-text" : "bg-sidebar text-sidebar-foreground",
 			className
 		)}
 		bind:this={ref}

@@ -17,9 +17,10 @@
     import ServerHealthOverview from "#lib/components/ServerHealthOverview.svelte";
     import MonitoringTypeDiagnostics from "#lib/components/MonitoringTypeDiagnostics.svelte";
     import MonitoringLocationList from "#lib/components/MonitoringLocationList.svelte";
+    import StatusBadge from "#lib/components/StatusBadge.svelte";
     import NavIcon from "#lib/components/NavIcon.svelte";
     import { notificationChannelLabel } from "#lib/notification-channels.ts";
-    import type { MonitoringDetailData, MonitoringFormOptions, MonitoringHeatmapPoint, MonitoringMutationResult, MonitoringSummary } from "#lib/api/monitoring.ts";
+    import type { MonitoringDetailData, MonitoringFormOptions, MonitoringMutationResult, MonitoringSummary } from "#lib/api/monitoring.ts";
 
     interface Props {
         data: {
@@ -39,6 +40,10 @@
     let editLoading = $state(false);
     let editOpen = $state(false);
     let error = $state("");
+
+    function text(value: string): string {
+        return translate(value, data.locale, data.messages);
+    }
 
     const linkedTarget = $derived(targetUrl(data.monitoring.target));
     const availabilityPeriods = $derived(data.detail.availability_periods);
@@ -69,6 +74,13 @@
         return seconds % 60 === 0 ? `Checked every ${seconds / 60} minutes` : `Checked every ${seconds} seconds`;
     }
 
+    function lastDayAvailability(): string | null {
+        const uptime = data.detail.heatmap.reduce((total, point) => total + point.uptime, 0);
+        const checks = uptime + data.detail.heatmap.reduce((total, point) => total + point.downtime, 0);
+
+        return checks === 0 ? null : formatPercentage((uptime / checks) * 100, 1);
+    }
+
     function targetUrl(target: string): string | null {
         try {
             const url = new URL(target);
@@ -88,11 +100,6 @@
         if (!period?.has_data) return "No availability data yet";
         const incidents = period.downtime.incidents_count;
         return `${formatNumber(incidents)} ${incidents === 1 ? "incident" : "incidents"}, ${formatPercentage(period.downtime.percentage ?? 0)} downtime`;
-    }
-
-    function heatmapClass(point: MonitoringHeatmapPoint): string {
-        if (point.uptime === point.downtime) return "bg-wg-surface-muted";
-        return point.uptime > point.downtime ? "bg-emerald-500" : "bg-red-500";
     }
 
     async function remove(): Promise<void> {
@@ -164,8 +171,8 @@
             <NavIcon name="arrow-left" size={16} />Back to monitorings
         </a>
         <div class="mt-4 flex flex-wrap items-center gap-2">
-            <Badge variant="outline" class="rounded-full bg-violet-50 px-2.5 py-1 text-[0.6875rem] font-extrabold tracking-[0.12em] text-wg-accent uppercase dark:bg-violet-950/50">{data.monitoring.type ?? "Monitoring"}</Badge>
-            <Badge variant="outline" class={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[0.6875rem] font-extrabold tracking-[0.12em] uppercase ${statusTone() === "healthy" ? "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300" : statusTone() === "danger" ? "bg-red-50 text-red-700 dark:bg-red-950/50 dark:text-red-300" : "bg-wg-surface-muted text-wg-text-muted"}`}><Badge variant="dot" class="size-1.5" aria-hidden="true" />{statusLabel()}</Badge>
+            <Badge variant="neutral" class="rounded-lg px-2.5 py-1 text-xs font-medium">{data.monitoring.type ?? "Monitoring"}</Badge>
+            <Badge variant="outline" class={`inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-xs font-medium ${statusTone() === "healthy" ? "bg-wg-status-up text-wg-status-up-foreground" : statusTone() === "danger" ? "bg-wg-status-down text-wg-status-down-foreground" : "bg-wg-surface-muted text-wg-text-muted"}`}><Badge variant="dot" class="size-1.5" aria-hidden="true" />{statusLabel()}</Badge>
         </div>
         <h1 class="mt-3 break-words text-3xl leading-none font-extrabold tracking-tight sm:text-[2.15rem]">{data.monitoring.name}</h1>
         <div class="mt-4 flex flex-wrap items-center gap-3 text-sm text-wg-text-muted">
@@ -208,9 +215,18 @@
         {/if}
 
         <section class="grid gap-4 md:grid-cols-3" aria-label="Monitoring summary">
-            <Card.Root role="article" class="min-h-32 p-6"><p class="text-[0.6875rem] font-extrabold tracking-[0.16em] text-wg-text-muted uppercase">Current status</p><div class="mt-4 flex items-center gap-3"><Badge variant="dot" class={`size-3 ${statusTone() === "healthy" ? "bg-emerald-500" : statusTone() === "danger" ? "bg-red-500" : "bg-amber-500"}`} aria-hidden="true" /><p class="text-lg font-extrabold uppercase">{statusLabel()}</p>{#if data.detail.current_check.status_code !== null}<span class="text-sm text-wg-text-muted">HTTP {data.detail.current_check.status_code}</span>{/if}</div><p class="mt-3 text-sm text-wg-text-muted">Since {timestamp(data.detail.current_check.checked_at)}</p></Card.Root>
-            <Card.Root role="article" class="min-h-32 p-6"><p class="text-[0.6875rem] font-extrabold tracking-[0.16em] text-wg-text-muted uppercase">Last check</p><p class="mt-4 text-lg font-extrabold">{timestamp(data.detail.current_check.checked_at)}</p><p class="mt-3 text-sm text-wg-text-muted">{intervalLabel(data.detail.current_check.interval)}</p></Card.Root>
-            <Card.Root role="article" class="min-h-32 p-6"><div class="flex items-center justify-between gap-3"><p class="text-[0.6875rem] font-extrabold tracking-[0.16em] text-wg-text-muted uppercase">Last 24 hours</p><span class="text-lg font-extrabold text-wg-accent">—</span></div><div class="mt-4 flex h-7 gap-0.5" aria-label="Last 24 hours availability">{#each data.detail.heatmap.slice(0, 24) as point}<span class={`min-w-1 flex-1 rounded-sm ${heatmapClass(point)}`} aria-hidden="true"></span>{/each}</div><p class="mt-3 text-sm text-wg-text-muted">{data.detail.heatmap.length > 0 ? "No incidents in this period" : "No results in this period"}</p></Card.Root>
+            <Card.Root role="article" class={`md:col-span-3 border-l-4 p-5 sm:p-6 ${statusTone() === "healthy" ? "border-l-wg-status-up-foreground" : statusTone() === "danger" ? "border-l-wg-status-down-foreground" : "border-l-wg-status-degraded-foreground"}`}>
+                <div class="flex flex-wrap items-start justify-between gap-4">
+                    <div><p class="text-sm font-medium text-wg-text-muted">Current status</p><div class="mt-2 flex flex-wrap items-center gap-3"><StatusBadge tone={statusTone()} label={statusLabel()} />{#if data.detail.current_check.status_code !== null}<span class="text-sm tabular-nums text-wg-text-muted">HTTP {data.detail.current_check.status_code}</span>{/if}</div><p class="mt-2 text-sm text-wg-text-muted">Since {timestamp(data.detail.current_check.checked_at)}</p></div>
+                    {#if data.detail.maintenance.active}<div class="rounded-lg bg-wg-status-maintenance px-3 py-2 text-sm font-semibold text-wg-status-maintenance-foreground">{text("Maintenance in progress")}</div>{/if}
+                </div>
+                <dl class="mt-5 grid grid-cols-2 gap-4 border-t border-wg-border pt-4 sm:grid-cols-4">
+                    <div><dt class="text-sm text-wg-text-muted">{text("Uptime")} · {text("Last 90 days")}</dt><dd class="mt-1 text-xl font-semibold tabular-nums">{availability("90")}</dd></div>
+                    <div><dt class="text-sm text-wg-text-muted">{text("Average response time")}</dt><dd class="mt-1 text-xl font-semibold tabular-nums">{data.detail.response_times.aggregated.avg === null ? "—" : `${formatNumber(Math.round(data.detail.response_times.aggregated.avg))} ms`}</dd></div>
+                    <div><dt class="text-sm text-wg-text-muted">{text("Last 24 hours")}</dt><dd class="mt-1 text-xl font-semibold tabular-nums">{lastDayAvailability() ?? "—"}</dd></div>
+                    <div class="col-span-2 sm:col-span-1"><dt class="text-sm text-wg-text-muted">{text("Last check")}</dt><dd class="mt-1 text-base font-semibold tabular-nums">{timestamp(data.detail.current_check.checked_at)}</dd><p class="mt-1 text-xs text-wg-text-muted">{intervalLabel(data.detail.current_check.interval)}</p></div>
+                </dl>
+            </Card.Root>
         </section>
 
         {#if data.detail.server_health_telemetry}

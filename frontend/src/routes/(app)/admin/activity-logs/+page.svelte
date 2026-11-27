@@ -40,7 +40,7 @@
 
 <svelte:head><title>Activity logs | WebGuard</title></svelte:head>
 <main class="mx-auto w-[min(78rem,calc(100%_-_2rem))] py-6 sm:py-12">
-    <header class="mb-8"><p class="m-0 text-[0.8125rem] font-extrabold tracking-[0.1em] text-wg-accent uppercase">Administration</p><h1 class="mt-2 text-[clamp(2rem,6vw,3rem)] leading-[1.1] font-bold">Activity logs</h1><p class="mt-3 leading-6 text-wg-text-muted">Review privileged and operational events for auditability.</p></header>
+    <header class="mb-8"><p class="m-0 text-sm font-semibold text-wg-text-muted">Administration</p><h1 class="mt-2 text-[clamp(2rem,6vw,3rem)] leading-[1.1] font-bold">Activity logs</h1><p class="mt-3 max-w-2xl leading-6 text-wg-text-muted">Review privileged and operational events for auditability.</p></header>
     <GlassCard class="mb-5 overflow-visible p-5">
         <form class="grid gap-4 sm:grid-cols-[minmax(0,1fr)_14rem_8rem_auto] sm:items-end" method="GET">
             <FilterField>
@@ -55,7 +55,7 @@
                 <FieldLabel for={`${filterId}-per_page`} class="font-bold">Rows</FieldLabel>
                 <Select id={`${filterId}-per_page`} name="per_page" value={String(filters.perPage)}><option value="10">10</option><option value="25">25</option><option value="50">50</option><option value="100">100</option></Select>
             </FilterField>
-            <div class="flex gap-3"><Button type="submit">Apply</Button><ActionLink variant="outline" class="no-underline" href={appRoutes.adminActivityLogs}>Reset</ActionLink></div>
+            <div class="flex flex-col gap-2 sm:flex-row sm:gap-3"><Button type="submit">Apply</Button><ActionLink variant="outline" class="no-underline" href={appRoutes.adminActivityLogs}>Reset</ActionLink></div>
             <input name="sort" type="hidden" value={filters.sort} /><input name="direction" type="hidden" value={filters.direction} />
         </form>
     </GlassCard>

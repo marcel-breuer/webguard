@@ -107,26 +107,26 @@
 </script>
 
 <section>
-    <header class="mb-8 flex flex-col items-start justify-between gap-4 sm:flex-row"><div><p class="m-0 text-[0.8125rem] font-extrabold tracking-[0.1em] text-wg-accent uppercase">Administration</p><h1 class="mt-2 text-[clamp(2rem,6vw,3rem)] leading-[1.1] font-bold">{title}</h1><p class="mt-3 leading-6 text-wg-text-muted">{description}</p></div><Button onclick={openCreate}>Create {singular}</Button></header>
+    <header class="mb-8 flex flex-col items-start justify-between gap-4 sm:flex-row"><div><p class="m-0 text-sm font-medium text-wg-text-muted">Administration</p><h1 class="mt-2 text-[clamp(1.75rem,6vw,2.25rem)] leading-tight font-semibold">{title}</h1><p class="mt-3 text-sm leading-6 text-wg-text-muted">{description}</p></div><Button onclick={openCreate}>Create {singular}</Button></header>
     {#if error}<Alert.Root variant="destructive" class="mb-5 font-bold"><Alert.Description>{error}</Alert.Description></Alert.Root>{/if}
 
     <GlassCard class="mb-5 overflow-visible p-5">
         <form class="grid gap-4 sm:grid-cols-[minmax(0,1fr)_11rem_8rem_auto] sm:items-end" method="GET">
 
             <FilterField>
-                <FieldLabel for={`${filterId}-search`} class="font-bold">Search</FieldLabel>
+                <FieldLabel for={`${filterId}-search`} class="font-medium">Search</FieldLabel>
                 <Input id={`${filterId}-search`} name="search" type="search" value={query.search} placeholder={`Search ${title.toLowerCase()}`} />
             </FilterField>
 
             {#each tableFilters as filter}
                 <FilterField>
-                    <FieldLabel for={`${filterId}-${filter.name}`} class="font-bold">{filter.label}</FieldLabel>
+                    <FieldLabel for={`${filterId}-${filter.name}`} class="font-medium">{filter.label}</FieldLabel>
                     <Select id={`${filterId}-${filter.name}`} name={filter.name} value={filter.value}><option value="">All {filter.label.toLowerCase()}</option>{#each filter.options as option}<option value={option.value}>{option.label}</option>{/each}</Select>
                 </FilterField>
             {/each}
 
             <FilterField>
-                <FieldLabel for={`${filterId}-per_page`} class="font-bold">Rows</FieldLabel>
+                <FieldLabel for={`${filterId}-per_page`} class="font-medium">Rows</FieldLabel>
                 <Select id={`${filterId}-per_page`} name="per_page" value={String(query.perPage)}><option value="10">10</option><option value="25">25</option><option value="50">50</option><option value="100">100</option></Select>
             </FilterField>
 
@@ -137,7 +137,7 @@
         </form>
     </GlassCard>
 
-    {#if items.length === 0}<EmptyState title={`No ${title.toLowerCase()} match the selected filters`} description="Try a broader search or reset the table controls." />{:else}<DataTable caption={title}><Table.Header><Table.Row>{#each columns as column}<Table.Head>{#if column.sortKey}<a class="font-bold text-wg-text-muted no-underline hover:text-wg-accent" href={sortHref(column.sortKey)}>{column.label}{sortLabel(column.sortKey)}</a>{:else}{column.label}{/if}</Table.Head>{/each}<Table.Head>Actions</Table.Head></Table.Row></Table.Header><Table.Body>{#each items as item (String(item.id))}<Table.Row>{#each columns as column}<Table.Cell>{format(column, item)}</Table.Cell>{/each}<Table.Cell><div class="flex flex-wrap gap-2 md:flex-nowrap"><Button class="min-h-9 px-3 py-1.5 text-xs" variant="secondary" type="button" onclick={() => openEdit(item)}>Edit</Button>{#each extraActions(item) as mutation}<Button class="min-h-9 px-3 py-1.5 text-xs" variant="secondary" type="button" onclick={() => action(item, mutation)}>{mutation.label}</Button>{/each}<Button class="min-h-9 px-3 py-1.5 text-xs" variant="danger" type="button" onclick={() => remove(item)}>Delete</Button></div></Table.Cell></Table.Row>{/each}</Table.Body></DataTable>{/if}
+    {#if items.length === 0}<EmptyState title={`No ${title.toLowerCase()} match the selected filters`} description="Try a broader search or reset the table controls." />{:else}<DataTable caption={title}><Table.Header><Table.Row>{#each columns as column}<Table.Head>{#if column.sortKey}<a class="font-medium text-wg-text-muted no-underline hover:text-wg-accent" href={sortHref(column.sortKey)}>{column.label}{sortLabel(column.sortKey)}</a>{:else}{column.label}{/if}</Table.Head>{/each}<Table.Head>Actions</Table.Head></Table.Row></Table.Header><Table.Body>{#each items as item (String(item.id))}<Table.Row>{#each columns as column}<Table.Cell>{format(column, item)}</Table.Cell>{/each}<Table.Cell><div class="flex flex-wrap gap-2 md:flex-nowrap"><Button class="min-h-10 px-3 py-1.5 text-sm" variant="secondary" type="button" onclick={() => openEdit(item)}>Edit</Button>{#each extraActions(item) as mutation}<Button class="min-h-10 px-3 py-1.5 text-sm" variant="secondary" type="button" onclick={() => action(item, mutation)}>{mutation.label}</Button>{/each}<Button class="min-h-10 px-3 py-1.5 text-sm" variant="danger" type="button" onclick={() => remove(item)}>Delete</Button></div></Table.Cell></Table.Row>{/each}</Table.Body></DataTable>{/if}
 
     <div class="mt-4 flex flex-col gap-3 text-sm text-wg-text-muted sm:flex-row sm:items-center sm:justify-between"><p>Showing {formatNumber(items.length)} of {formatNumber(pagination.total)} entries</p><PaginationControls page={pagination.current_page} pages={pagination.last_page} href={(page) => href({ page })} /></div>
 </section>

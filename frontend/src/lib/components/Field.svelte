@@ -16,17 +16,17 @@
     let { label, hint, error, required = false, children }: Props = $props();
 </script>
 
-<Field class="w-auto gap-[0.45rem]" aria-describedby={error || hint ? messageId : undefined}>
+<Field class="w-auto gap-2" aria-describedby={error || hint ? messageId : undefined}>
     <Label>
-        <span class="text-sm leading-5 font-bold">
+        <span class="text-sm leading-5 font-medium">
             {label}
             {#if required}<span aria-hidden="true">*</span>{/if}
         </span>
         {@render children?.()}
     </Label>
     {#if error}
-        <FieldError id={messageId} class="text-[0.8125rem] leading-5 text-wg-danger">{error}</FieldError>
+        <FieldError id={messageId} class="text-sm leading-5 text-wg-danger">{error}</FieldError>
     {:else if hint}
-        <FieldDescription id={messageId} class="text-[0.8125rem] leading-5 text-wg-text-muted">{hint}</FieldDescription>
+        <FieldDescription id={messageId} class="text-sm leading-5 text-wg-text-muted">{hint}</FieldDescription>
     {/if}
 </Field>

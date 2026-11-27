@@ -50,7 +50,7 @@
     }
 </script>
 
-<Surface variant="inset" class="mt-4 rounded-xl border border-wg-border bg-wg-surface-muted/40 shadow-none p-4">
+<Surface variant="inset" class="mt-4 rounded-xl border border-wg-border bg-wg-surface-muted/40 p-4 shadow-none sm:p-5">
     <div class="flex flex-wrap items-center justify-between gap-3">
         <h3 class="font-bold">Probable cause</h3>
         <Button variant="quiet" class="min-h-9 px-3 py-1.5" loading={recomputing} onclick={recompute}>Recompute diagnosis</Button>
@@ -60,7 +60,7 @@
             <span class="font-semibold">{primary.label}</span>
             <StatusBadge tone={tone(primary.confidence_level)} label={primary.confidence_label} />
         </div>
-        <p class="mt-2 text-sm leading-6">{primary.summary}</p>
+        <p class="mt-2 text-sm leading-6 text-wg-text">{primary.summary}</p>
         <p class="mt-3 text-sm font-semibold">Supporting evidence</p>
         <ul class="mt-1 grid gap-1 pl-5 text-sm text-wg-text-muted">
             {#each primary.evidence as item}

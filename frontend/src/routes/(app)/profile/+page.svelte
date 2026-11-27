@@ -45,7 +45,7 @@
 <svelte:head><title>Profile | WebGuard</title></svelte:head>
 
 <main class="mx-auto w-[min(52rem,calc(100%_-_2rem))] py-6 sm:py-12">
-    <header class="mb-8"><p class="m-0 text-[0.8125rem] font-extrabold tracking-[0.1em] text-wg-accent uppercase">Account</p><h1 class="mt-2 text-[clamp(2rem,6vw,3rem)] leading-[1.1] font-bold">Profile settings</h1><span class="mt-3 block leading-6 text-wg-text-muted">Manage your account details, credentials, and security settings.</span></header>
+    <header class="mb-8"><p class="m-0 text-sm font-semibold text-wg-text-muted">Account</p><h1 class="mt-2 text-[clamp(2rem,6vw,3rem)] leading-[1.1] font-bold">Profile settings</h1><span class="mt-3 block max-w-2xl leading-6 text-wg-text-muted">Manage your account details, credentials, and security settings.</span></header>
 
     <div class="grid gap-6">
         <Card title="Account information" description="Changing your email requires verification again.">

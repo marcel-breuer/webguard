@@ -1,4 +1,8 @@
 <script lang="ts">
+    import MenuIcon from "@lucide/svelte/icons/menu";
+    import XIcon from "@lucide/svelte/icons/x";
+    import ChevronLeftIcon from "@lucide/svelte/icons/chevron-left";
+    import ChevronRightIcon from "@lucide/svelte/icons/chevron-right";
     import { Separator } from "#lib/components/ui/separator/index.ts";
     import { Kbd } from "#lib/components/ui/kbd/index.ts";
     import * as Avatar from "#lib/components/ui/avatar/index.ts";
@@ -130,27 +134,27 @@
 <Button href="#main-content" class="sr-only fixed top-3 left-3 z-[60] min-h-0 border-0 px-4 py-2 font-bold tracking-normal no-underline shadow-none focus:not-sr-only">Skip to main content</Button>
 
 <Sidebar.Provider open={!collapsed} onOpenChange={(open) => setCollapsed(!open)}>
-    <div class={`min-h-screen w-full min-w-0 transition-[padding] duration-150 ${collapsed ? "pl-[5.5rem] max-[54rem]:pl-0" : "pl-68 max-[54rem]:pl-0"}`}>
+    <div class={`min-h-screen w-full min-w-0 transition-[padding] duration-150 ${collapsed ? "pl-[5.5rem] max-[54rem]:pl-0" : "pl-64 max-[54rem]:pl-0"}`}>
         {#if !isMobileViewport}
-            <Sidebar.Root collapsible="none" class={`fixed inset-y-0 left-0 z-20 border-r border-purple-900 transition-[width] duration-150 max-[54rem]:hidden ${collapsed ? "w-[5.5rem]" : "w-68"}`}>
+            <Sidebar.Root collapsible="none" class={`fixed inset-y-0 left-0 z-20 border-r border-wg-border transition-[width] duration-150 max-[54rem]:hidden ${collapsed ? "w-[5.5rem]" : "w-64"}`}>
                 <Sidebar.Root as="aside" collapsible="none" variant="navigation" id="app-navigation" class="w-full" aria-label="Application navigation">{@render Navigation()}</Sidebar.Root>
             </Sidebar.Root>
         {/if}
 
         <Sheet.Root bind:open={mobileOpen}>
             <Sidebar.Header variant="bar" inert={mobileOpen} class="hidden min-h-16 items-center justify-between px-4 max-[54rem]:flex">
-                <a class="flex items-center gap-3 font-extrabold tracking-tight no-underline" href={appRoutes.dashboard} aria-label="WebGuard dashboard"><img class="size-9 rounded-[0.65rem] bg-white object-contain p-0.5" src="/brand/webguard-logo.png" alt="" /><span>WebGuard</span></a>
+                <a class="flex items-center gap-3 font-semibold no-underline" href={appRoutes.dashboard} aria-label="WebGuard dashboard"><img class="size-9 rounded-lg bg-white object-contain p-0.5" src="/brand/webguard-logo.png" alt="" /><span>WebGuard</span></a>
                 <Button variant="ghost" class="ml-auto mr-2 size-11 border-wg-border p-0" aria-label="Search monitorings" aria-haspopup="dialog" onclick={openMonitoringSearch}><NavIcon name="search" /></Button>
                 <Sheet.Trigger>
                     {#snippet child({ props })}
-                        <Button {...props} variant="ghost" class="size-11 border-wg-border p-0 text-xl" aria-controls="app-navigation" aria-expanded={mobileOpen} aria-label="Toggle navigation">☰</Button>
+                        <Button {...props} variant="ghost" class="size-11 border-wg-border p-0" aria-controls="app-navigation" aria-expanded={mobileOpen} aria-label="Toggle navigation"><MenuIcon class="size-[18px]" /></Button>
                     {/snippet}
                 </Sheet.Trigger>
             </Sidebar.Header>
             {#if isMobileViewport}
                 <!-- Keep the controlled element mounted and let the mobile-navigation dataset own the scroll lock. -->
                 <Sheet.Content side="left" id="app-navigation" forceMount preventScroll={false} showCloseButton={false}
-                    class="hidden border-purple-900 p-0 data-[side=left]:w-[min(18rem,calc(100vw_-_3.5rem))] data-[state=open]:flex"
+                    class="hidden border-wg-border p-0 data-[side=left]:w-[min(18rem,calc(100vw_-_3.5rem))] data-[state=open]:flex"
                     inert={isMobileViewport && !mobileOpen} aria-describedby={undefined} portalProps={{ to: "#localized-app" }}
                     onCloseAutoFocus={(event) => { if (monitoringSearchOpen) event.preventDefault(); }}>
                     <Sheet.Title class="sr-only">Application navigation</Sheet.Title>
@@ -164,18 +168,18 @@
 </Sidebar.Provider>
 
 {#snippet Navigation()}
-    <Sidebar.Header class={compact ? "flex min-h-18 flex-row items-center justify-center gap-1 px-1.5" : "flex min-h-18 flex-row items-center justify-between gap-2 px-3.5"}>
-        <a class="flex min-w-0 items-center gap-3 font-extrabold tracking-tight no-underline" href={appRoutes.dashboard} aria-label="WebGuard dashboard" onclick={closeMobileNavigation}>
-            <img class="size-9 shrink-0 rounded-[0.65rem] bg-white object-contain p-0.5" src="/brand/webguard-logo.png" alt="" />
+    <Sidebar.Header class={compact ? "flex min-h-16 flex-row items-center justify-center gap-1 px-1.5" : "flex min-h-16 flex-row items-center justify-between gap-2 px-3.5"}>
+        <a class="flex min-w-0 items-center gap-3 font-semibold no-underline" href={appRoutes.dashboard} aria-label="WebGuard dashboard" onclick={closeMobileNavigation}>
+            <img class="size-9 shrink-0 rounded-lg bg-white object-contain p-0.5" src="/brand/webguard-logo.png" alt="" />
             <span class={compact ? "sr-only" : "transition-opacity duration-100 max-[54rem]:not-sr-only"}>WebGuard</span>
         </a>
-        <Button variant="ghost" class="grid size-9 min-h-9 shrink-0 place-items-center p-0 rounded-[0.65rem] border border-purple-700 bg-transparent text-xl text-purple-100 max-[54rem]:hidden" type="button" aria-label={compact ? "Expand sidebar" : "Collapse sidebar"} title={compact ? "Expand sidebar" : "Collapse sidebar"} onclick={() => setCollapsed(!collapsed)}>
-            <span aria-hidden="true">{compact ? "›" : "‹"}</span>
+        <Button variant="ghost" class="grid size-9 min-h-9 shrink-0 place-items-center p-0 max-[54rem]:hidden" type="button" aria-label={compact ? "Expand sidebar" : "Collapse sidebar"} title={compact ? "Expand sidebar" : "Collapse sidebar"} onclick={() => setCollapsed(!collapsed)}>
+            {#if compact}<ChevronRightIcon class="size-4" />{:else}<ChevronLeftIcon class="size-4" />{/if}
         </Button>
         {#if isMobileViewport}
             <Sheet.Close>
                 {#snippet child({ props })}
-                    <Button {...props} variant="ghost" class="size-9 min-h-9 shrink-0 border-purple-700 p-0 text-xl text-purple-100" aria-label="Close navigation">×</Button>
+                    <Button {...props} variant="ghost" class="size-10 min-h-10 shrink-0 p-0" aria-label="Close navigation"><XIcon class="size-[18px]" /></Button>
                 {/snippet}
             </Sheet.Close>
         {/if}
@@ -183,12 +187,12 @@
 
     <Sidebar.Content class="px-3 py-4">
         <nav>
-            <Sidebar.MenuButton class={`min-h-11 rounded-[0.65rem] border border-purple-700 text-purple-100 ${compact ? "justify-center px-0" : "gap-3 px-3"}`}
+            <Sidebar.MenuButton class={`min-h-10 rounded-lg border border-wg-border bg-wg-surface text-wg-text-muted hover:bg-wg-surface-muted hover:text-wg-text ${compact ? "justify-center px-0" : "gap-3 px-3"}`}
                 aria-label="Search monitorings" aria-keyshortcuts="Meta+K" aria-haspopup="dialog"
                 tooltipContent={compact ? "Search monitorings" : undefined} tooltipContentProps={{ role: "tooltip", portalProps: { to: "#localized-app" } }} onclick={openMonitoringSearch}>
                 <NavIcon name="search" />
                 <span class={compact ? "sr-only" : "min-w-0 flex-1 text-left"}>Search</span>
-                {#if !compact}<Kbd class="h-auto min-w-0 shrink-0 rounded border border-purple-700 bg-transparent px-1 font-mono text-xs font-normal text-purple-300" aria-hidden="true">⌘K</Kbd>{/if}
+                {#if !compact}<Kbd class="h-auto min-w-0 shrink-0 rounded border border-wg-border bg-wg-surface-muted px-1 font-mono text-xs font-normal text-wg-text-muted" aria-hidden="true">⌘K</Kbd>{/if}
             </Sidebar.MenuButton>
             <Sidebar.Menu class="gap-0">
                 {@render NavItem({ href: appRoutes.dashboard, icon: "home", label: "Dashboard" })}
@@ -200,8 +204,8 @@
         </nav>
     </Sidebar.Content>
 
-    <Sidebar.Footer class="relative grid gap-3 p-3.5">
-        <Separator class="absolute inset-x-0 top-0 bg-purple-900" />
+    <Sidebar.Footer class="relative grid gap-3 p-3">
+        <Separator class="absolute inset-x-0 top-0 bg-wg-border" />
         <div class="flex flex-wrap items-center gap-2">
             <AppearanceSelector initialTheme={session.user.theme} bind:open={appearanceOpen} onOpen={() => (localeOpen = false)} />
             <LocaleSelector initialLocale={session.user.locale} bind:open={localeOpen} onOpen={() => (appearanceOpen = false)} />
@@ -209,8 +213,8 @@
         <DropdownMenu.Root>
             <DropdownMenu.Trigger>
                 {#snippet child({ props })}
-                    <Sidebar.MenuButton {...props} class={`min-h-11 text-purple-100 ${compact ? "justify-center px-0" : "gap-3 px-1"}`} aria-label="Profile" title="Profile">
-                        <Avatar.Root class="size-8 shrink-0"><Avatar.Fallback class="bg-purple-700 text-white">{session.user.name.slice(0, 1).toUpperCase()}</Avatar.Fallback></Avatar.Root>
+                    <Sidebar.MenuButton {...props} class={`min-h-11 text-wg-text ${compact ? "justify-center px-0" : "gap-3 px-1"}`} aria-label="Profile" title="Profile">
+                        <Avatar.Root class="size-8 shrink-0"><Avatar.Fallback class="bg-wg-surface-muted text-wg-text">{session.user.name.slice(0, 1).toUpperCase()}</Avatar.Fallback></Avatar.Root>
                         <span class={compact ? "sr-only" : ""}>{session.user.name}</span>
                     </Sidebar.MenuButton>
                 {/snippet}
@@ -231,7 +235,7 @@
 
 {#snippet NavSection(label: string, items: NavigationItem[])}
     <Sidebar.Group class="mt-7 p-0" aria-label={label}>
-        <h2 class={compact ? "sr-only" : "mb-2 px-3 text-[0.6875rem] tracking-[0.12em] text-purple-300 uppercase"}>{label}</h2>
+        <h2 class={compact ? "sr-only" : "mb-2 px-3 text-xs font-medium text-wg-text-muted"}>{label}</h2>
         <Sidebar.Menu class="gap-0">
             {#each items as item (item.href)}{@render NavItem(item)}{/each}
         </Sidebar.Menu>
@@ -244,13 +248,13 @@
     <Sidebar.MenuItem>
         <Sidebar.MenuButton isActive={isActive(item.href)} data-active={isActive(item.href) ? "true" : undefined} tooltipContent={compact ? label : undefined}
             tooltipContentProps={{ role: "tooltip", portalProps: { to: "#localized-app" } }}
-            class={`mt-1 min-h-11 overflow-visible rounded-[0.65rem] border border-transparent font-semibold text-purple-200 no-underline hover:border-purple-700 hover:bg-purple-900 hover:text-white data-active:border-purple-400 data-active:bg-purple-800 data-active:text-white ${compact ? "justify-center px-0" : "gap-3 px-3"}`}>
+            class={`mt-1 min-h-10 overflow-visible rounded-lg border border-transparent font-medium text-wg-text-muted no-underline transition-colors hover:border-wg-border hover:bg-wg-surface-muted hover:text-wg-text data-active:border-wg-border data-active:bg-wg-surface data-active:text-wg-text data-active:shadow-[inset_2px_0_0_var(--wg-accent)] ${compact ? "justify-center px-0" : "gap-3 px-3"}`}>
             {#snippet child({ props })}
                 <a {...props} href={item.href} aria-current={isActive(item.href) ? "page" : undefined} aria-label={label} onclick={closeMobileNavigation}>
                     <span class="relative grid size-5 shrink-0 place-items-center">
                         <NavIcon name={item.icon} />
                         {#if notifications && unreadNotificationCount > 0}
-                            <Badge class="absolute -top-2 left-1/2 h-4 min-w-4 -translate-x-1/2 justify-center border-0 bg-red-500 px-1 text-[0.625rem] font-extrabold text-white ring-2 ring-purple-950" aria-hidden="true">{unreadNotificationCount > 99 ? `${formatNumber(99)}+` : formatNumber(unreadNotificationCount)}</Badge>
+                            <Badge class="absolute -top-2 left-1/2 h-4 min-w-4 -translate-x-1/2 justify-center border border-wg-border bg-wg-status-down px-1 font-mono text-[0.625rem] font-semibold text-wg-status-down-foreground" aria-hidden="true">{unreadNotificationCount > 99 ? `${formatNumber(99)}+` : formatNumber(unreadNotificationCount)}</Badge>
                         {/if}
                     </span>
                     <span class={compact ? "sr-only" : ""}>{item.label}</span>

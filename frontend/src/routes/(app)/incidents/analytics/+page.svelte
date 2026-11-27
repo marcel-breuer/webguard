@@ -87,8 +87,8 @@
 
 <main class="mx-auto w-[min(76rem,calc(100%_-_2rem))] py-6 sm:py-12">
     <header class="mb-8 max-w-3xl">
-        <p class="m-0 text-[0.8125rem] font-extrabold tracking-[0.1em] text-wg-accent uppercase">Operations</p>
-        <h1 class="mt-2 text-[clamp(2rem,6vw,3rem)] leading-[1.1] font-bold">Service operations</h1>
+        <p class="m-0 text-sm font-medium text-wg-text-muted">Operations</p>
+        <h1 class="mt-2 text-[clamp(2rem,6vw,3rem)] leading-[1.1] font-semibold">Service operations</h1>
         <p class="mt-3 leading-6 text-wg-text-muted">Keep system health, monitoring groups, status pages, and incident patterns in one operational view.</p>
     </header>
 
@@ -113,7 +113,7 @@
     </section>
 
     <section class="mt-8" aria-labelledby="incidents-heading">
-        <div class="mb-5"><p class="text-[0.8125rem] font-extrabold tracking-[0.1em] text-wg-accent uppercase">Analytics</p><h2 id="incidents-heading" class="mt-1 text-2xl font-bold">Incidents</h2><p class="mt-2 text-sm leading-6 text-wg-text-muted">Incident count includes incidents opened in the selected period. MTTR is the average time between down and recovery for resolved incidents.</p></div>
+        <div class="mb-5"><p class="text-sm font-medium text-wg-text-muted">Analytics</p><h2 id="incidents-heading" class="mt-1 text-2xl font-semibold">Incidents</h2><p class="mt-2 text-sm leading-6 text-wg-text-muted">Incident count includes incidents opened in the selected period. MTTR is the average time between down and recovery for resolved incidents.</p></div>
         <Card title="Filter incidents" description="Narrow the operational view without a separate submit step.">
             <form method="GET" action="/incidents/analytics">
                 <FieldGroup class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">

@@ -300,7 +300,7 @@
     {/snippet}
 
     {#if presentation === "edit-modal"}
-        <Card variant="sticky-footer" class="sticky bottom-0 z-10 -mx-4 -mb-4 px-4 py-4 sm:-mx-6 sm:-mb-6 sm:px-6">
+        <Card variant="sticky-footer" class="sticky bottom-0 z-10 -mx-4 -mb-4 border-t border-wg-border px-4 py-4 sm:-mx-6 sm:-mb-6 sm:px-6">
             {@render actions()}
         </Card>
     {:else}

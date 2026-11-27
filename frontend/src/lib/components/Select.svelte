@@ -70,7 +70,7 @@
     const allFilteredSelected = $derived(selectableOptions.length > 0 && selectableOptions.every((option) => selectedValues.includes(option.value)));
     const hasSelection = $derived(selectedValues.length > 0);
     const widthClass = $derived(width === "full" ? "w-full" : "w-32");
-    const densityClass = $derived(density === "default" ? "min-h-11 px-3 py-2 text-sm" : "min-h-8 px-2.5 py-1 text-xs");
+    const densityClass = $derived(density === "default" ? "min-h-11 px-3 py-2 text-sm" : "min-h-10 px-2.5 py-1.5 text-sm");
     const controlClass = $derived(`border border-wg-border text-wg-text transition-colors hover:border-wg-text-muted focus:border-wg-accent focus:ring-2 focus:ring-wg-focus/40 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-wg-focus disabled:cursor-not-allowed disabled:bg-wg-surface-muted disabled:text-wg-text-muted ${densityClass} ${className}`);
 
     function select(option: SelectOption): void {
@@ -173,7 +173,7 @@
             </Popover.Content>
         </Popover.Root>
         {#if hasSelection}
-            <Button variant="ghost" size="icon-xs" {disabled} class="absolute top-1/2 right-8 min-h-0 -translate-y-1/2 border-0 p-0 active:-translate-y-1/2" aria-label={clearLabel}
+            <Button variant="ghost" size="icon-lg" {disabled} class="absolute top-1/2 right-8 size-10 min-h-10 -translate-y-1/2 border-0 p-0 active:-translate-y-1/2" aria-label={clearLabel}
                 onclick={() => { value = multiple ? [] : ""; query = ""; }}
             >
                 <XIcon class="size-3.5" />
