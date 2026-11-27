@@ -1,5 +1,24 @@
 # Installation and Operations
 
+## Screenshot demo data
+
+Start the local Docker environment with `./start-dev.sh`. In another terminal, seed or reset the anonymized screenshot workspace:
+
+```bash
+docker compose -f docker-compose.yml -f docker-compose.override.yml exec php php artisan webguard:seed-screenshot-demo
+```
+
+Open the local app and choose **Demo** on the sign-in page, or sign in with:
+
+- Email: `demo.operator@example.test`
+- Password: `password`
+
+The demo operator can switch between English and German in the app's language settings and choose light, dark, or system theme in appearance settings. Running the seed command again replaces only this demo workspace and refreshes relative dates so the newest check remains recent. Mail uses the local Mailpit service; seeded notification channel deliveries are marked skipped and push credentials are empty, so the fixture does not send email, push, Slack, or webhook traffic.
+
+To reset the fixture, run the same seed command again. The seeded API reference entry is a disabled placeholder; it is not a usable API credential.
+
+To read the Core version used by a checkout, run `git describe --tags --always` from the Core repository. A running deployment can report its exact build revision only when its deployment exposes a version endpoint or build metadata; compare that revision to the displayed release tag before capturing screenshots.
+
 ## Prerequisites
 
 - PHP 8.5 or higher
