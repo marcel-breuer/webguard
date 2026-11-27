@@ -307,7 +307,7 @@ class SvelteKitQualityGateTest extends TestCase
         $this->assertStringContainsString('grid-cols-[1.25rem_minmax(0,1fr)]', $monitoringAnalytics);
         $this->assertStringContainsString('row-span-3 flex justify-center pt-0.5', $monitoringAnalytics);
         $this->assertStringContainsString('col-start-2 mt-0 grid min-w-0 grid-cols-2', $monitoringAnalytics);
-        $this->assertStringContainsString('px-2.5 py-0.5 text-[0.5625rem] leading-none', $monitoringAnalytics);
+        $this->assertStringContainsString('rounded-lg px-2.5 py-1 text-xs font-medium', $monitoringAnalytics);
         $this->assertStringContainsString('sm:-mx-6 sm:-mb-6 sm:px-6', $monitoringForm);
     }
 
