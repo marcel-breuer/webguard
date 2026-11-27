@@ -11,7 +11,7 @@
     <ul class="m-0 flex flex-wrap gap-2 p-0" aria-label="Monitoring locations">
         {#each locations as location (location.code)}
             <li>
-                <Badge variant="neutral" class="gap-2 rounded-full px-2.5 py-1 font-bold text-wg-text">
+                <Badge variant="neutral" class="gap-2 rounded-lg px-2.5 py-1 font-medium text-wg-text">
                     <Badge variant="dot" class="size-1.5 bg-wg-accent" aria-hidden="true" />
                     {location.name}
                 </Badge>

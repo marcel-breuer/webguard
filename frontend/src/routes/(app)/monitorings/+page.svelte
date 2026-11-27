@@ -11,7 +11,7 @@
     import { invalidateAll } from "$app/navigation";
     import { FirstPartyApiError, requestFirstPartyApi } from "#lib/api/client.ts";
     import { appRoutes } from "#lib/routes.ts";
-    import { formatDateTime, formatNumber } from "#lib/i18n/format.ts";
+    import { formatDateTime, formatNumber, formatPercentage } from "#lib/i18n/format.ts";
     import Button from "#lib/components/Button.svelte";
     import Dialog from "#lib/components/Dialog.svelte";
     import EmptyState from "#lib/components/EmptyState.svelte";
@@ -118,6 +118,13 @@
         const points = card(monitoring)?.heatmap ?? [];
         return [...points.slice(0, 24), ...Array<MonitoringHeatmapPoint | null>(Math.max(0, 24 - points.length)).fill(null)];
     }
+    function uptimePercentage(monitoring: MonitoringSummary): string {
+        const points = card(monitoring)?.heatmap ?? [];
+        const uptime = points.reduce((total, point) => total + point.uptime, 0);
+        const downtime = points.reduce((total, point) => total + point.downtime, 0);
+
+        return uptime + downtime === 0 ? "—" : formatPercentage((uptime / (uptime + downtime)) * 100, 1);
+    }
     function heatmapClass(point: MonitoringHeatmapPoint | null): string {
         if (point === null || point.uptime === point.downtime) return "bg-wg-surface-muted";
         return point.uptime > point.downtime ? "bg-emerald-500" : "bg-red-500";
@@ -160,9 +167,9 @@
 
 <main class="mx-auto w-[min(76rem,calc(100%_-_2rem))] py-6 sm:py-10">
     <header class="mb-6 flex flex-col gap-4 border-b border-wg-border pb-6 sm:flex-row sm:items-end sm:justify-between">
-        <div><p class="m-0 text-[0.8125rem] font-extrabold tracking-[0.1em] text-wg-accent uppercase">Service operations</p><h1 class="mt-2 text-[clamp(2rem,5vw,2.75rem)] leading-[1.1] font-bold">Monitorings</h1><p class="mt-3 max-w-2xl leading-6 text-wg-text-muted">Keep system health, monitoring groups, status pages, and incident patterns in one operational view.</p></div>
+        <div><p class="m-0 text-sm font-medium text-wg-text-muted">Service operations</p><h1 class="mt-2 text-[clamp(2rem,5vw,2.75rem)] leading-[1.1] font-semibold">Monitorings</h1><p class="mt-3 max-w-2xl leading-6 text-wg-text-muted">Keep system health, monitoring groups, status pages, and incident patterns in one operational view.</p></div>
         {#if dashboard?.capabilities.can_create_monitoring}
-            <Button class="tracking-[0.08em] uppercase" type="button" loading={createLoading} onclick={openCreateModal}>Create</Button>
+            <Button type="button" loading={createLoading} onclick={openCreateModal}>Create</Button>
         {/if}
     </header>
 
@@ -210,17 +217,18 @@
         {/if}
     {:else}
         <div class="grid gap-5 xl:grid-cols-[minmax(0,1fr)_18rem] xl:items-start">
-            <Card.Root as="section" aria-labelledby="active-monitorings-heading">
-                <Card.Header class="gap-3 px-5 py-5 sm:items-end"><div><Card.Title id="active-monitorings-heading" class="text-xl">Active monitorings</Card.Title><Card.Description class="mt-1">System health and details in one focused workspace.</Card.Description></div><p class="text-sm font-semibold text-wg-text-muted">Total monitorings: {formatNumber(monitorings.meta.total)}</p></Card.Header>
+                <Card.Root as="section" aria-labelledby="active-monitorings-heading">
+                <Card.Header class="gap-3 px-5 py-5 sm:items-end"><div><Card.Title id="active-monitorings-heading" class="text-xl">Monitorings</Card.Title><Card.Description class="mt-1">Status, recent availability, response time, and last check.</Card.Description></div><p class="text-sm font-medium text-wg-text-muted">Total monitorings: {formatNumber(monitorings.meta.total)}</p></Card.Header>
                 {#if visibleMonitorings.length === 0}
                     <Empty.Root class="items-start gap-0 rounded-none border-0 p-6 text-left text-sm text-wg-text-muted md:p-6">No monitorings match the selected quick view and filters.</Empty.Root>
                 {:else}
-                    <DataTable caption="Active monitorings">
-                        <Table.Header><Table.Row><Table.Head scope="col">Name</Table.Head><Table.Head scope="col">Target</Table.Head><Table.Head scope="col">Last 24 hours</Table.Head><Table.Head scope="col">Status</Table.Head></Table.Row></Table.Header>
+                    <DataTable caption="Monitorings">
+                        <Table.Header><Table.Row><Table.Head scope="col">Name</Table.Head><Table.Head scope="col">Target and last check</Table.Head><Table.Head scope="col">24-hour uptime</Table.Head><Table.Head scope="col">Response time</Table.Head><Table.Head scope="col">Status</Table.Head></Table.Row></Table.Header>
                         <Table.Body>{#each visibleMonitorings as monitoring (monitoring.id)}<Table.Row class="transition-colors hover:bg-wg-surface-muted/50">
                             <Table.Cell class="!p-0"><a class="block h-full px-4 py-3.5 text-wg-text no-underline focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-wg-focus" href={`/monitorings/${monitoring.id}`} aria-label={`View ${monitoring.name}`}><div class="flex min-w-40 items-center gap-2"><Badge variant="dot" class={`size-2.5 ${statusTone(monitoring) === "healthy" ? "bg-emerald-500" : statusTone(monitoring) === "danger" ? "bg-red-500" : statusTone(monitoring) === "degraded" ? "bg-amber-500" : "bg-wg-text-muted"}`} aria-hidden="true" /><span class="truncate font-bold transition-colors hover:text-wg-accent">{monitoring.name}</span></div><div class="mt-2 flex flex-wrap items-center gap-2"><Badge variant="neutral" class="px-2 py-0.5">{monitoring.type ?? "Monitoring"}</Badge>{#if monitoring.groups.length > 0}<span class="max-w-36 truncate text-xs text-wg-text-muted" title={monitoring.groups.map((group) => group.name).join(", ")}>{monitoring.groups.map((group) => group.name).join(", ")}</span>{/if}</div></a></Table.Cell>
                             <Table.Cell class="!p-0"><a class="block h-full px-4 py-3.5 text-wg-text no-underline focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-wg-focus" href={`/monitorings/${monitoring.id}`} aria-label={`View ${monitoring.name}`}><span class="block max-w-52 truncate text-sm" title={monitoring.target}>{monitoring.target}</span><p class="mt-1 text-xs text-wg-text-muted">{checkedAt(monitoring)}</p></a></Table.Cell>
-                            <Table.Cell class="!p-0"><a class="block h-full px-4 py-3.5 text-wg-text no-underline focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-wg-focus" href={`/monitorings/${monitoring.id}`} aria-label={`View ${monitoring.name} details`}><div class="flex min-w-36 gap-0.5" aria-label={`24-hour availability for ${monitoring.name}`}>{#each heatmapPoints(monitoring) as point}<span class={`h-6 w-1.5 rounded-sm ${heatmapClass(point)}`} aria-hidden="true"></span>{/each}</div></a></Table.Cell>
+                            <Table.Cell class="!p-0"><a class="block h-full px-4 py-3.5 text-wg-text no-underline focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-wg-focus" href={`/monitorings/${monitoring.id}`} aria-label={`View ${monitoring.name} details`}><span class="text-sm font-medium tabular-nums">{uptimePercentage(monitoring)}</span><div class="mt-2 flex min-w-36 gap-0.5" aria-label={`24-hour availability for ${monitoring.name}`}>{#each heatmapPoints(monitoring) as point}<span class={`h-5 w-1.5 rounded-sm ${heatmapClass(point)}`} aria-hidden="true"></span>{/each}</div></a></Table.Cell>
+                            <Table.Cell class="!p-0"><a class="block h-full px-4 py-3.5 text-wg-text no-underline focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-wg-focus" href={`/monitorings/${monitoring.id}`} aria-label={`View ${monitoring.name} details`}><span class="whitespace-nowrap text-sm tabular-nums">{monitoring.latest_check?.response_time_ms === null || monitoring.latest_check === null ? "—" : `${formatNumber(Math.round(monitoring.latest_check.response_time_ms))} ms`}</span></a></Table.Cell>
                             <Table.Cell class="!p-0"><a class="block h-full px-4 py-3.5 text-wg-text no-underline focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-wg-focus" href={`/monitorings/${monitoring.id}`} aria-label={`View ${monitoring.name} details`}><div class="flex flex-wrap gap-1"><StatusBadge tone={statusTone(monitoring)} label={statusLabel(monitoring)} />{#if monitoring.open_incident}<StatusBadge tone="danger" label="Incident" />{/if}{#if monitoring.maintenance.has_recurring_window}<StatusBadge tone="neutral" label="Maintenance" />{/if}</div></a></Table.Cell>
                         </Table.Row>{/each}</Table.Body>
                     </DataTable>
@@ -229,7 +237,7 @@
             </Card.Root>
             {#if dashboard}
             <aside class="grid gap-4" aria-label="Operational summary">
-                <Card.Root as="section" class="p-5"><p class="text-xs font-extrabold tracking-[0.12em] text-wg-accent uppercase">All systems</p><h2 class="mt-3 text-lg font-bold">{allSystemsOperational ? "All systems operational" : "Service attention required"}</h2><dl class="mt-5 grid grid-cols-2 gap-3 border-t border-violet-200 pt-4 dark:border-violet-800"><div><dt class="text-2xl font-extrabold text-emerald-600">{formatNumber(dashboard.summary.healthy)}</dt><dd class="mt-1 text-xs text-wg-text-muted">Healthy</dd></div><div><dt class="text-2xl font-extrabold text-red-600">{formatNumber(dashboard.summary.down + dashboard.summary.unknown)}</dt><dd class="mt-1 text-xs text-wg-text-muted">Needs attention</dd></div></dl></Card.Root>
+                <Card.Root as="section" class="border-l-4 border-l-wg-accent p-5"><p class="text-sm font-medium text-wg-text-muted">All systems</p><h2 class="mt-3 text-lg font-semibold">{allSystemsOperational ? "All systems operational" : "Service attention required"}</h2><dl class="mt-5 grid grid-cols-2 gap-3 border-t border-wg-border pt-4"><div><dt class="text-2xl font-semibold tabular-nums text-wg-status-up-foreground">{formatNumber(dashboard.summary.healthy)}</dt><dd class="mt-1 text-xs text-wg-text-muted">Healthy</dd></div><div><dt class="text-2xl font-semibold tabular-nums text-wg-status-down-foreground">{formatNumber(dashboard.summary.down + dashboard.summary.unknown)}</dt><dd class="mt-1 text-xs text-wg-text-muted">Needs attention</dd></div></dl></Card.Root>
                 <Card.Root as="section" class="p-5"><div class="flex items-start justify-between gap-3"><h2 class="text-base font-bold">Open incidents</h2><Badge variant="danger" class="rounded-full bg-red-50 px-2 py-1 font-bold text-red-600 dark:bg-red-950">{formatNumber(openIncidents.length)}</Badge></div><p class="mt-3 text-sm leading-5 text-wg-text-muted">Review current service disruptions and recent incident activity.</p><a class="mt-4 inline-flex text-sm font-bold text-wg-accent no-underline hover:text-wg-accent-strong" href={appRoutes.incidents}>Open incidents →</a></Card.Root>
                 <Card.Root as="section" class="p-5"><h2 class="text-base font-bold">Status pages</h2><p class="mt-3 text-sm leading-5 text-wg-text-muted">Publish service availability for your customers and teams.</p><a class="mt-4 inline-flex text-sm font-bold text-wg-accent no-underline hover:text-wg-accent-strong" href={appRoutes.statusPages}>Manage →</a></Card.Root>
             </aside>

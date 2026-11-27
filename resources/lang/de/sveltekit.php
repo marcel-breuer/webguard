@@ -154,6 +154,8 @@ return [
         'No data' => 'Keine Daten',
         'No outstanding attention items.' => 'Keine offenen Punkte, die Aufmerksamkeit erfordern.',
         'No results in this period' => 'Keine Ergebnisse in diesem Zeitraum',
+        'Availability across recorded checks' => 'Verfügbarkeit der erfassten Prüfungen',
+        'Loading notifications…' => 'Benachrichtigungen werden geladen …',
         'No result yet' => 'Noch kein Ergebnis',
         'No server-health reports have been received yet.' => 'Es wurden noch keine Serverzustandsberichte empfangen.',
         'No services match the current filters.' => 'Keine Dienste entsprechen den aktuellen Filtern.',
@@ -274,6 +276,7 @@ return [
         'Try a broader period or remove one of the filters.' => 'Versuchen Sie es mit einem längeren Zeitraum oder entfernen Sie einen der Filter.',
     ],
     'navigation' => [
+        'Your monitoring overview' => 'Ihre Monitoring-Übersicht',
         'Close navigation' => 'Navigation schließen',
         'Collaboration' => 'Zusammenarbeit',
         'Dashboard' => 'Dashboard',
@@ -291,6 +294,9 @@ return [
         'Dashboard data could not be loaded.' => 'Dashboarddaten konnten nicht geladen werden.',
     ],
     'monitorings' => [
+        '24-hour uptime' => 'Verfügbarkeit in 24 Stunden',
+        'Target and last check' => 'Ziel und letzte Prüfung',
+        'Status, recent availability, response time, and last check.' => 'Status, aktuelle Verfügbarkeit, Antwortzeit und letzte Prüfung.',
         'Active monitorings' => 'Aktive Überwachungen',
         'All monitorings' => 'Alle Überwachungen',
         'Check configuration' => 'Prüfkonfiguration',

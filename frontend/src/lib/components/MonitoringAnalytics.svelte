@@ -241,6 +241,7 @@
         const accent = chartColor("--wg-accent", "#7e22ce");
         const muted = chartColor("--wg-text-muted", "#64748b");
         const border = chartColor("--wg-border", "#d9e0ea");
+        const range = chartColor("--wg-text-muted", "#64748b");
         const fontFamily = chartFontFamily();
 
         responseTimeChart = new Chart(canvas, {
@@ -248,9 +249,9 @@
             data: {
                 labels: points.map((point) => responseTimeAxisLabel(point.date)),
                 datasets: [
-                    { label: "Min. Response Time", data: points.map((point) => point.min ?? point.avg), borderColor: "#c4b5fd", borderWidth: 1.5, borderDash: [4, 4], pointRadius: 0, pointHoverRadius: 4, tension: 0.35 },
+                    { label: "Min. Response Time", data: points.map((point) => point.min ?? point.avg), borderColor: range, borderWidth: 1.5, borderDash: [4, 4], pointRadius: 0, pointHoverRadius: 4, tension: 0.35 },
                     { label: "Avg. Response Time", data: points.map((point) => point.avg), borderColor: accent, backgroundColor: accent, borderWidth: 2.5, pointRadius: 0, pointHoverRadius: 4, tension: 0.35 },
-                    { label: "Max. Response Time", data: points.map((point) => point.max ?? point.avg), borderColor: "#d8b4fe", borderWidth: 1.5, borderDash: [4, 4], pointRadius: 0, pointHoverRadius: 4, tension: 0.35 },
+                    { label: "Max. Response Time", data: points.map((point) => point.max ?? point.avg), borderColor: range, borderWidth: 1.5, borderDash: [2, 3], pointRadius: 0, pointHoverRadius: 4, tension: 0.35 },
                 ],
             },
             options: {
@@ -493,8 +494,8 @@
                     {#if index < checks.length - 1}<span class={`pointer-events-none absolute top-[1.625rem] bottom-[-1.625rem] left-[1.625rem] z-[-1] w-px sm:left-8 ${timelineConnectorTone(check.status)}`} aria-hidden="true"></span>{/if}
                     <div class="row-span-3 flex justify-center pt-0.5 sm:row-span-1 sm:pt-0"><span class={`grid size-5 shrink-0 place-items-center rounded-full border ${timelineDotTone(check.status)}`} aria-label={check.status}>{#if check.status === "unknown"}<span class="text-xs font-extrabold" aria-hidden="true">!</span>{:else}<svg class="size-3" viewBox="0 0 16 16" aria-hidden="true"><path fill="currentColor" d={check.status === "up" ? "M6.35 11.15 2.9 7.7l1.05-1.05 2.4 2.4 5.7-5.7L13.1 4.4z" : "m4.05 3 3.95 3.95L11.95 3 13 4.05 9.05 8 13 11.95 11.95 13 8 9.05 4.05 13 3 11.95 6.95 8 3 4.05z"} /></svg>{/if}</span></div>
                     <div class="min-w-0"><p class="text-sm font-extrabold">{timestamp(check.checked_at)}</p><p class="mt-1 text-xs text-wg-text-muted">{check.source === "live" ? "Live" : "Archived"}</p></div>
-                    <dl class="col-start-2 mt-0 grid min-w-0 grid-cols-2 gap-x-4 gap-y-3 text-sm sm:col-start-auto sm:grid-cols-3 sm:gap-x-5"><div><dt class="text-[0.625rem] font-extrabold tracking-[0.1em] text-wg-text-muted uppercase">Status code</dt><dd class="mt-1 font-extrabold">{check.http_status_code ?? "—"}</dd></div><div><dt class="text-[0.625rem] font-extrabold tracking-[0.1em] text-wg-text-muted uppercase">Response time</dt><dd class="mt-1 font-extrabold text-sky-700 dark:text-sky-300">{check.response_time === null ? "—" : `${formatNumber(Math.round(check.response_time))} ms`}</dd></div><div><dt class="text-[0.625rem] font-extrabold tracking-[0.1em] text-wg-text-muted uppercase">Raw status</dt><dd class="mt-1 font-extrabold uppercase">{check.status}</dd></div></dl>
-                    <Badge variant="outline" class={`col-start-2 mt-0 inline-flex w-fit max-w-full items-center justify-self-start whitespace-nowrap rounded-full px-2.5 py-0.5 text-[0.5625rem] leading-none font-extrabold tracking-[0.08em] uppercase sm:col-start-auto sm:justify-self-end ${statusTone(check.status)}`}>{check.status === "up" ? "Successful" : check.status}</Badge>
+                    <dl class="col-start-2 mt-0 grid min-w-0 grid-cols-2 gap-x-4 gap-y-3 text-sm sm:col-start-auto sm:grid-cols-3 sm:gap-x-5"><div><dt class="text-xs font-medium text-wg-text-muted">Status code</dt><dd class="mt-1 font-semibold tabular-nums">{check.http_status_code ?? "—"}</dd></div><div><dt class="text-xs font-medium text-wg-text-muted">Response time</dt><dd class="mt-1 font-semibold tabular-nums text-wg-text">{check.response_time === null ? "—" : `${formatNumber(Math.round(check.response_time))} ms`}</dd></div><div><dt class="text-xs font-medium text-wg-text-muted">Raw status</dt><dd class="mt-1 font-semibold">{check.status}</dd></div></dl>
+                    <Badge variant="outline" class={`col-start-2 mt-0 inline-flex w-fit max-w-full items-center justify-self-start whitespace-nowrap rounded-lg px-2.5 py-1 text-xs font-medium sm:col-start-auto sm:justify-self-end ${statusTone(check.status)}`}>{check.status === "up" ? "Successful" : check.status}</Badge>
                 </article>
             {/each}
         </Surface>

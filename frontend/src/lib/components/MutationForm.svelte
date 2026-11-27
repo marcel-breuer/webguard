@@ -75,7 +75,7 @@
     {#if message}
         <Alert
             variant={Object.keys(errors).length > 0 ? "destructive" : "default"}
-            class={Object.keys(errors).length > 0 ? "font-semibold" : "font-semibold text-green-700 dark:text-green-300"}
+            class={Object.keys(errors).length > 0 ? "font-medium" : "font-medium text-wg-status-up-foreground"}
             role={Object.keys(errors).length > 0 ? "alert" : "status"}
         >
             {message}

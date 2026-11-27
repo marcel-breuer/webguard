@@ -154,6 +154,8 @@ return [
         'No data' => 'No data',
         'No outstanding attention items.' => 'No outstanding attention items.',
         'No results in this period' => 'No results in this period',
+        'Availability across recorded checks' => 'Availability across recorded checks',
+        'Loading notifications…' => 'Loading notifications…',
         'No result yet' => 'No result yet',
         'No server-health reports have been received yet.' => 'No server-health reports have been received yet.',
         'No services match the current filters.' => 'No services match the current filters.',
@@ -274,6 +276,7 @@ return [
         'Try a broader period or remove one of the filters.' => 'Try a broader period or remove one of the filters.',
     ],
     'navigation' => [
+        'Your monitoring overview' => 'Your monitoring overview',
         'Close navigation' => 'Close navigation',
         'Collaboration' => 'Collaboration',
         'Dashboard' => 'Dashboard',
@@ -291,6 +294,9 @@ return [
         'Dashboard data could not be loaded.' => 'Dashboard data could not be loaded.',
     ],
     'monitorings' => [
+        '24-hour uptime' => '24-hour uptime',
+        'Target and last check' => 'Target and last check',
+        'Status, recent availability, response time, and last check.' => 'Status, recent availability, response time, and last check.',
         'Active monitorings' => 'Active monitorings',
         'All monitorings' => 'All monitorings',
         'Check configuration' => 'Check configuration',

@@ -90,12 +90,12 @@
         <Card title="Notification preferences" description="Control your effective alert settings for this monitoring.">
             <form class="grid gap-4" onsubmit={updateNotifications}>
                 <input name="notification_on_failure" type="hidden" value="0" />
-                <FieldLabel class="flex-row text-sm font-bold">
+                <FieldLabel class="flex-row text-sm font-medium">
                     <Checkbox name="notification_on_failure" value="1" checked={preferences.effective.notification_on_failure} />
                     Notify on failure
                 </FieldLabel>
                 <FieldSet class="grid gap-2">
-                    <FieldLegend class="text-sm font-bold">Channels</FieldLegend>
+                    <FieldLegend class="text-sm font-medium">Channels</FieldLegend>
                     {#each preferences.permitted_channels as channel (channel)}
                         <FieldLabel class="flex-row text-sm font-normal">
                             <Checkbox name="notification_channels[]" value={channel} bind:group={selectedChannels} />
@@ -114,7 +114,7 @@
     </section>
 
     {#if message}
-        <Alert role="status" class="mt-4 rounded-none border-0 bg-transparent p-0 text-sm font-bold text-green-700 dark:text-green-300">{message}</Alert>
+        <Alert role="status" class="mt-4 rounded-none border-0 bg-transparent p-0 text-sm font-medium text-wg-status-up-foreground">{message}</Alert>
     {/if}
     {#if error}
         <Alert variant="destructive" class="mt-4 text-sm font-bold">{error}</Alert>

@@ -181,11 +181,11 @@
 
 <svelte:head><title>Dashboard | WebGuard</title></svelte:head>
 
-<main class="mx-auto w-[min(76rem,calc(100%_-_2rem))] py-6 sm:py-12">
+<main class="mx-auto w-[min(76rem,calc(100%_-_2rem))] py-6 sm:py-10">
     <header class="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
-            <p class="m-0 text-[0.8125rem] font-extrabold tracking-[0.1em] text-wg-accent uppercase">Your websites</p>
-            <h1 class="mt-2 text-[clamp(2rem,6vw,3rem)] leading-[1.1] font-bold">Welcome back, {data.session.user.name}</h1>
+            <p class="m-0 text-sm font-medium text-wg-text-muted">Your monitoring overview</p>
+            <h1 class="mt-2 text-[clamp(2rem,6vw,3rem)] leading-[1.1] font-semibold">Dashboard</h1>
             <p class="mt-3 max-w-2xl leading-6 text-wg-text-muted">Check which websites are working, which need attention, and when they were last checked.</p>
         </div>
         {#if dashboard?.capabilities.can_create_monitoring && dashboard.summary.total > 0}
@@ -218,7 +218,7 @@
             </EmptyState>
         {/if}
     {:else}
-        <Card title="Website health" titleId="health-heading" description={healthMessage()}>
+        <Card title="Website health" titleId="health-heading" description={healthMessage()} class="border-l-4 border-l-wg-accent">
             {#snippet actions()}<StatusBadge tone={healthTone()} label={healthBadgeLabel()} />{/snippet}
             <p class="mb-4 mt-0 text-sm font-bold text-wg-text-muted">{formatNumber(dashboard.summary.total)} <span>websites</span></p>
             <dl class="grid grid-cols-2 gap-3 sm:grid-cols-5">

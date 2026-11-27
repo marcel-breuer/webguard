@@ -151,7 +151,7 @@
 
 <main class="mx-auto w-[min(70rem,calc(100%_-_2rem))] py-6 sm:py-12">
     <header class="mb-8 flex flex-col items-start justify-between gap-4 lg:flex-row lg:items-end">
-        <div><p class="m-0 text-[0.8125rem] font-extrabold tracking-[0.1em] text-wg-accent uppercase">Inbox</p><h1 class="mt-2 text-[clamp(2rem,6vw,3rem)] leading-[1.1] font-bold">Notifications</h1><p class="mt-3 max-w-2xl leading-6 text-wg-text-muted">{formatNumber(meta.unread_count)} unread {meta.unread_count === 1 ? "notification" : "notifications"} across your accessible monitorings.</p></div>
+        <div><p class="m-0 text-sm font-medium text-wg-text-muted">Inbox</p><h1 class="mt-2 text-[clamp(2rem,6vw,3rem)] leading-[1.1] font-semibold">Notifications</h1><p class="mt-3 max-w-2xl leading-6 text-wg-text-muted">{formatNumber(meta.unread_count)} unread {meta.unread_count === 1 ? "notification" : "notifications"} across your accessible monitorings.</p></div>
         <Button variant="secondary" loading={markingAllRead} disabled={meta.unread_count === 0} onclick={markAllRead}>Mark all as read</Button>
     </header>
 
@@ -163,12 +163,14 @@
 
         {#if errorMessage}<Alert variant="destructive" class="mt-5 text-sm font-semibold">{errorMessage}</Alert>{/if}
 
-        {#if entries.length === 0 && !loading}
+        {#if entries.length === 0 && loading}
+            <p class="mt-6 py-8 text-center text-sm text-wg-text-muted" role="status">Loading notifications…</p>
+        {:else if entries.length === 0}
             <div class="mt-6"><EmptyState title={showRead ? "No notifications yet" : "No unread notifications"} description={showRead ? "New monitoring events and delivery failures will appear here." : "You're all caught up. Switch to all notifications to review earlier events."} /></div>
         {:else}
             <Surface variant="inset" class="mt-6 divide-y divide-wg-border rounded-xl border border-wg-border bg-transparent shadow-none">
                 {#each entries as entry (entry.id)}
-                    <article class={`grid gap-4 p-4 sm:grid-cols-[1fr_auto] sm:items-center ${entry.read ? "opacity-70" : ""}`}>
+                    <article class="grid gap-4 p-4 sm:grid-cols-[1fr_auto] sm:items-center">
                         <div class="min-w-0"><div class="flex flex-wrap items-center gap-2"><StatusBadge tone={tone(entry)} label={eventLabel(entry)} />{#if entry.delivery_status === "failed"}<StatusBadge tone="degraded" label="Delivery failed" />{/if}{#if entry.read}<span class="text-xs font-bold text-wg-text-muted">Read</span>{/if}</div><h2 class="mt-3 text-base font-bold"><a class="text-wg-text no-underline hover:text-wg-accent hover:underline" href={`/monitorings/${entry.monitoring.id}`}>{entry.monitoring.name}</a></h2>{#if !hasTechnicalMessage(entry)}<p class="mt-1 text-sm leading-6 text-wg-text-muted">{entry.message}</p>{/if}<p class="mt-2 text-xs font-semibold tracking-[0.03em] text-wg-text-muted"><a class="text-wg-text-muted underline decoration-wg-border underline-offset-2 hover:text-wg-accent" href={entry.monitoring.target} target="_blank" rel="noopener noreferrer">{entry.monitoring.target}</a> · {formatDate(entry.occurred_at)}</p></div>
                         {#if !entry.read}<Button variant="quiet" loading={markingRead === entry.id} onclick={() => markRead(entry)}>Mark as read</Button>{/if}
                     </article>
