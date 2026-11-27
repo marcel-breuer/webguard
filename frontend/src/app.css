@@ -74,23 +74,23 @@
     --wg-status-degraded-foreground: #694500;
     --wg-status-maintenance: #edf0f4;
     --wg-status-maintenance-foreground: #3d4a5b;
-    /* Keep translucent surfaces as a restrained enhancement over solid fallbacks. */
+    /* Solid fallbacks are progressively enhanced by the translucent glass tokens below. */
     --wg-glass-solid: #ffffff;
     --wg-glass-tint: #f1f0f3;
     --wg-glass-fill: var(--wg-glass-solid);
     --wg-glass-raised-fill: var(--wg-glass-solid);
     --wg-glass-inset-fill: var(--wg-glass-tint);
     --wg-glass-blur: none;
-    --wg-glass-edge: transparent;
-    --wg-glass-rim: var(--wg-border);
-    --wg-glass-shadow: 0 1px 2px rgb(20 18 24 / 5%);
-    --wg-glass-radius: 1rem;
-    --wg-glass-radius-inset: 0.75rem;
-    --wg-glass-radius-dialog: 1.25rem;
+    --wg-glass-edge: rgb(255 255 255 / 90%);
+    --wg-glass-rim: rgb(255 255 255 / 50%);
+    --wg-glass-shadow: 0 8px 32px rgb(88 28 135 / 10%);
+    --wg-glass-radius: 20px;
+    --wg-glass-radius-inset: 16px;
+    --wg-glass-radius-dialog: 24px;
     --wg-glass-radius-control: 0.625rem;
-    --wg-glass-ease: 160ms cubic-bezier(0.22, 1, 0.36, 1);
-    --wg-navigation: #f0eff2;
-    --wg-navigation-edge: var(--wg-border);
+    --wg-glass-ease: 180ms ease-out;
+    --wg-navigation: #ffffff;
+    --wg-navigation-edge: rgb(255 255 255 / 50%);
 
     /*
      * shadcn variables. The only place WebGuard colours meet shadcn: change a
@@ -122,7 +122,7 @@
     --wg-surface: #1b1a1d;
     --wg-surface-muted: #242327;
     --wg-text: #f1eff3;
-    --wg-text-muted: #b0acb5;
+    --wg-text-muted: #b9b5bd;
     --wg-border: #3b3940;
     --wg-accent: #d0a5f4;
     --wg-accent-strong: #e2c8fa;
@@ -140,11 +140,11 @@
     --wg-status-maintenance-foreground: #c4cad4;
     --wg-glass-solid: #1b1a1d;
     --wg-glass-tint: #242327;
-    --wg-glass-edge: transparent;
-    --wg-glass-rim: var(--wg-border);
-    --wg-glass-shadow: 0 1px 2px rgb(0 0 0 / 20%);
+    --wg-glass-edge: rgb(255 255 255 / 22%);
+    --wg-glass-rim: rgb(255 255 255 / 8%);
+    --wg-glass-shadow: 0 8px 32px rgb(0 0 0 / 35%);
     --wg-navigation: #1b1a1d;
-    --wg-navigation-edge: var(--wg-border);
+    --wg-navigation-edge: rgb(255 255 255 / 8%);
 }
 
 html {
@@ -170,6 +170,18 @@ body {
     background-color: var(--wg-canvas);
     color: var(--wg-text);
     font-family: var(--wg-font-sans);
+    background-image:
+        radial-gradient(60rem 40rem at 12% 8%, color-mix(in srgb, var(--color-purple-300) 38%, transparent), transparent 70%),
+        radial-gradient(52rem 38rem at 92% 28%, color-mix(in srgb, var(--color-purple-200) 42%, transparent), transparent 70%),
+        radial-gradient(56rem 40rem at 30% 92%, color-mix(in srgb, var(--color-purple-400) 26%, transparent), transparent 70%);
+    background-attachment: fixed;
+}
+
+:root.dark body {
+    background-image:
+        radial-gradient(60rem 40rem at 12% 8%, color-mix(in srgb, var(--color-purple-700) 38%, transparent), transparent 70%),
+        radial-gradient(52rem 38rem at 92% 28%, color-mix(in srgb, var(--color-purple-800) 42%, transparent), transparent 70%),
+        radial-gradient(56rem 40rem at 30% 92%, color-mix(in srgb, var(--color-purple-600) 26%, transparent), transparent 70%);
 }
 
 /* Shared surface levels: quiet chrome, raised panels and inset controls. */
@@ -186,7 +198,7 @@ body {
     .wg-glass-panel {
         border: 1px solid var(--wg-glass-rim);
         border-radius: var(--wg-glass-radius);
-        box-shadow: var(--wg-glass-shadow);
+        box-shadow: inset 0 1px 0 var(--wg-glass-edge), inset 0 0 0 1px var(--wg-glass-rim), var(--wg-glass-shadow);
     }
 
     /* Nested level: no blur of its own, so glass never stacks three deep. */
@@ -196,18 +208,19 @@ body {
         background-color: var(--wg-glass-inset-fill);
         -webkit-backdrop-filter: none;
         backdrop-filter: none;
-        box-shadow: none;
+        box-shadow: inset 0 1px 0 var(--wg-glass-edge), inset 0 0 0 1px var(--wg-glass-rim);
     }
 
     /* Chrome bars (toolbars, sticky footers): edge-to-edge, hairline only. */
     .wg-glass-bar {
         border-color: var(--wg-glass-rim);
-        box-shadow: none;
+        box-shadow: inset 0 1px 0 var(--wg-glass-edge), inset 0 0 0 1px var(--wg-glass-rim);
     }
 
     .wg-glass-navigation {
-        background-color: var(--wg-navigation);
-        box-shadow: inset -1px 0 var(--wg-navigation-edge);
+        background-color: var(--wg-navigation-fill, var(--wg-navigation));
+        border: 1px solid var(--wg-glass-rim);
+        box-shadow: inset -1px 0 var(--wg-navigation-edge), inset 0 1px 0 var(--wg-glass-edge), inset 0 0 0 1px var(--wg-glass-rim);
     }
 
     .wg-glass-overlay {
@@ -222,7 +235,7 @@ body {
     .wg-glass-control {
         border-radius: var(--wg-glass-radius-control);
         background-color: var(--wg-glass-inset-fill);
-        box-shadow: none;
+        box-shadow: inset 0 1px 0 var(--wg-glass-edge);
     }
 
     .wg-status-badge {
@@ -236,30 +249,46 @@ body {
     }
 
     .wg-glass-lift {
-        transition: border-color var(--wg-glass-ease), background-color var(--wg-glass-ease);
+        transition: color var(--wg-glass-ease), background-color var(--wg-glass-ease), border-color var(--wg-glass-ease), opacity var(--wg-glass-ease), transform var(--wg-glass-ease);
+    }
+
+    .wg-glass-lift:hover {
+        transform: translateY(-2px);
     }
 }
 
 @supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) and (background: color-mix(in srgb, white, transparent)) {
     :root {
-        --wg-glass-fill: color-mix(in srgb, var(--wg-glass-solid) 94%, transparent);
-        --wg-glass-raised-fill: color-mix(in srgb, var(--wg-glass-solid) 98%, transparent);
-        --wg-glass-inset-fill: color-mix(in srgb, var(--wg-glass-tint) 96%, transparent);
-        --wg-glass-blur: blur(12px);
-        --wg-navigation-fill: color-mix(in srgb, var(--wg-navigation) 96%, transparent);
+        --wg-glass-fill: color-mix(in srgb, var(--wg-glass-solid) 52%, transparent);
+        --wg-glass-raised-fill: color-mix(in srgb, var(--wg-glass-solid) 52%, transparent);
+        --wg-glass-inset-fill: color-mix(in srgb, var(--wg-glass-tint) 38%, transparent);
+        --wg-glass-blur: blur(28px) saturate(180%);
+        --wg-navigation-fill: color-mix(in srgb, var(--wg-navigation) 52%, transparent);
     }
 
     :root.dark {
-        --wg-glass-fill: color-mix(in srgb, var(--wg-glass-solid) 96%, transparent);
-        --wg-glass-raised-fill: color-mix(in srgb, var(--wg-glass-solid) 98%, transparent);
-        --wg-glass-inset-fill: color-mix(in srgb, var(--wg-glass-tint) 96%, transparent);
+        --wg-glass-fill: rgb(255 255 255 / 7%);
+        --wg-glass-raised-fill: rgb(255 255 255 / 7%);
+        --wg-glass-inset-fill: rgb(255 255 255 / 5%);
+        --wg-glass-edge: rgb(255 255 255 / 22%);
+        --wg-glass-rim: rgb(255 255 255 / 8%);
+        --wg-glass-shadow: 0 8px 32px rgb(0 0 0 / 35%);
+        --wg-navigation-fill: rgb(255 255 255 / 7%);
+        --wg-navigation-edge: rgb(255 255 255 / 8%);
     }
+}
 
-    @layer components {
-        .wg-glass-navigation {
-            background-color: var(--wg-navigation-fill);
-        }
-    }
+/* The active item reads as an inset layer over the navigation glass. */
+.wg-glass-navigation [data-active="true"] {
+    background-color: var(--wg-glass-inset-fill);
+}
+
+/* The mobile sheet hosts its own glass navigation surface. */
+#app-navigation[data-slot="sheet-content"] {
+    background-color: transparent;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    box-shadow: none;
 }
 
 @media (prefers-reduced-transparency: reduce), (prefers-contrast: more), (forced-colors: active), print {
