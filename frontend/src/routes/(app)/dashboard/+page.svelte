@@ -185,7 +185,7 @@
     <header class="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
             <p class="m-0 text-sm font-medium text-wg-text-muted">Your monitoring overview</p>
-            <h1 class="mt-2 text-[clamp(2rem,6vw,3rem)] leading-[1.1] font-semibold">Dashboard</h1>
+            <h1 class="mt-2 text-[clamp(2rem,6vw,3rem)] leading-[1.1] font-semibold">Welcome back, {data.session.user.name}</h1>
             <p class="mt-3 max-w-2xl leading-6 text-wg-text-muted">Check which websites are working, which need attention, and when they were last checked.</p>
         </div>
         {#if dashboard?.capabilities.can_create_monitoring && dashboard.summary.total > 0 && !onboardingVisible}

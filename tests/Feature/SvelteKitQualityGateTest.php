@@ -445,7 +445,7 @@ class SvelteKitQualityGateTest extends TestCase
         $this->assertIsString($appShell);
         $this->assertStringContainsString('unreadNotificationCount = $state(0)', $appShell);
         $this->assertStringContainsString('/api/notifications?limit=1&show_read=0', $appShell);
-        $this->assertStringContainsString('bg-red-500', $appShell);
+        $this->assertStringContainsString('bg-wg-status-down', $appShell);
         $this->assertStringContainsString('webguard:notifications-count', $appShell);
         $this->assertStringContainsString('publishUnreadNotificationCount', $notificationInbox);
     }
