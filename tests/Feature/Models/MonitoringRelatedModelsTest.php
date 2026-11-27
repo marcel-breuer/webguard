@@ -218,7 +218,7 @@ class MonitoringRelatedModelsTest extends TestCase
             ->get()
             ->mapWithKeys(fn (Monitoring $monitoring): array => [$monitoring->id => $monitoring->has_enabled_maintenance_windows]);
         $this->assertTrue($flags[$plain->id]);
-        $this->assertNull($flags[$open->id]);
+        $this->assertFalse($flags[$open->id]);
 
         $this->actingAs($owner);
         $bound = (new Monitoring)->resolveRouteBindingQuery(Monitoring::query(), $plain->id)->first();

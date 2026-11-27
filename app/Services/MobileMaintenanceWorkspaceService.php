@@ -74,7 +74,7 @@ final class MobileMaintenanceWorkspaceService
             $monitoring->maintenance_until !== null && $monitoring->maintenance_until->lt($now) => 'expired',
             default => 'active',
         });
-        $monitoring->setAttribute('mobile_can_manage', $monitoring->isManageableBy($user));
+        $monitoring->setAttribute('mobile_can_manage', ! $user->isDemo() && $monitoring->isManageableBy($user));
 
         return $monitoring;
     }
@@ -82,13 +82,15 @@ final class MobileMaintenanceWorkspaceService
     public function decorateRecurring(MaintenanceWindow $maintenanceWindow, User $user): MaintenanceWindow
     {
         $occurrence = $this->maintenanceWindowService->occurrence($maintenanceWindow);
-        $manageableMonitoringIds = $maintenanceWindow->monitoring_id !== null
+        $manageableMonitoringIds = $user->isDemo()
+            ? []
+            : ($maintenanceWindow->monitoring_id !== null
             ? ($maintenanceWindow->monitoring?->isManageableBy($user) ? [$maintenanceWindow->monitoring_id] : [])
             : $maintenanceWindow->monitoringGroup?->monitorings
                 ->filter(fn (Monitoring $monitoring): bool => $monitoring->isManageableBy($user))
                 ->pluck('id')
                 ->values()
-                ->all() ?? [];
+                ->all() ?? []);
 
         $maintenanceWindow->setAttribute('mobile_state', match (true) {
             ! $maintenanceWindow->enabled => 'disabled',
@@ -96,7 +98,7 @@ final class MobileMaintenanceWorkspaceService
             $occurrence['active'] => 'active',
             default => 'upcoming',
         });
-        $maintenanceWindow->setAttribute('mobile_can_manage', $maintenanceWindow->isManageableBy($user));
+        $maintenanceWindow->setAttribute('mobile_can_manage', ! $user->isDemo() && $maintenanceWindow->isManageableBy($user));
         $maintenanceWindow->setAttribute('manageable_monitoring_ids', $manageableMonitoringIds);
         $maintenanceWindow->setAttribute('mobile_ends_at', $occurrence === null ? null : $occurrence['ends_at']->toIso8601String());
         $maintenanceWindow->setAttribute('mobile_next_occurrence', $occurrence === null ? null : [
@@ -212,7 +214,7 @@ final class MobileMaintenanceWorkspaceService
 
     public function cancelOneOff(Monitoring $monitoring, User $user): void
     {
-        abort_unless($monitoring->isManageableBy($user), 404);
+        abort_unless(! $user->isDemo() && $monitoring->isManageableBy($user), 404);
         $monitoring->update(['maintenance_from' => null, 'maintenance_until' => null]);
     }
 

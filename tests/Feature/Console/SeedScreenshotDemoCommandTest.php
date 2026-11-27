@@ -58,10 +58,16 @@ it('seeds every monitoring type with a 90 day history and a fresh check', functi
     expect(DB::table('monitoring_response_results')->whereIn('monitoring_id', $seededMonitoringIds)->min('created_at'))
         ->toBeLessThan(now()->subDays(90)->toDateTimeString());
     expect(DB::table('monitoring_response_results')->whereIn('monitoring_id', $seededMonitoringIds)->max('created_at'))
-        ->toBeGreaterThan(now()->subMinutes(3)->toDateTimeString());
+        ->toBeGreaterThan(now()->subMinute()->toDateTimeString());
     expect(DB::table('monitoring_response_results')->whereIn('monitoring_id', $seededMonitoringIds)->distinct('location_code')->count('location_code'))
         ->toBe(4);
     expect(DB::table('monitorings')->whereIn('id', $seededMonitoringIds)->where('expected_http_statuses', '200-399')->exists())
+        ->toBeTrue();
+    expect(DB::table('monitorings')->whereIn('id', $seededMonitoringIds)->where('user_id', DB::table('users')->where('email', 'demo.operator@example.test')->value('id'))->count())
+        ->toBe(count($seededMonitoringIds));
+    expect(DB::table('monitoring_group_monitoring')->whereIn('monitoring_id', $seededMonitoringIds)->count())
+        ->toBe(count($seededMonitoringIds));
+    expect(DB::table('monitorings')->whereIn('id', $seededMonitoringIds)->whereNotNull('maintenance_from')->where('maintenance_from', '<=', now())->where('maintenance_until', '>', now())->exists())
         ->toBeTrue();
 });
 
@@ -70,7 +76,7 @@ function screenshotDemoSnapshot(): array
 {
     $userId = DB::table('users')->where('email', 'demo.operator@example.test')->value('id');
     $teamId = DB::table('teams')->where('name', 'Operations Team')->value('id');
-    $monitoringIds = DB::table('monitorings')->where('team_id', $teamId)->orderBy('id')->pluck('id');
+    $monitoringIds = DB::table('monitorings')->where('created_by_user_id', $userId)->orderBy('id')->pluck('id');
 
     return [
         'user' => [$userId],

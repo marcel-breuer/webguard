@@ -6,6 +6,7 @@ namespace Tests\Feature\Api;
 
 use App\Enums\MaintenanceWindowRecurrence;
 use App\Enums\TeamRole;
+use App\Enums\UserRole;
 use App\Jobs\SendPlannedMaintenanceNotification;
 use App\Mail\PublicStatusPageMaintenanceScheduledMail;
 use App\Models\MaintenanceWindow;
@@ -117,6 +118,39 @@ class MobileMaintenanceApiTest extends TestCase
             'maintenance_from' => '2026-10-26T10:00:00+01:00',
             'maintenance_until' => '2026-10-26T11:00:00+01:00',
         ])->assertUnprocessable()->assertJsonValidationErrors('idempotency_key');
+    }
+
+    public function test_demo_user_can_view_seeded_maintenance_without_mutating_it(): void
+    {
+        Date::setTestNow('2026-03-29 12:00:00 UTC');
+        $user = $this->user();
+        $user->update(['role' => UserRole::DEMO]);
+        $monitoring = Monitoring::factory()->for($user)->create([
+            'maintenance_from' => Date::now()->addDay(),
+            'maintenance_until' => Date::now()->addDay()->addHour(),
+        ]);
+        $maintenanceWindow = MaintenanceWindow::query()->create([
+            'monitoring_id' => $monitoring->id,
+            'starts_at' => Date::now()->addDay(),
+            'duration_minutes' => 60,
+            'recurrence' => MaintenanceWindowRecurrence::WEEKLY,
+            'timezone' => 'UTC',
+            'enabled' => true,
+        ]);
+        $this->actingAsMobile($user);
+
+        $this->getJson('/api/mobile/maintenance/one-off')
+            ->assertOk()
+            ->assertJsonPath('data.0.can_manage', false);
+        $this->getJson('/api/mobile/maintenance/recurring')
+            ->assertOk()
+            ->assertJsonPath('data.0.can_manage', false)
+            ->assertJsonPath('data.0.target.manageable_monitoring_ids', []);
+        $this->deleteJson('/api/mobile/maintenance/one-off/' . $monitoring->id)->assertNotFound();
+        $this->patchJson('/api/mobile/maintenance/recurring/' . $maintenanceWindow->id, ['enabled' => false])->assertForbidden();
+
+        $this->assertDatabaseHas('monitorings', ['id' => $monitoring->id, 'maintenance_from' => '2026-03-30 14:00:00']);
+        $this->assertDatabaseHas('maintenance_windows', ['id' => $maintenanceWindow->id, 'enabled' => true]);
     }
 
     public function test_mobile_user_can_schedule_group_one_off_maintenance_and_cannot_mutate_team_member_windows(): void

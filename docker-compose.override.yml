@@ -82,7 +82,7 @@ services:
       context: .
       target: sveltekit_production
     environment:
-      ORIGIN: "http://${DOCKER_APP_HOST:-webguard.test}"
+      ORIGIN: "${ORIGIN:-http://${DOCKER_APP_HOST:-webguard.test}}"
 
   gateway:
     labels:

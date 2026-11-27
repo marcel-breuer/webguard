@@ -94,9 +94,14 @@ trait HasMonitoringMaintenance
                     });
             });
 
-        return $builder->addSelect([
-            'has_enabled_maintenance_windows' => $maintenanceWindowQuery,
-        ]);
+        if ($builder->getQuery()->columns === null) {
+            $builder->select($monitoringTable . '.*');
+        }
+
+        return $builder->selectRaw(
+            'exists (' . $maintenanceWindowQuery->toSql() . ') as has_enabled_maintenance_windows',
+            $maintenanceWindowQuery->getBindings(),
+        );
     }
 
     private function isUnderMaintenanceWithoutRecurringWindow(): bool

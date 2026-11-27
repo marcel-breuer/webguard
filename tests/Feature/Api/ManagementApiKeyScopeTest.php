@@ -91,7 +91,7 @@ class ManagementApiKeyScopeTest extends TestCase
         $token = $this->key($user, [ApiKeyAbility::MANAGEMENT_WRITE]);
 
         $this->app['env'] = 'production';
-        $this->withMiddleware(PreventRequestForgery::class);
+        $this->withMiddleware(PreventRequestForgeryExceptBearer::class);
 
         $this->withToken($token)->postJson('/api/monitoring-groups', ['name' => 'Bearer write'])->assertCreated();
 

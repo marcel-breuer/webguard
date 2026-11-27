@@ -43,10 +43,10 @@ Route::middleware(MeasureInternalUiRequest::class)->group(function (): void {
         ->middleware('role:member')
         ->name('onboarding.update');
     Route::patch('/appearance', AppearanceController::class)
-        ->middleware('role:member,admin')
+        ->middleware('role:member,admin,demo')
         ->name('appearance.update');
     Route::patch('/locale', LocaleController::class)
-        ->middleware('role:member,admin')
+        ->middleware('role:member,admin,demo')
         ->name('locale.update');
     Route::patch('/profile', [ProfileController::class, 'update'])
         ->middleware('role:member,admin')

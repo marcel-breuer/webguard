@@ -25,7 +25,11 @@ class MonitoringReadQueriesTest extends TestCase
 
         $monitoringDetailQuery = resolve(MonitoringDetailQuery::class);
 
-        $this->assertTrue($monitoringDetailQuery->findVisible($user, $visible->id)->is($visible));
+        $detail = $monitoringDetailQuery->findVisible($user, $visible->id);
+
+        $this->assertTrue($detail->is($visible));
+        $this->assertNotNull($detail->created_at);
+        $this->assertFalse((bool) $detail->getAttribute('has_enabled_maintenance_windows'));
         $this->expectException(ModelNotFoundException::class);
 
         $monitoringDetailQuery->findVisible($user, $hidden->id);

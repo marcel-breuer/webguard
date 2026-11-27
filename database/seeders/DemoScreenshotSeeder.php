@@ -88,7 +88,7 @@ class DemoScreenshotSeeder extends Seeder
                 'updated_at' => $now,
             ]);
 
-            $this->seedMonitorings($userId, $teamId, $now);
+            $this->seedMonitorings($userId, $now);
             $this->seedMonitoringGroups($userId, $now);
             $this->seedHistory($now);
             $this->seedDailyResults($now);
@@ -107,7 +107,10 @@ class DemoScreenshotSeeder extends Seeder
             ->where('tokenable_id', $userId)
             ->delete();
 
-        DB::table('monitorings')->where('team_id', $teamId)->delete();
+        DB::table('monitorings')
+            ->where('team_id', $teamId)
+            ->orWhere('created_by_user_id', $userId)
+            ->delete();
         DB::table('teams')->where('id', $teamId)->delete();
         DB::table('users')->where('id', $userId)->delete();
 
@@ -171,12 +174,19 @@ class DemoScreenshotSeeder extends Seeder
         }
     }
 
-    private function seedMonitorings(string $userId, string $teamId, Carbon $now): void
+    private function seedMonitorings(string $userId, Carbon $now): void
     {
         $monitorings = [
             'campaign-hub' => ['Campaign Hub', MonitoringType::HTTP, 'https://campaign.example.test/health', ['expected_http_statuses' => '200-399']],
             'payment-api' => ['Payment API', MonitoringType::HTTP, 'https://payments.example.test/health', ['expected_http_statuses' => '200-299', 'response_time_threshold_ms' => 800]],
-            'billing-worker' => ['Billing Worker', MonitoringType::HEARTBEAT, 'billing-worker.example.test', ['heartbeat_interval_minutes' => 5, 'heartbeat_grace_minutes' => 10, 'heartbeat_last_ping_at' => $now->copy()->subMinutes(2), 'heartbeat_token' => 'demo-heartbeat-token-disabled']],
+            'billing-worker' => ['Billing Worker', MonitoringType::HEARTBEAT, 'billing-worker.example.test', [
+                'heartbeat_interval_minutes' => 5,
+                'heartbeat_grace_minutes' => 10,
+                'heartbeat_last_ping_at' => $now->copy()->subMinutes(2),
+                'heartbeat_token' => 'demo-heartbeat-token-disabled',
+                'maintenance_from' => $now->copy()->subMinutes(30),
+                'maintenance_until' => $now->copy()->addMinutes(60),
+            ]],
             'identity-gateway' => ['Identity Gateway', MonitoringType::KEYWORD, 'https://identity.example.test/ready', ['keyword' => 'ready', 'expected_http_statuses' => '200-399']],
             'asset-pipeline' => ['Asset Pipeline', MonitoringType::PING, 'assets.example.test', []],
             'message-queue' => ['Message Queue', MonitoringType::PORT, 'queue.example.test', ['port' => 5672]],
@@ -199,8 +209,8 @@ class DemoScreenshotSeeder extends Seeder
             $this->monitoringIds[$key] = $this->id('monitoring:' . $key);
             $attributes = array_merge([
                 'id' => $this->monitoringIds[$key],
-                'user_id' => null,
-                'team_id' => $teamId,
+                'user_id' => $userId,
+                'team_id' => null,
                 'created_by_user_id' => $userId,
                 'name' => $name,
                 'type' => $type->value,
@@ -318,7 +328,7 @@ class DemoScreenshotSeeder extends Seeder
                     $monitoringKey,
                     $monitoringId,
                     $locationCode,
-                    $now->copy()->subMinutes(2),
+                    $now->copy(),
                     MonitoringStatus::UP,
                     $this->responseTime($monitoringKey, $locationCode, $now),
                 );
@@ -759,6 +769,6 @@ class DemoScreenshotSeeder extends Seeder
             $milliseconds = intdiv($milliseconds, 32);
         }
 
-        return $time . substr($this->id($key), 10);
+        return $time . mb_substr($this->id($key), 10);
     }
 }
